@@ -1,0 +1,18 @@
+{
+  "name": "f(x) runtime",
+  "icons": [
+    {
+      "src": "/pwa.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#3367D6",
+  "display": "standalone",
+  "scope": "/",
+  "theme_color": "#3367D6",
+  "shortcuts": [],
+  "description": "Platform for development",
+  "screenshots": []
+}

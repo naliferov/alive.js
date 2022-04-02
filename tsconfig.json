@@ -1,0 +1,16 @@
+{
+  "files": [
+    "x.ts"
+  ],
+  "compilerOptions": {
+    "outDir": "./",
+    "downlevelIteration": true,
+
+    "typeRoots" : ["src", "node_modules/@types"],
+    "module": "commonjs",
+    "target": "es6",
+
+    "moduleResolution": "node",
+    "plugins": [{ "name": "typescript-plugin-css-modules" }]
+  },
+}
