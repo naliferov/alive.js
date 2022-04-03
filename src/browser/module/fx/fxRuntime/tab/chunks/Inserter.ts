@@ -25,6 +25,8 @@ export default class Inserter extends BaseChunk {
         if (!t.length) return;
 
         if (t === '=') return new Op('=');
+        if (t === '==') return new Op('==');
+        if (t === '===') return new Op('===');
         if (t === '!') return new Op('!');
         if (t === '+') return new Op('+');
         if (t === '-') return new Op('-');

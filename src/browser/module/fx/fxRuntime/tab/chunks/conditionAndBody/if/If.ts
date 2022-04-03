@@ -8,7 +8,7 @@ import ConditionAndBodyChunk from "../ConditionAndBodyChunk";
 export default class If extends ConditionAndBodyChunk {
 
     condition: IfCondition;
-    body: IfCondition;
+    body: IfBody;
 
     constructor() {
         super('', {className: 'if'});

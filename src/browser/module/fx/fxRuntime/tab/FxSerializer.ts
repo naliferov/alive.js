@@ -16,7 +16,16 @@ export default class FxSerializer {
 
     deserialize(mainChunk: MainChunk, chunksData: any[]) {
 
-        const deserializeIfChunk = (ifData): If => new If();
+        const deserializeIfChunk = (ifData): If => {
+
+            const {condition, body} = ifData;
+            const if_ = new If();
+            buildListOfChunks(if_.getCondition(), condition);
+            buildListOfChunks(if_.getBody(), body);
+
+            return if_;
+        }
+
         const deserializeForChunk = (chunkData): For => {
             const forChunk = new For();
 
@@ -41,6 +50,7 @@ export default class FxSerializer {
             return new Callable();
         }
         const deserializeCall = () => {}
+
 
 
         const buildListOfChunks = (chunk, data) => {
