@@ -1,6 +1,6 @@
-import BaseChunk from "../../../BaseChunk";
+import BodyChunk from "../../BodyChunk";
 
-export default class CallableBody extends BaseChunk {
+export default class CallableBody extends BodyChunk {
 
     constructor() {
         super('', {className: ['callableBody']});

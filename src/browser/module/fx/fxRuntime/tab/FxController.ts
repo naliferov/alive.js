@@ -168,7 +168,10 @@ export default class FxController {
             'ArrowRight': (e) => this.moveRight(e.shiftKey, ctrl),
             'ArrowUp': (e) => { e.preventDefault(); this.moveUp(e.shiftKey, ctrl); },
             'ArrowDown': (e) => { e.preventDefault(); this.moveDown(e.shiftKey, ctrl); },
-            'Backspace': (e) => this.backspaceBtn(),
+            'Backspace': (e) => {
+                if (ctrl) { this.deleteBtn(); return; }
+                this.backspaceBtn();
+            },
             'Delete': (e) => this.deleteBtn(),
             'Tab': (e) => { e.preventDefault(); this.tabBtn(e.shiftKey); },
             'Enter': (e) => { this.enterBtn(e.shiftKey, ctrl) }
@@ -519,9 +522,11 @@ export default class FxController {
                 }
             }
 
-            let prevChunk = marked.getPrevChunk(); if (!prevChunk) return;
-            //if (prevChunk instanceof NewLine) prevChunk = prevChunk.getPrevChunk();
-            if (!prevChunk) return;
+            let prevChunk = marked.getPrevChunk();
+            if (!prevChunk) {
+                this.moveLeftButNoNextChunk(marked, parent);
+                return;
+            }
 
             if (isShift) {
                 this.marker.setDirection('left');
@@ -547,6 +552,19 @@ export default class FxController {
             } else {
                 if (chunk instanceof NewLine) chunk = markedChunk.getPrevChunk();
                 this.marker.unmarkAll().mark(chunk);
+            }
+        }
+    }
+
+    moveLeftButNoNextChunk(marked: BaseChunk, parent: BaseChunk) {
+
+        if (parent instanceof IfBody) {
+
+            const ifCondition = parent.getParentChunk().getCondition();
+            if (ifCondition.getLastChunk()) {
+                this.marker.unmarkAll().mark(ifCondition.getLastChunk());
+            } else {
+                this.switchToInsertingMode(ifCondition);
             }
         }
     }
@@ -697,8 +715,7 @@ export default class FxController {
             if (ifBody.getFirstChunk()) {
                 this.marker.unmarkAll().mark(ifBody.getFirstChunk());
             } else {
-                console.log('asdsd');
-                //todo createInserter
+                this.switchToInsertingMode(ifBody);
             }
         }
     }

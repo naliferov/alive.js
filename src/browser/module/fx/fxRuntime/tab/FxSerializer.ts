@@ -5,9 +5,7 @@ import Literal from "./chunks/literal/Literal";
 import NewLine from "./chunks/NewLine";
 import For from "./chunks/conditionAndBody/loop/For";
 import If from "./chunks/conditionAndBody/if/If";
-import BaseChunk from "./chunks/BaseChunk";
 import ForConditionPart from "./chunks/conditionAndBody/loop/ForConditionPart";
-import ForBody from "./chunks/conditionAndBody/loop/ForBody";
 import Callable from "./chunks/conditionAndBody/call/callable/Callable";
 
 export default class FxSerializer {
@@ -17,11 +15,9 @@ export default class FxSerializer {
     deserialize(mainChunk: MainChunk, chunksData: any[]) {
 
         const deserializeIfChunk = (ifData): If => {
-
-            const {condition, body} = ifData;
             const if_ = new If();
-            buildListOfChunks(if_.getCondition(), condition);
-            buildListOfChunks(if_.getBody(), body);
+            buildListOfChunks(if_.getCondition(), ifData.condition);
+            buildListOfChunks(if_.getBody(), ifData.body);
 
             return if_;
         }
