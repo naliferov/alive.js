@@ -16,18 +16,18 @@ export default class If extends ConditionAndBodyChunk {
         const ifChunk = new BaseChunk('if', {className: ['ifKeyword', 'keyword']});
 
         super.insert(ifChunk);
-        super.insert(new Space());
+        super.insert(new Space);
 
         let openBracket = new BaseChunk('('); super.insert(openBracket);
-        this.condition = new IfCondition(); super.insert(this.condition);
+        this.condition = new IfCondition; super.insert(this.condition);
         let closeBracket = new BaseChunk(')');  super.insert(closeBracket);
 
-        super.insert(new Space());
+        super.insert(new Space);
         openBracket = new BaseChunk('{'); super.insert(openBracket);
-        super.insert(new NewLine());
+        super.insert(new NewLine);
 
-        this.body = new IfBody(); super.insert(this.body);
-        super.insert(new NewLine());
+        this.body = new IfBody; super.insert(this.body);
+        super.insert(new NewLine);
         openBracket = new BaseChunk('}'); super.insert(openBracket);
     }
 }

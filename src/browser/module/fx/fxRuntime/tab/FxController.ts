@@ -5,7 +5,7 @@ import NewLine from "./chunks/NewLine";
 import Call from "./chunks/conditionAndBody/call/call/Call";
 import Name from "./chunks/literal/Name";
 import If from "./chunks/conditionAndBody/if/If";
-import Surround from "./chunks/Surround";
+import Surround from "./chunks/surround/Surround";
 import Marker from "./Marker";
 import IfCondition from "./chunks/conditionAndBody/if/IfCondition";
 import IfBody from "./chunks/conditionAndBody/if/IfBody";
@@ -22,6 +22,7 @@ import FxSerializer from "./FxSerializer";
 import Callable from "./chunks/conditionAndBody/call/callable/Callable";
 import CallableConditionPart from "./chunks/conditionAndBody/call/callable/ConditionPart";
 import BaseChunk from "./chunks/BaseChunk";
+import SurroundInternal from "./chunks/surround/SurroundInternal";
 
 export type fxSerialized = {
     chunks: any[]
@@ -97,11 +98,6 @@ export default class FxController {
         if (prevChunk && chunk instanceof Call) {
             prevChunk.displayAsFunction();
         }
-    }
-
-    addChunkBeforeMarked(chunk) {
-        if (this.marker.isEmpty()) return;
-        //this.chunk.insertBefore(chunk, this.markedChunk);
     }
 
     addChunkAfterMarked(chunk) {
@@ -228,8 +224,6 @@ export default class FxController {
 
             const nextUnmarkedChunk = this.marker.getLast().getNextChunk();
             if (!nextUnmarkedChunk) return;
-
-            //todo убрать возможность перемещения на элементы surround
 
             const surround = new Surround();
             this.marker.iterate((chunk) => surround.insert(chunk));
@@ -726,8 +720,10 @@ export default class FxController {
         if (isCtrl) {
             let parentChunk = this.marker.getFirst().getParentChunk();
             if (!parentChunk) return;
-
-            if (parentChunk instanceof ForConditionPartInternal) {
+            if (
+                parentChunk instanceof ForConditionPartInternal ||
+                parentChunk instanceof SurroundInternal
+            ) {
                 parentChunk = parentChunk.getParentChunk();
             }
 
@@ -771,8 +767,11 @@ export default class FxController {
 
         if (isCtrl && !isShift) {
 
-            if (markedChunk instanceof Name) {
-                return;
+            if (markedChunk instanceof Name) return;
+            else if (markedChunk instanceof Surround) {
+                this.marker.unmarkAll();
+                const condition = markedChunk.getFirstChunk();
+                this.marker.mark(condition);
             } else if (markedChunk instanceof If) {
 
                 if (markedChunk.isConditionEmpty() && markedChunk.isBodyEmpty()) {
@@ -788,7 +787,8 @@ export default class FxController {
                     this.marker.mark(condition);
                 }
 
-            } else if (markedChunk instanceof IfBody) this.switchToInsertingMode(markedChunk);
+            }
+            else if (markedChunk instanceof IfBody) this.switchToInsertingMode(markedChunk);
             else if (markedChunk instanceof For) {
 
                 if (markedChunk.isConditionEmpty() && markedChunk.isBodyEmpty()) {

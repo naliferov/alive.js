@@ -1,18 +1,23 @@
-import BaseChunk from "./BaseChunk";
+import BaseChunk from "../BaseChunk";
+import SurroundInternal from "./SurroundInternal";
 
 export default class Surround extends BaseChunk {
 
-    internal: BaseChunk;
+    internal: SurroundInternal;
 
     constructor() {
         super('', {className: 'surround'});
         let openBracket = new BaseChunk('('); super.insert(openBracket);
-        this.internal = new BaseChunk('', {className: 'internal'}); super.insert(this.internal);
+        this.internal = new SurroundInternal; super.insert(this.internal);
         let closeBracket = new BaseChunk(')');  super.insert(closeBracket);
     }
 
     insert(chunk: BaseChunk) {
         this.internal.insert(chunk);
+    }
+
+    getFirstChunk() {
+        return this.internal.getFirstChunk();
     }
 
     serialize(): object {
