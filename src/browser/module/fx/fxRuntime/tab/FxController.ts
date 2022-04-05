@@ -224,6 +224,8 @@ export default class FxController {
 
             e.preventDefault();
             const marked = this.marker.getFirst();
+            if (!marked) return;
+
             const parent = marked.getParentChunk();
 
             if (this.marker.getLength() === 1) {
