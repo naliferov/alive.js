@@ -8,7 +8,7 @@ export default class Name extends BaseChunk {
     constructor(name: string, letPart: boolean = false) {
         super('', {className: 'name'});
         this.letChunk = new BaseChunk('let ', {className: 'keyword', hidden: true});
-        this.nameChunk = new BaseChunk(name, {className: 'name'});
+        this.nameChunk = new BaseChunk(name, {className: 'namePart'});
         super.insert(this.letChunk);
         super.insert(this.nameChunk);
     }

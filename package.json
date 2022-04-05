@@ -2,7 +2,7 @@
   "engines": {
     "node": "16.7.0"
   },
-  "name": "util",
+  "name": "fx",
   "version": "0.0.9",
   "description": "",
   "author": "Nick Aliferov",
@@ -19,8 +19,6 @@
     "cookie-parser": "^1.4.5",
     "esbuild": "^0.11.9",
     "express": "*",
-    "formidable": "^1.2.2",
-    "mongoose": "^5.13.5",
     "sass": "^1.32.11",
     "sass-loader": "^11.0.1",
     "urlcat": "^2.0.4",

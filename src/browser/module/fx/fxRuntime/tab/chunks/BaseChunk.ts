@@ -108,6 +108,9 @@ export default class BaseChunk {
     getChildrenCount() {
         return this.unit.getDOM().children.length
     }
+    getChildren() {
+        return this.unit.getDOM().children
+    }
 
     getUnit() { return this.unit }
     newLine() { this.unit.removeClass('inline') }
@@ -115,10 +118,7 @@ export default class BaseChunk {
     unmark() { this.unit.removeClass('chunkSelected') }
     show() { this.unit.show() }
     hide() { this.unit.hide() }
-
-    remove() {
-        this.unit.removeFromDom();
-    }
+    remove() { this.unit.removeFromDom() }
 
     getTxt() {
         return this.unit.getTxt();

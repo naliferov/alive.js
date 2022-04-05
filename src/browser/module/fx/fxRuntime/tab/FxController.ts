@@ -222,52 +222,36 @@ export default class FxController {
         }
         if (ctrl && code === 'KeyB') {
 
-            const nextUnmarkedChunk = this.marker.getLast().getNextChunk();
-            if (!nextUnmarkedChunk) return;
+            e.preventDefault();
+            const marked = this.marker.getFirst();
+            const parent = marked.getParentChunk();
+
+            if (this.marker.getLength() === 1) {
+
+                if (parent instanceof SurroundInternal) {
+
+                    const surroundChunk = parent.getParentChunk();
+                    const chunks = parent.getChildren();
+                    const surroundChunksCount = parent.getChildrenCount();
+                    const parentAboveSurround = surroundChunk.getParentChunk().getUnit().getDOM();
+
+                    if (surroundChunksCount) {
+                        for (let i = 0; i < surroundChunksCount; i++) {
+                            parentAboveSurround.insertBefore(chunks[0], surroundChunk.getUnit().getDOM());
+                        }
+                        surroundChunk.remove();
+                        return;
+                    }
+                }
+            }
+
+            const nextChunk = marked.getNextChunk();
 
             const surround = new Surround();
             this.marker.iterate((chunk) => surround.insert(chunk));
 
-            //todo отменить surround если блок внутри него и нажали ещё ctrl+b
-
-            //вставить сураунд после последнего элемента
-            //или просто в поделя
-            nextUnmarkedChunk.getParentChunk().insertBefore(surround, nextUnmarkedChunk);
-
-            e.preventDefault();
-        }
-        if (ctrl && code === 'KeyV') {
-            navigator.clipboard.readText().then(clipText => {
-
-                if (!clipText) {
-                    return;
-                }
-
-                //processList case if clipText have more than 1 line
-
-                /*const {x, y} = cursor.getPos();
-                const line = this.linesList.get(y);
-                let startTxt = line.getText().substring(0, x);
-                let endTxt = line.getText().substring(x);
-
-                line.setText(startTxt + clipText + endTxt)
-
-                this.syncLinesNumbers(this.linesList.getLength());
-                this.save();*/
-            });
-            return;
-        }
-        if (ctrl && k.toLowerCase() === 'd') {
-            e.preventDefault();
-
-            /*const oldLine = this.linesList.get(y);
-            const newLine = new V({tagName: 'pre', class: ['line'], txt: oldLine.getText()});
-
-            //this.linesView.insert(newLine, y);
-            this.linesList.add(newLine, y);
-
-            cursor.down();
-            this.syncLinesNumbers(this.linesList.getLength());*/
+            if (nextChunk) nextChunk.getParentChunk().insertBefore(surround, nextChunk)
+            else parent.insert(surround);
         }
     }
 
