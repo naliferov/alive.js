@@ -231,12 +231,13 @@ export default class FxController {
                 if (parent instanceof SurroundInternal) {
 
                     const surroundChunk = parent.getParentChunk();
-                    const chunks = parent.getChildren();
-                    const surroundChunksCount = parent.getChildrenCount();
                     const parentAboveSurround = surroundChunk.getParentChunk().getUnit().getDOM();
 
-                    if (surroundChunksCount) {
-                        for (let i = 0; i < surroundChunksCount; i++) {
+                    const chunks = parent.getChildren();
+                    const chunksCount = parent.getChildrenCount();
+
+                    if (chunksCount) {
+                        for (let i = 0; i < chunksCount; i++) {
                             parentAboveSurround.insertBefore(chunks[0], surroundChunk.getUnit().getDOM());
                         }
                         surroundChunk.remove();
