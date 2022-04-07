@@ -7,6 +7,7 @@ import For from "./chunks/conditionAndBody/loop/For";
 import If from "./chunks/conditionAndBody/if/If";
 import ForConditionPart from "./chunks/conditionAndBody/loop/ForConditionPart";
 import Callable from "./chunks/conditionAndBody/call/callable/Callable";
+import CallableConditionPart from "./chunks/conditionAndBody/call/callable/ConditionPart";
 
 export default class FxSerializer {
 
@@ -52,9 +53,9 @@ export default class FxSerializer {
             if (condition && condition.length > 0) {
                 for (let i = 0; i < condition.length; i++) {
 
-                    const forConditionPart = new ForConditionPart();
-                    callable.insertInCondition(forConditionPart);
-                    buildListOfChunks(forConditionPart, condition[i].internal);
+                    const conditionPart = new CallableConditionPart();
+                    callable.insertInCondition(conditionPart);
+                    buildListOfChunks(conditionPart, condition[i].internal);
                 }
             }
             if (body && body.length > 0) buildListOfChunks(callable.getBody(), body);
