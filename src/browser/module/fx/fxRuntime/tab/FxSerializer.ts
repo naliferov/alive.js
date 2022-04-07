@@ -42,8 +42,24 @@ export default class FxSerializer {
 
             return forChunk;
         }
-        const deserializeCallable = (callableData) => {
-            return new Callable();
+        const deserializeCallable = (chunkData) => {
+
+            const callable = new Callable();
+
+            const condition = chunkData.condition;
+            const body = chunkData.body;
+
+            if (condition && condition.length > 0) {
+                for (let i = 0; i < condition.length; i++) {
+
+                    const forConditionPart = new ForConditionPart();
+                    callable.insertInCondition(forConditionPart);
+                    buildListOfChunks(forConditionPart, condition[i].internal);
+                }
+            }
+            if (body && body.length > 0) buildListOfChunks(callable.getBody(), body);
+
+            return callable;
         }
         const deserializeCall = () => {}
 
