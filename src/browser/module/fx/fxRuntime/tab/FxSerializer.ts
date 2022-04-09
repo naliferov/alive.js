@@ -50,6 +50,8 @@ export default class FxSerializer {
             const condition = chunkData.condition;
             const body = chunkData.body;
 
+            console.log(body);
+
             if (condition && condition.length > 0) {
                 for (let i = 0; i < condition.length; i++) {
 

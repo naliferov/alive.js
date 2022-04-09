@@ -23,6 +23,10 @@ import Callable from "./chunks/conditionAndBody/call/callable/Callable";
 import CallableConditionPart from "./chunks/conditionAndBody/call/callable/ConditionPart";
 import BaseChunk from "./chunks/BaseChunk";
 import SurroundInternal from "./chunks/surround/SurroundInternal";
+import ConditionAndBodyChunk from "./chunks/conditionAndBody/ConditionAndBodyChunk";
+import ConditionChunk from "./chunks/conditionAndBody/ConditionChunk";
+import CallableBody from "./chunks/conditionAndBody/call/callable/CallableBody";
+import BodyChunk from "./chunks/conditionAndBody/BodyChunk";
 
 export type fxSerialized = {
     chunks: any[]
@@ -407,17 +411,6 @@ export default class FxController {
 
             const inserter = this.createInserter();
 
-            if (marked instanceof ForCondition) {
-
-                const forConditionPart = new ForConditionPart();
-                marked.insert(forConditionPart);
-
-                //дублирование кода ещё в 4х местах ниже
-                forConditionPart.insert(inserter);
-                this.marker.unmarkAll().mark(inserter);
-                this.pubsub.pub(MINDFIELDS_INSERTING_CHUNK);
-                return;
-            }
             if (marked instanceof ForConditionPart) {
 
                 const forConditionPart = new ForConditionPart();
@@ -429,8 +422,18 @@ export default class FxController {
                 this.pubsub.pub(MINDFIELDS_INSERTING_CHUNK);
                 return;
             }
-            if (marked instanceof IfCondition || marked instanceof IfBody) {
+            if (marked instanceof ForCondition) {
 
+                const forConditionPart = new ForConditionPart();
+                marked.insert(forConditionPart);
+
+                //дублирование кода ещё в 4х местах ниже
+                forConditionPart.insert(inserter);
+                this.marker.unmarkAll().mark(inserter);
+                this.pubsub.pub(MINDFIELDS_INSERTING_CHUNK);
+                return;
+            }
+            if (marked instanceof ConditionChunk || marked instanceof BodyChunk) {
                 marked.insert(inserter);
                 this.marker.unmarkAll().mark(inserter);
                 this.pubsub.pub(MINDFIELDS_INSERTING_CHUNK);
@@ -469,15 +472,15 @@ export default class FxController {
             const marked = this.marker.getFirst();
             const parent = marked.getParentChunk();
 
-            if (marked instanceof IfCondition) {
-                const prevChunk = marked.getParentChunk().getPrevChunk(); //parent
-                if (!prevChunk) return;
-                this.marker.unmarkAll().mark(prevChunk);
+            if (marked instanceof BodyChunk) {
+                const ifCondition = marked.getParentChunk().getCondition();
+                this.marker.unmarkAll().mark(ifCondition);
                 return;
             }
-            if (marked instanceof IfBody) {
-                const ifCondition = marked.getParentChunk().getCondition(); //parent
-                this.marker.unmarkAll().mark(ifCondition);
+            if (marked instanceof IfCondition) {
+                const prevChunk = marked.getParentChunk().getPrevChunk();
+                if (!prevChunk) return;
+                this.marker.unmarkAll().mark(prevChunk);
                 return;
             }
             if (marked instanceof ForCondition) {
@@ -486,12 +489,6 @@ export default class FxController {
                 this.marker.unmarkAll().mark(prevChunk);
                 return;
             }
-            if (marked instanceof ForBody) {
-                const forCondition = marked.getParentChunk().getCondition();
-                this.marker.unmarkAll().mark(forCondition);
-                return;
-            }
-
             if (parent instanceof ForConditionPartInternal) {
 
                 const forConditionPart = parent.getParentChunk();
@@ -612,17 +609,16 @@ export default class FxController {
                 }
             }
 
-            if (markedChunk instanceof IfCondition) {
-                const IfBody = markedChunk.getParentChunk().getBody();
-                this.marker.unmarkAll().mark(IfBody);
+            if (markedChunk instanceof ConditionChunk) {
+                const body = markedChunk.getParentChunk().getBody();
+                this.marker.unmarkAll().mark(body);
                 return;
             }
             if (markedChunk instanceof IfBody) {
-                const ifChunk = markedChunk.getParentChunk();
-                if (ifChunk.getNextChunk()) this.marker.unmarkAll().mark(ifChunk.getNextChunk());
+                const conditionBodyChunk = markedChunk.getParentChunk();
+                if (conditionBodyChunk.getNextChunk()) this.marker.unmarkAll().mark(conditionBodyChunk.getNextChunk());
                 return;
             }
-
             if (markedChunk instanceof ForCondition) {
                 const forBody = markedChunk.getParentChunk().getBody();
                 this.marker.unmarkAll().mark(forBody);
@@ -756,10 +752,12 @@ export default class FxController {
 
             if (markedChunk instanceof Name) return;
             else if (markedChunk instanceof Surround) {
+
                 this.marker.unmarkAll();
                 const condition = markedChunk.getFirstChunk();
                 this.marker.mark(condition);
-            } else if (markedChunk instanceof If) {
+
+            } else if (markedChunk instanceof ConditionAndBodyChunk) {
 
                 if (markedChunk.isConditionEmpty() && markedChunk.isBodyEmpty()) {
                     this.marker.unmarkAll();

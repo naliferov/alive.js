@@ -25,7 +25,6 @@ export default class If extends ConditionAndBodyChunk {
         super.insert(new Space);
         openBracket = new BaseChunk('{'); super.insert(openBracket);
         super.insert(new NewLine);
-
         this.body = new IfBody; super.insert(this.body);
         super.insert(new NewLine);
         openBracket = new BaseChunk('}'); super.insert(openBracket);

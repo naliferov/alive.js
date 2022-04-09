@@ -3,6 +3,6 @@ import BodyChunk from "../../BodyChunk";
 export default class CallableBody extends BodyChunk {
 
     constructor() {
-        super('', {className: ['callableBody']});
+        super('', {className: ['callableBody', 'shift']});
     }
 }

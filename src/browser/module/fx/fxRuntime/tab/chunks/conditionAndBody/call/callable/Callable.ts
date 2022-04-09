@@ -21,9 +21,9 @@ export default class Callable extends ConditionAndBodyChunk {
         let arrow = new BaseChunk('=>');  super.insert(arrow);
         super.insert(new Space());
 
-        this.body = new CallableBody(); super.insert(this.body);
-
         openBracket = new BaseChunk('{'); super.insert(openBracket);
+        super.insert(new NewLine());
+        this.body = new CallableBody(); super.insert(this.body);
         super.insert(new NewLine());
         openBracket = new BaseChunk('}'); super.insert(openBracket);
     }
