@@ -312,9 +312,14 @@ export default class FxController {
         }
     }
 
-    createInserter() {
+    createInserter(existTxt = '') {
         const inserter = new Inserter();
+        /*if (existTxt) {
+            inserter.setTxt('');
+        }*/
+
         inserter.setInsertHandler(async (chunk) => {
+
             inserter.getParentChunk().insertBefore(chunk, inserter);
             this.removeChunk(inserter);
             this.marker.unmarkAll().mark(chunk);
@@ -356,6 +361,7 @@ export default class FxController {
             this.marker.unmarkAll().mark(chunk);
             setTimeout(() => this.pubsub.pub(FX_RUNTIME_GET_FOCUS), 300);
         });
+
         //insert new chunk if it was detected and create new inserter right next after new chunk
         inserter.setNewChunkHandler(async (newChunk) => {
 

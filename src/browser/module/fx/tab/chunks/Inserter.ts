@@ -16,6 +16,7 @@ export default class Inserter extends BaseChunk {
     constructor() {
         super('', {className: 'inserter'});
     }
+
     setInsertHandler(handler) { this.insertHandler = handler; }
     setExitHandler(handler) { this.exitHandler = handler; }
     setNewChunkHandler(handler) { this.newChunkHandler = handler; }
@@ -42,19 +43,11 @@ export default class Inserter extends BaseChunk {
         if (t === '()') return new Call();
         if (t === '=>') return new Callable();
 
-        //todo creating object and array
-
         const num = Number(t);
-        if (!isNaN(num)) {
-            return new Literal(t, 'number');
-        }
-        if (t[0] === "'") {
-            //super(str, {className: 'string'});
-            //this.type = 'string';
-            return;
-        }
+        if (!isNaN(num)) return new Literal(t, 'number');
+        if (t[0] === "'") return new Literal(t, 'string');
 
-        //если это строка то добавить литерал со строкой
+        //creating object and array
         //если это что-то другое, тоооо... это скорее всего использование переменной
         //если хочу вставить NameOfProp ?
 
@@ -87,6 +80,9 @@ export default class Inserter extends BaseChunk {
                 if (chunk) this.newChunkHandler(chunk);
                 return;
             }
+
+            console.log('asds');
+
 
             if (offset < text.length) {
                 isCaretOnLastChar = false;

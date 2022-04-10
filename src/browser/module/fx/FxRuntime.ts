@@ -1,6 +1,4 @@
 import U from "../../core/U";
-import Editor from "../txtEditor/Editor";
-import Script from "../txtEditor/txt/scripts/Script";
 import Button from "../../core/view/ui/Button";
 import WSClient from "../../core/io/WSClient";
 import Pubsub from "../../../io/pubsub/Pubsub";
