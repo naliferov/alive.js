@@ -1,6 +1,6 @@
-import U from "../../../../core/U";
+import U from "../../core/U";
 import Tab from "./tabs/tab/Tab";
-import State from "../../../mindfields/state/State";
+import State from "../mindfields/state/State";
 
 export default class Editor {
 

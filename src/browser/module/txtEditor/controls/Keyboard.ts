@@ -1,5 +1,5 @@
-import U from "../../../../../../../../core/U";
-import Console from "../../../../../../../fx/Console";
+import U from "../../../core/U";
+import Console from "../../fx/Console";
 
 export const TAB_KEY = 'T>';
 export const TAB_REVERSE_KEY = 'T<';

@@ -1,5 +1,5 @@
 import U from "../../../core/U";
-import {DELETE_KEY, TAB_KEY, TAB_REVERSE_KEY} from "../../txtEdit/txt/txtEditor/tabs/tab/editor/Controls/Keyboard";
+import {DELETE_KEY, TAB_KEY, TAB_REVERSE_KEY} from "../../txtEditor/controls/Keyboard";
 import Inserter from "./chunks/Inserter";
 import NewLine from "./chunks/NewLine";
 import Call from "./chunks/conditionAndBody/call/call/Call";

@@ -1,4 +1,4 @@
-import U from "../../../../../../../core/U";
+import U from "../../core/U";
 import Cursor from "./Cursor";
 
 export default class Selector {
