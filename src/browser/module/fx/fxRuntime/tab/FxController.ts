@@ -14,7 +14,6 @@ import MainChunk from "./chunks/MainChunk";
 import ForCondition from "./chunks/conditionAndBody/loop/ForCondition";
 import Pubsub from "../../../../../io/pubsub/Pubsub";
 import {FX_RUNTIME_GET_FOCUS, MINDFIELDS_INSERTING_CHUNK} from "../../../../../io/pubsub/PubsubConstants";
-import ForBody from "./chunks/conditionAndBody/loop/ForBody";
 import ForConditionPart from "./chunks/conditionAndBody/loop/ForConditionPart";
 import ForConditionPartInternal from "./chunks/conditionAndBody/loop/ForConditionPartInternal";
 import MindFields from "../../../mindfields/MindFields";
@@ -25,7 +24,6 @@ import BaseChunk from "./chunks/BaseChunk";
 import SurroundInternal from "./chunks/surround/SurroundInternal";
 import ConditionAndBodyChunk from "./chunks/conditionAndBody/ConditionAndBodyChunk";
 import ConditionChunk from "./chunks/conditionAndBody/ConditionChunk";
-import CallableBody from "./chunks/conditionAndBody/call/callable/CallableBody";
 import BodyChunk from "./chunks/conditionAndBody/BodyChunk";
 
 export type fxSerialized = {
@@ -93,15 +91,6 @@ export default class FxController {
             markedChunksIds: this.marker.getMarkedChunksIds(),
         });
         await this.mindFields.save();
-    }
-
-    addChunk(chunk) {
-        this.mainChunk.insert(chunk);
-
-        const prevChunk = chunk.getPrevChunk();
-        if (prevChunk && chunk instanceof Call) {
-            prevChunk.displayAsFunction();
-        }
     }
 
     addChunkAfterMarked(chunk) {
@@ -185,15 +174,15 @@ export default class FxController {
             e.preventDefault();
             if (this.marker.isEmpty()) return;
 
-            const markedChunk = this.marker.getFirst();
+            const marked = this.marker.getFirst();
 
-            markedChunk.toggleEditTxt();
+            marked.toggleEditTxt();
             this.pubsub.pub(MINDFIELDS_INSERTING_CHUNK); //todo rename to EDITING_CHUNK and it will be more universal
 
-            //implement method markedChunk.enableInputProcessing and markedChunk.onStopEditing to clarify
-            markedChunk.onControlBack(() => {
+            //implement method marked.enableInputProcessing and marked.onStopEditing to clarify
+            marked.onControlBack(() => {
                 setTimeout(() => this.pubsub.pub(FX_RUNTIME_GET_FOCUS), 300);
-                markedChunk.toggleEditTxt();
+                marked.toggleEditTxt();
                 this.save();
             });
             return;
@@ -201,8 +190,9 @@ export default class FxController {
         if (ctrl && code === 'KeyL') {
             e.preventDefault(); if (this.marker.isEmpty()) return;
 
-            const markedChunk = this.marker.getFirst();
-            if (markedChunk instanceof Name) markedChunk.toggleLetDisplay();
+            const marked = this.marker.getFirst();
+            if (marked instanceof Name) marked.toggleLetDisplay();
+            this.save();
             return;
         }
         if (ctrl && code === 'KeyC') {
@@ -293,16 +283,16 @@ export default class FxController {
         if (this.marker.isEmpty()) return;
         if (this.marker.getLength() === 1) {
 
-            const markedChunk = this.marker.getFirst();
-            const chunkForMarking = markedChunk.getNextChunk() || markedChunk.getPrevChunk();
+            const marked = this.marker.getFirst();
+            const chunkForMarking = marked.getNextChunk() || marked.getPrevChunk();
 
             if (chunkForMarking) {
                 this.marker.unmarkAll();
                 this.marker.mark(chunkForMarking);
             }
 
-            if (! (markedChunk instanceof MainChunk)) {
-                this.removeChunk(markedChunk);
+            if (! (marked instanceof MainChunk)) {
+                this.removeChunk(marked);
             }
         }
 
@@ -313,8 +303,8 @@ export default class FxController {
         if (this.marker.isEmpty()) return;
         if (this.marker.getLength() === 1) {
 
-            const markedChunk = this.marker.getFirst();
-            const prevChunk = markedChunk.getPrevChunk();
+            const marked = this.marker.getFirst();
+            const prevChunk = marked.getPrevChunk();
             if (prevChunk) {
                 prevChunk.remove();
                 this.save();
@@ -472,21 +462,14 @@ export default class FxController {
             const marked = this.marker.getFirst();
             const parent = marked.getParentChunk();
 
+            if (marked instanceof ConditionChunk) {
+                const prevChunk = marked.getParentChunk().getPrevChunk();
+                if (!prevChunk) return;
+                this.marker.unmarkAll().mark(prevChunk);
+                return;
+            }
             if (marked instanceof BodyChunk) {
-                const ifCondition = marked.getParentChunk().getCondition();
-                this.marker.unmarkAll().mark(ifCondition);
-                return;
-            }
-            if (marked instanceof IfCondition) {
-                const prevChunk = marked.getParentChunk().getPrevChunk();
-                if (!prevChunk) return;
-                this.marker.unmarkAll().mark(prevChunk);
-                return;
-            }
-            if (marked instanceof ForCondition) {
-                const prevChunk = marked.getParentChunk().getPrevChunk();
-                if (!prevChunk) return;
-                this.marker.unmarkAll().mark(prevChunk);
+                this.marker.unmarkAll().mark(marked.getParentChunk().getCondition());
                 return;
             }
             if (parent instanceof ForConditionPartInternal) {
@@ -518,17 +501,17 @@ export default class FxController {
 
         if (this.marker.getLength() > 1) {
 
-            let markedChunk = this.marker.getLast();
-            let chunk = markedChunk.getPrevChunk();
+            let marked = this.marker.getLast();
+            let chunk = marked.getPrevChunk();
             if (!chunk) return;
 
             const isLeftDirection = this.marker.getDirection() === 'left';
 
             if (isShift) {
                 if (isLeftDirection) this.marker.mark(chunk);
-                else this.marker.unmark(markedChunk);
+                else this.marker.unmark(marked);
             } else {
-                if (chunk instanceof NewLine) chunk = markedChunk.getPrevChunk();
+                if (chunk instanceof NewLine) chunk = marked.getPrevChunk();
                 this.marker.unmarkAll().mark(chunk);
             }
         }
@@ -557,13 +540,13 @@ export default class FxController {
 
         if (this.marker.getLength() === 1) {
 
-            const markedChunk = this.marker.getFirst();
-            const parent = markedChunk.getParentChunk();
+            const marked = this.marker.getFirst();
+            const parent = marked.getParentChunk();
 
             //CTRL
             if (isCtrl && !isShift) {
 
-                if (!markedChunk) return;
+                if (!marked) return;
 
                 if (parent instanceof IfCondition) {
 
@@ -609,25 +592,25 @@ export default class FxController {
                 }
             }
 
-            if (markedChunk instanceof ConditionChunk) {
-                const body = markedChunk.getParentChunk().getBody();
+            if (marked instanceof ConditionChunk) {
+                const body = marked.getParentChunk().getBody();
                 this.marker.unmarkAll().mark(body);
                 return;
             }
-            if (markedChunk instanceof IfBody) {
-                const conditionBodyChunk = markedChunk.getParentChunk();
+            if (marked instanceof IfBody) {
+                const conditionBodyChunk = marked.getParentChunk();
                 if (conditionBodyChunk.getNextChunk()) this.marker.unmarkAll().mark(conditionBodyChunk.getNextChunk());
                 return;
             }
-            if (markedChunk instanceof ForCondition) {
-                const forBody = markedChunk.getParentChunk().getBody();
+            if (marked instanceof ForCondition) {
+                const forBody = marked.getParentChunk().getBody();
                 this.marker.unmarkAll().mark(forBody);
                 return;
             }
 
             if (parent instanceof ForConditionPartInternal) {
 
-                if (!markedChunk.getNextChunk()) {
+                if (!marked.getNextChunk()) {
 
                     const forConditionPart = parent.getParentChunk();
                     const forCondition = forConditionPart.getParentChunk();
@@ -649,9 +632,9 @@ export default class FxController {
                 }
             }
 
-            let nextChunk = markedChunk.getNextChunk();
+            let nextChunk = marked.getNextChunk();
             if (!nextChunk) {
-                this.moveRightButNoNextChunk(markedChunk, parent);
+                this.moveRightButNoNextChunk(marked, parent);
                 return;
             }
 
@@ -670,14 +653,14 @@ export default class FxController {
 
         if (this.marker.getLength() > 1) {
 
-            let markedChunk = this.marker.getLast();
-            let chunk = markedChunk.getNextChunk();
-            if (chunk instanceof NewLine) chunk = markedChunk.getNextChunk();
+            let marked = this.marker.getLast();
+            let chunk = marked.getNextChunk();
+            if (chunk instanceof NewLine) chunk = marked.getNextChunk();
             if (!chunk) return;
 
             if (isShift) {
                 if (this.marker.getDirection() === 'right') this.marker.mark(chunk);
-                else this.marker.unmark(markedChunk);
+                else this.marker.unmark(marked);
             } else {
                 this.marker.unmarkAll().mark(chunk);
             }
@@ -716,8 +699,8 @@ export default class FxController {
 
         if (this.marker.getLength() === 1) {
 
-            const markedChunk = this.marker.getFirst();
-            let prev = markedChunk.getPrevChunk();
+            const marked = this.marker.getFirst();
+            let prev = marked.getPrevChunk();
             if (!prev) return;
 
             while (prev) {
@@ -746,67 +729,68 @@ export default class FxController {
             return;
         }
 
-        const markedChunk = this.marker.getFirst();
+        const marked = this.marker.getFirst();
 
         if (isCtrl && !isShift) {
 
-            if (markedChunk instanceof Name) return;
-            else if (markedChunk instanceof Surround) {
+            if (marked instanceof Name) return;
+            else if (marked instanceof Surround) {
 
-                this.marker.unmarkAll();
-                const condition = markedChunk.getFirstChunk();
-                this.marker.mark(condition);
+                const condition = marked.getFirstChunk();
+                this.marker.unmarkAll().mark(condition);
+            }
+            else if (marked instanceof BodyChunk) {
 
-            } else if (markedChunk instanceof ConditionAndBodyChunk) {
+                if (marked.isEmpty()) {
+                    this.switchToInsertingMode(marked);
+                } else {
+                    this.marker.unmarkAll().mark(marked.getFirstChunk());
+                }
+            }
+            else if (marked instanceof ConditionAndBodyChunk) {
 
-                if (markedChunk.isConditionEmpty() && markedChunk.isBodyEmpty()) {
+                if (marked.isConditionEmpty() && marked.isBodyEmpty()) {
                     this.marker.unmarkAll();
 
                     const inserter = this.createInserter();
-                    markedChunk.insertInCondition(inserter);
+                    marked.insertInCondition(inserter);
                     this.marker.mark(inserter);
                     this.pubsub.pub(MINDFIELDS_INSERTING_CHUNK);
                 } else {
                     this.marker.unmarkAll();
-                    const condition = markedChunk.getCondition();
+                    const condition = marked.getCondition();
                     this.marker.mark(condition);
                 }
 
             }
-            else if (markedChunk instanceof IfBody) this.switchToInsertingMode(markedChunk);
-            else if (markedChunk instanceof For) {
+            else if (marked instanceof For) {
 
-                if (markedChunk.isConditionEmpty() && markedChunk.isBodyEmpty()) {
+                if (marked.isConditionEmpty() && marked.isBodyEmpty()) {
 
                     const forConditionPart = new ForConditionPart();
-                    markedChunk.insertInCondition(forConditionPart);
+                    marked.insertInCondition(forConditionPart);
 
                     const inserter = this.createInserter();
                     forConditionPart.insert(inserter);
                     this.marker.unmarkAll().mark(inserter);
                     this.pubsub.pub(MINDFIELDS_INSERTING_CHUNK);
                 } else {
-                    const condition = markedChunk.getCondition();
+                    const condition = marked.getCondition();
                     this.marker.unmarkAll().mark(condition);
                 }
 
-            } else if (markedChunk instanceof ForConditionPart) {
+            } else if (marked instanceof ForConditionPart) {
 
-                const internal = markedChunk.getInternal();
+                const internal = marked.getInternal();
                 if (internal.getFirstChunk()) this.marker.unmarkAll().mark(internal.getFirstChunk());
 
-            } else if (markedChunk instanceof ForBody) {
-                const inserter = this.createInserter();
-                markedChunk.insert(inserter);
-                this.marker.unmarkAll().mark(inserter);
-                this.pubsub.pub(MINDFIELDS_INSERTING_CHUNK);
-            } else if (markedChunk instanceof Callable) {
+            } else if (marked instanceof Callable) {
 
-                if (markedChunk.isConditionEmpty()) {
+                if (marked.isConditionEmpty()) {
                     this.marker.unmarkAll();
 
                     const callableConditionPart = new CallableConditionPart();
-                    markedChunk.insertInCondition(callableConditionPart);
+                    marked.insertInCondition(callableConditionPart);
 
                     const inserter = this.createInserter();
                     callableConditionPart.insert(inserter);
@@ -815,7 +799,7 @@ export default class FxController {
                 }
 
             } else {
-                const firstChunk = markedChunk.getFirstChunk();
+                const firstChunk = marked.getFirstChunk();
                 if (firstChunk) {
                     this.marker.unmarkAll().mark(firstChunk);
                 }
@@ -826,8 +810,8 @@ export default class FxController {
 
         if (this.marker.getLength() === 1) {
 
-            const markedChunk = this.marker.getFirst();
-            let next = markedChunk.getNextChunk();
+            const marked = this.marker.getFirst();
+            let next = marked.getNextChunk();
             if (!next) return;
 
             while (next) {

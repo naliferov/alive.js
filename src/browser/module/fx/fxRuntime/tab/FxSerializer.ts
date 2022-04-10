@@ -17,8 +17,8 @@ export default class FxSerializer {
 
         const deserializeIfChunk = (ifData): If => {
             const if_ = new If();
-            buildListOfChunks(if_.getCondition(), ifData.condition);
-            buildListOfChunks(if_.getBody(), ifData.body);
+            buildAST(if_.getCondition(), ifData.condition);
+            buildAST(if_.getBody(), ifData.body);
 
             return if_;
         }
@@ -34,11 +34,11 @@ export default class FxSerializer {
 
                     const forConditionPart = new ForConditionPart();
                     forChunk.insertInCondition(forConditionPart);
-                    buildListOfChunks(forConditionPart, condition[i].internal);
+                    buildAST(forConditionPart, condition[i].internal);
                 }
             }
             if (body && body.length > 0) {
-                buildListOfChunks(forChunk.getBody(), body);
+                buildAST(forChunk.getBody(), body);
             }
 
             return forChunk;
@@ -50,17 +50,15 @@ export default class FxSerializer {
             const condition = chunkData.condition;
             const body = chunkData.body;
 
-            console.log(body);
-
             if (condition && condition.length > 0) {
                 for (let i = 0; i < condition.length; i++) {
 
                     const conditionPart = new CallableConditionPart();
                     callable.insertInCondition(conditionPart);
-                    buildListOfChunks(conditionPart, condition[i].internal);
+                    buildAST(conditionPart, condition[i].internal);
                 }
             }
-            if (body && body.length > 0) buildListOfChunks(callable.getBody(), body);
+            if (body && body.length > 0) buildAST(callable.getBody(), body);
 
             return callable;
         }
@@ -68,7 +66,7 @@ export default class FxSerializer {
 
 
 
-        const buildListOfChunks = (chunk, data) => {
+        const buildAST = (chunk, data) => {
 
             for (let i = 0; i < data.length; i++) {
                 const d = data[i];
@@ -96,6 +94,6 @@ export default class FxSerializer {
             }
         }
 
-        buildListOfChunks(mainChunk, chunksData);
+        buildAST(mainChunk, chunksData);
     }
 }
