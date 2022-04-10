@@ -1,5 +1,5 @@
 import U from "../../../../../../../../core/U";
-import Console from "../../../../../../Console";
+import Console from "../../../../../../../fx/Console";
 
 export default class CircleMover {
 

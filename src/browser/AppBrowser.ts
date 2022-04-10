@@ -10,8 +10,8 @@ import {
     MINDFIELDS_GET_FOCUS,
     MINDFIELDS_INSERTING_CHUNK
 } from "../io/pubsub/PubsubConstants";
-import FxTabManager from "./module/fx/fxRuntime/tab/FxTabManager";
-import BaseChunk from "./module/fx/fxRuntime/tab/chunks/BaseChunk";
+import FxTabManager from "./module/fx/tab/FxTabManager";
+import BaseChunk from "./module/fx/tab/chunks/BaseChunk";
 import LocalState from "./module/mindfields/state/Localstate";
 
 class AppBrowser {

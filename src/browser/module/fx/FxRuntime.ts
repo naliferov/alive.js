@@ -1,6 +1,6 @@
 import U from "../../core/U";
-import Editor from "./txt/txtEditor/Editor";
-import Script from "./txt/scripts/Script";
+import Editor from "../txtEdit/txt/txtEditor/Editor";
+import Script from "../txtEdit/txt/scripts/Script";
 import Button from "../../core/view/ui/Button";
 import WSClient from "../../core/io/WSClient";
 import Pubsub from "../../../io/pubsub/Pubsub";
@@ -11,7 +11,7 @@ import {
     SCRIPTS_BTN_CLICK
 } from "../../../io/pubsub/PubsubConstants";
 import MindFields from "../mindfields/MindFields";
-import FxTabManager from "./fxRuntime/tab/FxTabManager";
+import FxTabManager from "./tab/FxTabManager";
 
 export default class FxRuntime {
 

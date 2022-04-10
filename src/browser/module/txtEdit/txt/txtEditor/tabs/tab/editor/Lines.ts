@@ -5,7 +5,7 @@ import State from "../../../../../../mindfields/state/State";
 import Selector from "./Selector";
 import {DELETE_KEY, TAB_KEY, TAB_REVERSE_KEY} from "./Controls/Keyboard";
 
-export default class CodeLines {
+export default class Lines {
 
     unit: U;
 
@@ -20,9 +20,9 @@ export default class CodeLines {
     contextUnit;
     state: State;
 
-    constructor(context: U) {
+    constructor(contextUnit: U) {
 
-        this.unit = new U({class: ['codeLines']});
+        this.unit = new U({class: ['lines']});
         this.linesList = new List();
 
         this.linesNumbers = new U({class: ['lineNumbers']});
@@ -31,7 +31,7 @@ export default class CodeLines {
         this.linesView = new U({class: ['lines']});
         this.unit.insert(this.linesView);
 
-        const jsArray = context.getJs().split('\n');
+        const jsArray = contextUnit.getJs().split('\n');
         this.buildLinesNumbers(jsArray, this.linesNumbers);
 
         for (let i = 0; i < jsArray.length; i++) {
@@ -40,7 +40,7 @@ export default class CodeLines {
             this.linesList.add(codeLine);
         }
 
-        this.contextUnit = context;
+        this.contextUnit = contextUnit;
 
         this.cursor = new Cursor();
         this.selector = new Selector(this.linesView, this.cursor);

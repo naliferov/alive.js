@@ -1,5 +1,5 @@
-import U from "../../../../../core/U";
-import {uuid} from "../../../../../../F";
+import U from "../../../../core/U";
+import {uuid} from "../../../../../F";
 
 export default class BaseChunk {
 

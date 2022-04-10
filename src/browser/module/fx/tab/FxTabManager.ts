@@ -1,8 +1,8 @@
-import U from "../../../../core/U";
-import Pubsub from "../../../../../io/pubsub/Pubsub";
-import MindFields from "../../../mindfields/MindFields";
+import U from "../../../core/U";
+import Pubsub from "../../../../io/pubsub/Pubsub";
+import MindFields from "../../mindfields/MindFields";
 import FxSerializer from "./FxSerializer";
-import LocalState from "../../../mindfields/state/Localstate";
+import LocalState from "../../mindfields/state/Localstate";
 import FxTab from "./FxTab";
 
 export default class FxTabManager {

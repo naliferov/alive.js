@@ -53,6 +53,10 @@ export default class FxSerializer {
             if (condition && condition.length > 0) {
                 for (let i = 0; i < condition.length; i++) {
 
+                    if (!condition[i].internal) {
+                        throw new Error('invalid data ' + JSON.stringify(condition[i]))
+                    }
+
                     const conditionPart = new CallableConditionPart();
                     callable.insertInCondition(conditionPart);
                     buildAST(conditionPart, condition[i].internal);

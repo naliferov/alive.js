@@ -1,5 +1,5 @@
 import BaseChunk from "../BaseChunk";
-import U from "../../../../../../core/U";
+import U from "../../../../../core/U";
 import {subst} from "urlcat";
 
 export default class NameOfDynProp extends BaseChunk {
