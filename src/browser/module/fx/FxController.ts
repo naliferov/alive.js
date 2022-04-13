@@ -29,7 +29,7 @@ export type fxSerialized = {
     chunks: any[]
     markedChunksIds: string[]
 };
-w
+
 export default class FxController {
 
     unit: U;
