@@ -1,4 +1,4 @@
-import HttpServer from "./HttpServer";
+import HttpServer from "../http/HttpServer";
 import { WebSocketServer } from 'ws';
 import FS from "../FS";
 import StateManager from "../state/StateManager";

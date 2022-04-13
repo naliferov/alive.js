@@ -1,7 +1,7 @@
 import U from "../../../core/U";
 import Pubsub from "../../../../io/pubsub/Pubsub";
 import MindFields from "../../mindfields/MindFields";
-import FxSerializer from "./FxSerializer";
+import FxSerializer from "../FxSerializer";
 import LocalState from "../../mindfields/state/Localstate";
 import FxTab from "./FxTab";
 

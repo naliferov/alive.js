@@ -1,7 +1,7 @@
 import HttpMsgHandler from "../../io/http/HttpMsgHandler";
 import HttpServer from "../../io/http/HttpServer";
 import {createServer} from "http";
-import WSServer from "../../io/http/WSServer";
+import WSServer from "../../io/websocket/WSServer";
 import FS from "../../io/FS";
 import Logger from "../../log/Logger";
 import * as express from "express";

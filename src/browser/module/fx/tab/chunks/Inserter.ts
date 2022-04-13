@@ -81,8 +81,6 @@ export default class Inserter extends BaseChunk {
                 return;
             }
 
-            console.log('asds');
-
 
             if (offset < text.length) {
                 isCaretOnLastChar = false;

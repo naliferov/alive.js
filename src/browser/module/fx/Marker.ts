@@ -1,6 +1,6 @@
-import List from "../../../core/List";
-import BaseChunk from "./chunks/BaseChunk";
-import U from "../../../core/U";
+import List from "../../core/List";
+import BaseChunk from "./tab/chunks/BaseChunk";
+import U from "../../core/U";
 
 export default class Marker {
 

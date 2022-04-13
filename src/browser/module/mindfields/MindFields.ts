@@ -3,7 +3,7 @@ import U, {UnitData} from "../../core/U";
 import {cloneObject, uuid} from "../../../F";
 import MindField from "./MindField";
 import MindfieldsDomHelper from "./MindfieldDomHelper";
-import HttpClientB from "../../../io/HttpClientB";
+import HttpClientB from "../../../io/http/client/HttpClientB";
 import Pubsub from "../../../io/pubsub/Pubsub";
 import {FX_RUNTIME_OPEN_TAB} from "../../../io/pubsub/PubsubConstants";
 

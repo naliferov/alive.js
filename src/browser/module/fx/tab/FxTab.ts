@@ -1,9 +1,9 @@
 import U from "../../../core/U";
 import FxTabName from "./FxTabName";
 import Pubsub from "../../../../io/pubsub/Pubsub";
-import FxSerializer from "./FxSerializer";
+import FxSerializer from "../FxSerializer";
 import MindFields from "../../mindfields/MindFields";
-import FxController from "./FxController";
+import FxController from "../FxController";
 
 export default class FxTab {
 

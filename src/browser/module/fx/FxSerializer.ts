@@ -1,13 +1,13 @@
-import MainChunk from "./chunks/MainChunk";
-import Name from "./chunks/literal/Name";
-import Op from "./chunks/Op";
-import Literal from "./chunks/literal/Literal";
-import NewLine from "./chunks/NewLine";
-import For from "./chunks/conditionAndBody/loop/For";
-import If from "./chunks/conditionAndBody/if/If";
-import ForConditionPart from "./chunks/conditionAndBody/loop/ForConditionPart";
-import Callable from "./chunks/conditionAndBody/call/callable/Callable";
-import CallableConditionPart from "./chunks/conditionAndBody/call/callable/ConditionPart";
+import MainChunk from "./tab/chunks/MainChunk";
+import Name from "./tab/chunks/literal/Name";
+import Op from "./tab/chunks/Op";
+import Literal from "./tab/chunks/literal/Literal";
+import NewLine from "./tab/chunks/NewLine";
+import For from "./tab/chunks/conditionAndBody/loop/For";
+import If from "./tab/chunks/conditionAndBody/if/If";
+import ForConditionPart from "./tab/chunks/conditionAndBody/loop/ForConditionPart";
+import Callable from "./tab/chunks/conditionAndBody/call/callable/Callable";
+import CallableConditionPart from "./tab/chunks/conditionAndBody/call/callable/ConditionPart";
 
 export default class FxSerializer {
 

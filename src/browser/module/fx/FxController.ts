@@ -1,36 +1,35 @@
-import U from "../../../core/U";
-import {DELETE_KEY, TAB_KEY, TAB_REVERSE_KEY} from "../../txtEditor/controls/Keyboard";
-import Inserter from "./chunks/Inserter";
-import NewLine from "./chunks/NewLine";
-import Call from "./chunks/conditionAndBody/call/call/Call";
-import Name from "./chunks/literal/Name";
-import If from "./chunks/conditionAndBody/if/If";
-import Surround from "./chunks/surround/Surround";
+import U from "../../core/U";
+import {DELETE_KEY, TAB_KEY, TAB_REVERSE_KEY} from "../txtEditor/controls/Keyboard";
+import Inserter from "./tab/chunks/Inserter";
+import NewLine from "./tab/chunks/NewLine";
+import Name from "./tab/chunks/literal/Name";
+import If from "./tab/chunks/conditionAndBody/if/If";
+import Surround from "./tab/chunks/surround/Surround";
 import Marker from "./Marker";
-import IfCondition from "./chunks/conditionAndBody/if/IfCondition";
-import IfBody from "./chunks/conditionAndBody/if/IfBody";
-import For from "./chunks/conditionAndBody/loop/For";
-import MainChunk from "./chunks/MainChunk";
-import ForCondition from "./chunks/conditionAndBody/loop/ForCondition";
-import Pubsub from "../../../../io/pubsub/Pubsub";
-import {FX_RUNTIME_GET_FOCUS, MINDFIELDS_INSERTING_CHUNK} from "../../../../io/pubsub/PubsubConstants";
-import ForConditionPart from "./chunks/conditionAndBody/loop/ForConditionPart";
-import ForConditionPartInternal from "./chunks/conditionAndBody/loop/ForConditionPartInternal";
-import MindFields from "../../mindfields/MindFields";
+import IfCondition from "./tab/chunks/conditionAndBody/if/IfCondition";
+import IfBody from "./tab/chunks/conditionAndBody/if/IfBody";
+import For from "./tab/chunks/conditionAndBody/loop/For";
+import MainChunk from "./tab/chunks/MainChunk";
+import ForCondition from "./tab/chunks/conditionAndBody/loop/ForCondition";
+import Pubsub from "../../../io/pubsub/Pubsub";
+import {FX_RUNTIME_GET_FOCUS, MINDFIELDS_INSERTING_CHUNK} from "../../../io/pubsub/PubsubConstants";
+import ForConditionPart from "./tab/chunks/conditionAndBody/loop/ForConditionPart";
+import ForConditionPartInternal from "./tab/chunks/conditionAndBody/loop/ForConditionPartInternal";
+import MindFields from "../mindfields/MindFields";
 import FxSerializer from "./FxSerializer";
-import Callable from "./chunks/conditionAndBody/call/callable/Callable";
-import CallableConditionPart from "./chunks/conditionAndBody/call/callable/ConditionPart";
-import BaseChunk from "./chunks/BaseChunk";
-import SurroundInternal from "./chunks/surround/SurroundInternal";
-import ConditionAndBodyChunk from "./chunks/conditionAndBody/ConditionAndBodyChunk";
-import ConditionChunk from "./chunks/conditionAndBody/ConditionChunk";
-import BodyChunk from "./chunks/conditionAndBody/BodyChunk";
+import Callable from "./tab/chunks/conditionAndBody/call/callable/Callable";
+import CallableConditionPart from "./tab/chunks/conditionAndBody/call/callable/ConditionPart";
+import BaseChunk from "./tab/chunks/BaseChunk";
+import SurroundInternal from "./tab/chunks/surround/SurroundInternal";
+import ConditionAndBodyChunk from "./tab/chunks/conditionAndBody/ConditionAndBodyChunk";
+import ConditionChunk from "./tab/chunks/conditionAndBody/ConditionChunk";
+import BodyChunk from "./tab/chunks/conditionAndBody/BodyChunk";
 
 export type fxSerialized = {
     chunks: any[]
     markedChunksIds: string[]
 };
-
+w
 export default class FxController {
 
     unit: U;
