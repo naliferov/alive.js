@@ -1,17 +1,19 @@
-import BaseChunk from "./BaseChunk";
-import Op from "./Op";
-import Literal from "./literal/Literal";
-import Name from "./literal/Name";
-import If from "./conditionAndBody/if/If";
-import For from "./conditionAndBody/loop/For";
-import Call from "./conditionAndBody/call/call/Call";
-import Callable from "./conditionAndBody/call/callable/Callable";
+import BaseChunk from "../BaseChunk";
+import Op from "../Op";
+import Literal from "../literal/Literal";
+import Name from "../literal/Name";
+import If from "../conditionAndBody/if/If";
+import For from "../conditionAndBody/loop/For";
+import Call from "../conditionAndBody/call/call/Call";
+import Callable from "../conditionAndBody/call/callable/Callable";
 
 export default class Inserter extends BaseChunk {
 
     insertHandler;
     exitHandler;
     newChunkHandler;
+
+    contextChunk: BaseChunk;
 
     constructor() {
         super('', {className: 'inserter'});
@@ -20,6 +22,7 @@ export default class Inserter extends BaseChunk {
     setInsertHandler(handler) { this.insertHandler = handler; }
     setExitHandler(handler) { this.exitHandler = handler; }
     setNewChunkHandler(handler) { this.newChunkHandler = handler; }
+    setContextChunk(chunk: BaseChunk) { this.contextChunk = chunk; }
 
     getNewChunkByTxt(t: string): BaseChunk {
 
@@ -51,7 +54,12 @@ export default class Inserter extends BaseChunk {
         //если это что-то другое, тоооо... это скорее всего использование переменной
         //если хочу вставить NameOfProp ?
 
-        return new Name(t);
+        const name = new Name(t);
+        if (this.contextChunk instanceof Name && this.contextChunk.isLet()) {
+            name.enableLet();
+        }
+
+        return name;
     }
 
     mark() {
@@ -72,15 +80,16 @@ export default class Inserter extends BaseChunk {
         this.iKeyup((e) => {
 
             const isArrowRight = e.key === 'ArrowRight';
+            const isSpace = e.key === ' ';
+
             const text = this.getTxt();
             const offset = document.getSelection().focusOffset;
 
-            if (e.key === ' ') {
+            if (isSpace) {
                 const chunk = this.getNewChunkByTxt(text.trim());
                 if (chunk) this.newChunkHandler(chunk);
                 return;
             }
-
 
             if (offset < text.length) {
                 isCaretOnLastChar = false;

@@ -1,4 +1,4 @@
-import MainChunk from "./tab/chunks/MainChunk";
+import Main from "./tab/chunks/Main";
 import Name from "./tab/chunks/literal/Name";
 import Op from "./tab/chunks/Op";
 import Literal from "./tab/chunks/literal/Literal";
@@ -11,9 +11,9 @@ import CallableConditionPart from "./tab/chunks/conditionAndBody/call/callable/C
 
 export default class FxSerializer {
 
-    serialize(mainChunk: MainChunk) { return mainChunk.serializeSubChunks(); }
+    serialize(mainChunk: Main) { return mainChunk.serializeSubChunks(); }
 
-    deserialize(mainChunk: MainChunk, chunksData: any[]) {
+    deserialize(mainChunk: Main, chunksData: any[]) {
 
         const deserializeIfChunk = (ifData): If => {
             const if_ = new If();

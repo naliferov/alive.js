@@ -21,8 +21,12 @@ export default class Name extends BaseChunk {
         }
     }
 
-    toggleEditTxt() {
-        this.nameChunk.toggleEditTxt();
+    isLet() {
+        return this.letChunk.isShowed()
+    }
+
+    enableLet() {
+        this.letChunk.show();
     }
 
     toggleLetDisplay() {

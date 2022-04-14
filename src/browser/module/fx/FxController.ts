@@ -1,6 +1,6 @@
 import U from "../../core/U";
 import {DELETE_KEY, TAB_KEY, TAB_REVERSE_KEY} from "../txtEditor/controls/Keyboard";
-import Inserter from "./tab/chunks/Inserter";
+import Inserter from "./tab/chunks/mutate/Inserter";
 import NewLine from "./tab/chunks/NewLine";
 import Name from "./tab/chunks/literal/Name";
 import If from "./tab/chunks/conditionAndBody/if/If";
@@ -9,7 +9,7 @@ import Marker from "./Marker";
 import IfCondition from "./tab/chunks/conditionAndBody/if/IfCondition";
 import IfBody from "./tab/chunks/conditionAndBody/if/IfBody";
 import For from "./tab/chunks/conditionAndBody/loop/For";
-import MainChunk from "./tab/chunks/MainChunk";
+import Main from "./tab/chunks/Main";
 import ForCondition from "./tab/chunks/conditionAndBody/loop/ForCondition";
 import Pubsub from "../../../io/pubsub/Pubsub";
 import {FX_RUNTIME_GET_FOCUS, MINDFIELDS_INSERTING_CHUNK} from "../../../io/pubsub/PubsubConstants";
@@ -39,7 +39,7 @@ export default class FxController {
     mindFields: MindFields;
     linesNumbers: U;
 
-    mainChunk: MainChunk;
+    mainChunk: Main;
     marker: Marker;
     fxSerializer: FxSerializer;
 
@@ -57,7 +57,7 @@ export default class FxController {
         const chunkContainer = new U({class: ['chunksContainer']});
         this.unit.in(chunkContainer);
 
-        this.mainChunk = new MainChunk();
+        this.mainChunk = new Main();
         chunkContainer.in(this.mainChunk.getUnit());
         this.fxSerializer = fxSerializer;
 
@@ -94,18 +94,15 @@ export default class FxController {
 
     addChunkAfterMarked(chunk) {
         if (this.marker.isEmpty()) return;
-        if (this.marker.getLength() === 1) {
+        if (this.marker.getLength() !== 1) return;
 
-            const markedChunk = this.marker.getFirst();
-            if (markedChunk.getNextChunk()) {
-                markedChunk.getParentChunk().insertBefore(chunk, markedChunk.getNextChunk());
-            } else {
-                markedChunk.getParentChunk().insert(chunk);
-            }
-            return true;
+        const marked = this.marker.getFirst();
+        if (marked.getNextChunk()) {
+            marked.getParentChunk().insertBefore(chunk, marked.getNextChunk());
+        } else {
+            marked.getParentChunk().insert(chunk);
         }
-
-        return;
+        return true;
     }
 
     getUnit() { return this.unit; }
@@ -171,19 +168,22 @@ export default class FxController {
         }
         if (ctrl && code === 'KeyE') {
             e.preventDefault();
+
             if (this.marker.isEmpty()) return;
+            if (this.marker.getLength() > 1) return;
 
-            const marked = this.marker.getFirst();
+            const inserter = this.createInserter(this.marker.getFirst());
+            this.addChunkAfterMarked(inserter);
 
-            marked.toggleEditTxt();
-            this.pubsub.pub(MINDFIELDS_INSERTING_CHUNK); //todo rename to EDITING_CHUNK and it will be more universal
+            this.marker.unmarkAll().mark(inserter);
+            this.pubsub.pub(MINDFIELDS_INSERTING_CHUNK);
 
             //implement method marked.enableInputProcessing and marked.onStopEditing to clarify
-            marked.onControlBack(() => {
+            /*marked.onControlBack(() => {
                 setTimeout(() => this.pubsub.pub(FX_RUNTIME_GET_FOCUS), 300);
                 marked.toggleEditTxt();
                 this.save();
-            });
+            });*/
             return;
         }
         if (ctrl && code === 'KeyL') {
@@ -290,7 +290,7 @@ export default class FxController {
                 this.marker.mark(chunkForMarking);
             }
 
-            if (! (marked instanceof MainChunk)) {
+            if (! (marked instanceof Main)) {
                 this.removeChunk(marked);
             }
         }
@@ -311,11 +311,10 @@ export default class FxController {
         }
     }
 
-    createInserter(existTxt = '') {
+    createInserter(contextChunk?: BaseChunk) {
+
         const inserter = new Inserter();
-        /*if (existTxt) {
-            inserter.setTxt('');
-        }*/
+        inserter.setContextChunk(contextChunk);
 
         inserter.setInsertHandler(async (chunk) => {
 
@@ -357,7 +356,11 @@ export default class FxController {
                 }
             }
 
-            this.marker.unmarkAll().mark(chunk);
+            this.marker.unmarkAll();
+
+            if (chunk && !(chunk instanceof Main)) {
+                this.marker.mark(chunk);
+            }
             setTimeout(() => this.pubsub.pub(FX_RUNTIME_GET_FOCUS), 300);
         });
 
