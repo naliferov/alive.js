@@ -50,9 +50,7 @@ export default class Inserter extends BaseChunk {
         if (!isNaN(num)) return new Literal(t, 'number');
         if (t[0] === "'") return new Literal(t, 'string');
 
-        //creating object and array
-        //если это что-то другое, тоооо... это скорее всего использование переменной
-        //если хочу вставить NameOfProp ?
+        //creating object, array, NameOfProp
 
         const name = new Name(t);
         if (this.contextChunk instanceof Name && this.contextChunk.isLet()) {
@@ -64,9 +62,10 @@ export default class Inserter extends BaseChunk {
 
     mark() {
         setTimeout(() => this.iEditTxt(), 150);
+
         this.iKeydown((e) => {
 
-            if (e.key === 'Escape') { this.exitHandler(); return; }
+            if (e.key === 'Escape') { this.exitHandler(this.contextChunk); return; }
             if (e.key !== 'Enter') return;
 
             e.preventDefault();

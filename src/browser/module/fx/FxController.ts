@@ -176,6 +176,8 @@ export default class FxController {
             this.addChunkAfterMarked(inserter);
 
             this.marker.unmarkAll().mark(inserter);
+
+            //todo string below don't make sense because method mark in inserter starts listen for events. need to fix this
             this.pubsub.pub(MINDFIELDS_INSERTING_CHUNK);
 
             //implement method marked.enableInputProcessing and marked.onStopEditing to clarify
@@ -314,8 +316,14 @@ export default class FxController {
     createInserter(contextChunk?: BaseChunk) {
 
         const inserter = new Inserter();
-        inserter.setContextChunk(contextChunk);
 
+        if (contextChunk) {
+            inserter.setContextChunk(contextChunk);
+            inserter.setTxt(contextChunk.getTxt());
+            contextChunk.hide();
+        }
+
+        //todo make one method instead setInsertHandler and setNewChunkHandler
         inserter.setInsertHandler(async (chunk) => {
 
             inserter.getParentChunk().insertBefore(chunk, inserter);
@@ -325,7 +333,27 @@ export default class FxController {
 
             await this.save();
         });
-        inserter.setExitHandler(() => {
+        inserter.setNewChunkHandler(async (newChunk) => {
+
+            inserter.getParentChunk().insertBefore(newChunk, inserter);
+            this.removeChunk(inserter);
+
+            const newInserter = this.createInserter();
+
+            const nextChunk = newChunk.getNextChunk();
+            if (nextChunk) {
+                newChunk.getParentChunk().insertBefore(newInserter, nextChunk);
+            } else {
+                newChunk.getParentChunk().insert(newInserter);
+            }
+
+            this.marker.unmarkAll().mark(newInserter);
+            await this.save();
+        });
+        inserter.setExitHandler((contextChunk: BaseChunk) => {
+
+            if (contextChunk) contextChunk.show();
+
             const prevChunk = inserter.getPrevChunk();
             const parentChunk = inserter.getParentChunk();
 
@@ -362,25 +390,6 @@ export default class FxController {
                 this.marker.mark(chunk);
             }
             setTimeout(() => this.pubsub.pub(FX_RUNTIME_GET_FOCUS), 300);
-        });
-
-        //insert new chunk if it was detected and create new inserter right next after new chunk
-        inserter.setNewChunkHandler(async (newChunk) => {
-
-            inserter.getParentChunk().insertBefore(newChunk, inserter);
-            this.removeChunk(inserter);
-
-            const newInserter = this.createInserter();
-
-            const nextChunk = newChunk.getNextChunk();
-            if (nextChunk) {
-                newChunk.getParentChunk().insertBefore(newInserter, nextChunk);
-            } else {
-                newChunk.getParentChunk().insert(newInserter);
-            }
-
-            this.marker.unmarkAll().mark(newInserter);
-            await this.save();
         });
 
         return inserter;

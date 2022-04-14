@@ -17,8 +17,12 @@ export default class Name extends BaseChunk {
         return {
             t: this.constructor.name,
             name: this.nameChunk.getTxt(),
-            isLet: this.letChunk.isShowed()
+            isLet: this.isLet()
         }
+    }
+
+    getTxt(): string {
+        return this.nameChunk.getTxt();
     }
 
     isLet() {

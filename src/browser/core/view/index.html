@@ -199,10 +199,12 @@
         div.propName { color: var(--prop-name-color); }
         div.function { color: var(--function-color); }
 
-        div[contenteditable="true"] {
+        /*div[contenteditable="true"] {
             padding: 0 4px;
+        }*/
+        [contenteditable] {
+            outline: 0;
         }
-
 
         .shift {
             margin-left: 1.2em;

@@ -23,6 +23,10 @@ export default class Op extends BaseChunk {
         }
     }
 
+    getTxt(): string {
+        return this.opType.getTxt();
+    }
+
     mark() { this.opType.mark() }
     unmark() { this.opType.unmark() }
 }

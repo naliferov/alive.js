@@ -92,7 +92,7 @@ export let exec = async (m) => {
 }
 
 export let fl = (path) => {
-    let rq = require; let p = rq('util').promisify; let fs = rq('fs');
+    let p = require('util').promisify; let fs = require('fs');
     return {
         r: async () => await p(fs.readFile)(path, 'utf8'),
         w: async (data) => await p(fs.writeFile)(path, data, 'utf8')
@@ -100,11 +100,13 @@ export let fl = (path) => {
 }
 
 export let fSet = (path) => {
-    let fileFn = fl(path); let rFile = async () => JSON.parse(await fileFn.r());
+    let file = fl(path);
+    let rFile = async () => JSON.parse(await file.r());
     return {
-        w: async (k, v) => { let set = await rFile(); set[k] = v; await fileFn.w(JSON.stringify(set)); },
-        r: async (k) => (await rFile())[k],
-        d: async (k) => { let set = await rFile(); delete set[k]; await fileFn.w(JSON.stringify(set)); }};
+        a: async (k) => (await rFile())[k],
+        w: async (k, v) => { let set = await rFile(); set[k] = v; await file.w(JSON.stringify(set)); },
+        d: async (k) => { let set = await rFile(); delete set[k]; await file.w(JSON.stringify(set)); }
+    };
 }
 
 export const getTimestamp = (): string => {
