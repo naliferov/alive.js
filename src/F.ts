@@ -155,7 +155,7 @@ export const u = async (...arg) => { console.log(arg[0]); }
 }
 
 static isObject(obj: any): boolean {
-    return typeof obj === 'object' && !Array.isArray(obj) && obj !== null
+    return typeof obj === 'object' && !ObjectChunk.isArray(obj) && obj !== null
 }
 
 static isObjectEmpty(obj: object) {
@@ -187,7 +187,7 @@ static iterateArrayReverse = (arrayToIterate: [], callback: any) => {
 
 static iterate(objectToIterate: {[key: string]: any}, callback: any) {
 
-    if (Array.isArray(objectToIterate)) {
+    if (ObjectChunk.isArray(objectToIterate)) {
 
         for (let i = 0; i < objectToIterate.length; i++) {
             callback(i, objectToIterate[i]);

@@ -13,7 +13,7 @@
             src: url('/font/JetBrainsMono-Medium.woff2');
         }
         :root {
-            --bg-color: #cfd8dc;
+            --bg-color: #ececec;
             --keyword-color: #0033B3;
             --name-color: #248F8F;
             --op-color: black;
@@ -57,15 +57,17 @@
             background: rgb(232, 232, 232);
         }
 
-        /*.mindField:first-of-type {
-        }*/
-
         .mindFields {
             background: #c8e6c9;
             padding-bottom: 1em;
         }
+
+        .mindFields > .mindField > .mindFieldStructure > .openClose {
+            display: none;
+        }
+
         .fxRuntimeContainer {
-            background: #cfd8dc;
+            background: var(--bg-color);
         }
 
         .subFields {
@@ -154,6 +156,14 @@
 
         .fxList {
             margin-bottom: 1em;
+        }
+
+        .markerMonitor {
+            margin: 0.5em 0;
+        }
+        .inserter {
+            width: 5px;
+            height: 5px;
         }
 
         /*pre.sq {

@@ -1,29 +1,32 @@
-import U from "../../core/U";
-import {DELETE_KEY, TAB_KEY, TAB_REVERSE_KEY} from "../txtEditor/controls/Keyboard";
-import Inserter from "./tab/chunks/mutate/Inserter";
-import NewLine from "./tab/chunks/NewLine";
-import Name from "./tab/chunks/literal/Name";
-import If from "./tab/chunks/conditionAndBody/if/If";
-import Surround from "./tab/chunks/surround/Surround";
-import Marker from "./Marker";
-import IfCondition from "./tab/chunks/conditionAndBody/if/IfCondition";
-import IfBody from "./tab/chunks/conditionAndBody/if/IfBody";
-import For from "./tab/chunks/conditionAndBody/loop/For";
-import Main from "./tab/chunks/Main";
-import ForCondition from "./tab/chunks/conditionAndBody/loop/ForCondition";
-import Pubsub from "../../../io/pubsub/Pubsub";
-import {FX_RUNTIME_GET_FOCUS, MINDFIELDS_INSERTING_CHUNK} from "../../../io/pubsub/PubsubConstants";
-import ForConditionPart from "./tab/chunks/conditionAndBody/loop/ForConditionPart";
-import ForConditionPartInternal from "./tab/chunks/conditionAndBody/loop/ForConditionPartInternal";
-import MindFields from "../mindfields/MindFields";
-import FxSerializer from "./FxSerializer";
-import Callable from "./tab/chunks/conditionAndBody/call/callable/Callable";
-import CallableConditionPart from "./tab/chunks/conditionAndBody/call/callable/ConditionPart";
-import BaseChunk from "./tab/chunks/BaseChunk";
-import SurroundInternal from "./tab/chunks/surround/SurroundInternal";
-import ConditionAndBodyChunk from "./tab/chunks/conditionAndBody/ConditionAndBodyChunk";
-import ConditionChunk from "./tab/chunks/conditionAndBody/ConditionChunk";
-import BodyChunk from "./tab/chunks/conditionAndBody/BodyChunk";
+import U from "../../../core/U";
+import {DELETE_KEY, TAB_KEY, TAB_REVERSE_KEY} from "../../txtMutator/controls/Keyboard";
+import NewLine from "../tab/chunks/NewLine";
+import Name from "../tab/chunks/literal/Name";
+import If from "../tab/chunks/conditionAndBody/if/If";
+import Surround from "../tab/chunks/surround/Surround";
+import Marker from "../Marker";
+import IfCondition from "../tab/chunks/conditionAndBody/if/IfCondition";
+import IfBody from "../tab/chunks/conditionAndBody/if/IfBody";
+import For from "../tab/chunks/conditionAndBody/loop/For";
+import Main from "../tab/chunks/Main";
+import ForCondition from "../tab/chunks/conditionAndBody/loop/ForCondition";
+import Pubsub from "../../../../io/pubsub/Pubsub";
+import {MINDFIELDS_INSERTING_CHUNK} from "../../../../io/pubsub/PubsubConstants";
+import ForConditionPart from "../tab/chunks/conditionAndBody/loop/ForConditionPart";
+import ForConditionPartInternal from "../tab/chunks/conditionAndBody/loop/ForConditionPartInternal";
+import MindFields from "../../mindfields/MindFields";
+import FxSerializer from "../FxSerializer";
+import Callable from "../tab/chunks/conditionAndBody/call/callable/Callable";
+import CallableConditionPart from "../tab/chunks/conditionAndBody/call/callable/ConditionPart";
+import BaseChunk from "../tab/chunks/BaseChunk";
+import SurroundInternal from "../tab/chunks/surround/SurroundInternal";
+import ConditionAndBodyChunk from "../tab/chunks/conditionAndBody/ConditionAndBodyChunk";
+import ConditionChunk from "../tab/chunks/conditionAndBody/ConditionChunk";
+import BodyChunk from "../tab/chunks/conditionAndBody/BodyChunk";
+import FxMutatorFactory from "./FxMutatorFactory";
+import ArrayChunk from "../tab/chunks/literal/array/ArrayChunk";
+import ArrayItem from "../tab/chunks/literal/array/ArrayItem";
+import ArrayItemParts from "../tab/chunks/literal/array/ArrayItemParts";
 
 export type fxSerialized = {
     chunks: any[]
@@ -42,17 +45,21 @@ export default class FxController {
     mainChunk: Main;
     marker: Marker;
     fxSerializer: FxSerializer;
+    fxMutatorFactory: FxMutatorFactory;
 
-    constructor(context: U, pubsub: Pubsub,  fxSerializer: FxSerializer, mindFields: MindFields) {
-
+    constructor(
+        context: U,
+        pubsub: Pubsub,
+        fxSerializer: FxSerializer,
+        fxMutatorFactory: FxMutatorFactory,
+        mindFields: MindFields
+    ) {
         this.pubsub = pubsub;
 
         this.unit = new U({class: ['fxRuntimeController']});
-        this.unit.inBr();
 
         const markerMonitor = new U({class: ['markerMonitor'], txt: 'markerMonitor'});
         this.unit.in(markerMonitor);
-        this.unit.inBr();
 
         const chunkContainer = new U({class: ['chunksContainer']});
         this.unit.in(chunkContainer);
@@ -60,6 +67,7 @@ export default class FxController {
         this.mainChunk = new Main();
         chunkContainer.in(this.mainChunk.getUnit());
         this.fxSerializer = fxSerializer;
+        this.fxMutatorFactory = fxMutatorFactory;
 
         this.mindFields = mindFields;
 
@@ -85,11 +93,17 @@ export default class FxController {
     }
 
     async save() {
+
+        console.log({
+            chunks: this.fxSerializer.serialize(this.mainChunk),
+            markedChunksIds: this.marker.getMarkedChunksIds(),
+        });
+
         this.contextUnit.setDataField('fx', {
             chunks: this.fxSerializer.serialize(this.mainChunk),
             markedChunksIds: this.marker.getMarkedChunksIds(),
         });
-        await this.mindFields.save();
+        //await this.mindFields.save();
     }
 
     addChunkAfterMarked(chunk) {
@@ -107,10 +121,16 @@ export default class FxController {
 
     getUnit() { return this.unit; }
 
-    removeChunk(chunk) {
-        //todo remove from window.chunkPool.set(this.id, this);
+    removeChunk(chunk: BaseChunk) {
         chunk.remove();
+        if (chunk.getId()) {
+            // @ts-ignore
+            window.chunkPool.delete(chunk.getId());
+        }
     }
+
+    unmarkAll() { return this.marker.unmarkAll(); }
+    mark(chunk: BaseChunk) { this.marker.mark(chunk); }
 
     //setCodeLinesMinHeight() { this.unit.getDOM().style.minHeight = '15em' }
     /*buildLinesNumbers(js: string[], linesNumbers: V) {
@@ -172,10 +192,9 @@ export default class FxController {
             if (this.marker.isEmpty()) return;
             if (this.marker.getLength() > 1) return;
 
-            const inserter = this.createInserter(this.marker.getFirst());
-            this.addChunkAfterMarked(inserter);
-
-            this.marker.unmarkAll().mark(inserter);
+            const mutator = this.fxMutatorFactory.createMutator(this, this.marker.getFirst());
+            this.addChunkAfterMarked(mutator);
+            this.marker.unmarkAll().mark(mutator);
 
             //todo string below don't make sense because method mark in inserter starts listen for events. need to fix this
             this.pubsub.pub(MINDFIELDS_INSERTING_CHUNK);
@@ -313,90 +332,8 @@ export default class FxController {
         }
     }
 
-    createInserter(contextChunk?: BaseChunk) {
-
-        const inserter = new Inserter();
-
-        if (contextChunk) {
-            inserter.setContextChunk(contextChunk);
-            inserter.setTxt(contextChunk.getTxt());
-            contextChunk.hide();
-        }
-
-        //todo make one method instead setInsertHandler and setNewChunkHandler
-        inserter.setInsertHandler(async (chunk) => {
-
-            inserter.getParentChunk().insertBefore(chunk, inserter);
-            this.removeChunk(inserter);
-            this.marker.unmarkAll().mark(chunk);
-            setTimeout(() => this.pubsub.pub(FX_RUNTIME_GET_FOCUS), 300);
-
-            await this.save();
-        });
-        inserter.setNewChunkHandler(async (newChunk) => {
-
-            inserter.getParentChunk().insertBefore(newChunk, inserter);
-            this.removeChunk(inserter);
-
-            const newInserter = this.createInserter();
-
-            const nextChunk = newChunk.getNextChunk();
-            if (nextChunk) {
-                newChunk.getParentChunk().insertBefore(newInserter, nextChunk);
-            } else {
-                newChunk.getParentChunk().insert(newInserter);
-            }
-
-            this.marker.unmarkAll().mark(newInserter);
-            await this.save();
-        });
-        inserter.setExitHandler((contextChunk: BaseChunk) => {
-
-            if (contextChunk) contextChunk.show();
-
-            const prevChunk = inserter.getPrevChunk();
-            const parentChunk = inserter.getParentChunk();
-
-            let chunk = prevChunk ? prevChunk : parentChunk;
-            this.removeChunk(inserter);
-
-            if (parentChunk instanceof ForConditionPartInternal) {
-
-                const forConditionPart = parentChunk.getParentChunk();
-                const prevForConditionPart = forConditionPart.getPrevChunk();
-                const nextForConditionPart = forConditionPart.getNextChunk();
-
-                if (parentChunk.isEmpty()) { //убираем conditionPart если в нём пусто
-
-                    const For = forConditionPart.getParentChunk().getParentChunk();
-                    forConditionPart.remove();
-
-                    if (For.getCondition().isEmpty()) {
-                        chunk = For;
-                    } else {
-                        chunk = prevForConditionPart ? prevForConditionPart.getLastChunk() : nextForConditionPart.getLastChunk();
-                    }
-
-                } else if (prevChunk) {
-                    chunk = prevChunk;
-                } else {
-                    chunk = forConditionPart;
-                }
-            }
-
-            this.marker.unmarkAll();
-
-            if (chunk && !(chunk instanceof Main)) {
-                this.marker.mark(chunk);
-            }
-            setTimeout(() => this.pubsub.pub(FX_RUNTIME_GET_FOCUS), 300);
-        });
-
-        return inserter;
-    }
-
     switchToInsertingMode(chunk: BaseChunk) {
-        const inserter = this.createInserter();
+        const inserter = this.fxMutatorFactory.createMutator(this);
         chunk.insert(inserter);
         this.marker.mark(inserter);
         this.pubsub.pub(MINDFIELDS_INSERTING_CHUNK);
@@ -408,6 +345,7 @@ export default class FxController {
         if (this.marker.getLength() === 1) {
 
             const marked = this.marker.getFirst();
+            const parent = marked.getParentChunk();
 
             //INSERT NEW LINE
             if (ctrl && shift && marked) {
@@ -416,7 +354,25 @@ export default class FxController {
                 return;
             }
 
-            const inserter = this.createInserter();
+            const inserter = this.fxMutatorFactory.createMutator(this);
+
+            if (parent instanceof ArrayItemParts) {
+
+                const arrayItem = parent.getParentChunk();
+                const arrayBody = arrayItem.getParentChunk();
+
+                const newArrayItem = new ArrayItem();
+                newArrayItem.insert(inserter);
+
+                if (arrayItem.getNextChunk()) {
+                    arrayBody.insertBefore(newArrayItem, arrayItem.getNextChunk())
+                } else {
+                    arrayBody.insert(newArrayItem);
+                }
+                this.marker.unmarkAll().mark(inserter);
+                this.pubsub.pub(MINDFIELDS_INSERTING_CHUNK);
+                return;
+            }
 
             if (marked instanceof ForConditionPart) {
 
@@ -461,7 +417,6 @@ export default class FxController {
                     this.pubsub.pub(MINDFIELDS_INSERTING_CHUNK);
                     return;
                 }
-
             }
 
             if (this.addChunkAfterMarked(inserter)) {
@@ -571,7 +526,7 @@ export default class FxController {
 
                     if (ifChunk.isBodyEmpty()) {
                         this.pubsub.pub(MINDFIELDS_INSERTING_CHUNK);
-                        const inserter = this.createInserter();
+                        const inserter = this.fxMutatorFactory.createMutator(this);
                         ifChunk.getBody().insert(inserter);
                         this.marker.mark(inserter);
                     } else {
@@ -589,7 +544,7 @@ export default class FxController {
 
                     if (forChunk.isBodyEmpty()) {
                         this.pubsub.pub(MINDFIELDS_INSERTING_CHUNK);
-                        const inserter = this.createInserter();
+                        const inserter = this.fxMutatorFactory.createMutator(this);
                         forChunk.getBody().insert(inserter);
                         this.marker.mark(inserter);
                     }
@@ -601,7 +556,7 @@ export default class FxController {
                     const forChunk = parent.getParentChunk().getParentChunk().getParentChunk();
                     if (forChunk.isBodyEmpty()) {
                         this.pubsub.pub(MINDFIELDS_INSERTING_CHUNK);
-                        const inserter = this.createInserter();
+                        const inserter = this.fxMutatorFactory.createMutator(this);
                         forChunk.getBody().insert(inserter);
                         this.marker.mark(inserter);
                     }
@@ -640,7 +595,7 @@ export default class FxController {
                     const newForConditionPart = new ForConditionPart();
                     forCondition.getParentChunk().insertInCondition(newForConditionPart);
 
-                    const inserter = this.createInserter();
+                    const inserter = this.fxMutatorFactory.createMutator(this);
                     newForConditionPart.insert(inserter);
                     this.marker.unmarkAll().mark(inserter);
                     this.pubsub.pub(MINDFIELDS_INSERTING_CHUNK);
@@ -755,21 +710,20 @@ export default class FxController {
 
                 const condition = marked.getFirstChunk();
                 this.marker.unmarkAll().mark(condition);
-            }
-            else if (marked instanceof BodyChunk) {
+            } else if (marked instanceof BodyChunk) {
 
                 if (marked.isEmpty()) {
                     this.switchToInsertingMode(marked);
                 } else {
                     this.marker.unmarkAll().mark(marked.getFirstChunk());
                 }
-            }
-            else if (marked instanceof ConditionAndBodyChunk) {
+
+            } else if (marked instanceof ConditionAndBodyChunk) {
 
                 if (marked.isConditionEmpty() && marked.isBodyEmpty()) {
                     this.marker.unmarkAll();
 
-                    const inserter = this.createInserter();
+                    const inserter = this.fxMutatorFactory.createMutator(this);
                     marked.insertInCondition(inserter);
                     this.marker.mark(inserter);
                     this.pubsub.pub(MINDFIELDS_INSERTING_CHUNK);
@@ -779,15 +733,14 @@ export default class FxController {
                     this.marker.mark(condition);
                 }
 
-            }
-            else if (marked instanceof For) {
+            } else if (marked instanceof For) {
 
                 if (marked.isConditionEmpty() && marked.isBodyEmpty()) {
 
                     const forConditionPart = new ForConditionPart();
                     marked.insertInCondition(forConditionPart);
 
-                    const inserter = this.createInserter();
+                    const inserter = this.fxMutatorFactory.createMutator(this);
                     forConditionPart.insert(inserter);
                     this.marker.unmarkAll().mark(inserter);
                     this.pubsub.pub(MINDFIELDS_INSERTING_CHUNK);
@@ -809,11 +762,21 @@ export default class FxController {
                     const callableConditionPart = new CallableConditionPart();
                     marked.insertInCondition(callableConditionPart);
 
-                    const inserter = this.createInserter();
+                    const inserter = this.fxMutatorFactory.createMutator(this);
                     callableConditionPart.insert(inserter);
                     this.marker.mark(inserter);
                     this.pubsub.pub(MINDFIELDS_INSERTING_CHUNK);
                 }
+
+            } else if (marked instanceof ArrayChunk) {
+
+                const inserter = this.fxMutatorFactory.createMutator(this);
+                const arrayItem = new ArrayItem();
+                arrayItem.insert(inserter);
+                marked.insert(arrayItem);
+
+                this.marker.mark(inserter);
+                this.pubsub.pub(MINDFIELDS_INSERTING_CHUNK);
 
             } else {
                 const firstChunk = marked.getFirstChunk();
@@ -844,7 +807,6 @@ export default class FxController {
             if (next instanceof NewLine && nextChunk) {
                 this.marker.unmarkAll().mark(nextChunk);
             }
-
         }
     }
 

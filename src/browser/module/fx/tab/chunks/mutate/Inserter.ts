@@ -6,6 +6,8 @@ import If from "../conditionAndBody/if/If";
 import For from "../conditionAndBody/loop/For";
 import Call from "../conditionAndBody/call/call/Call";
 import Callable from "../conditionAndBody/call/callable/Callable";
+import ArrayChunk from "../literal/array/ArrayChunk";
+import ObjectChunk from "../literal/object/ObjectChunk";
 
 export default class Inserter extends BaseChunk {
 
@@ -46,6 +48,10 @@ export default class Inserter extends BaseChunk {
         if (t === '()') return new Call();
         if (t === '=>') return new Callable();
 
+        //todo if prev element isName this is name usage else array creation
+        if (t === '[') return new ArrayChunk();
+        //if (t === '{') return new ObjectChunk();
+
         const num = Number(t);
         if (!isNaN(num)) return new Literal(t, 'number');
         if (t[0] === "'") return new Literal(t, 'string');
@@ -66,12 +72,12 @@ export default class Inserter extends BaseChunk {
         this.iKeydown((e) => {
 
             if (e.key === 'Escape') { this.exitHandler(this.contextChunk); return; }
-            if (e.key !== 'Enter') return;
+            if (e.key === 'Enter') {
+                e.preventDefault();
 
-            e.preventDefault();
-
-            const chunk = this.getNewChunkByTxt(this.getTxt().trim());
-            if (chunk) this.insertHandler(chunk);
+                const chunk = this.getNewChunkByTxt(this.getTxt().trim());
+                if (chunk) this.insertHandler(chunk, this.contextChunk);
+            }
         });
 
         let isCaretOnLastChar = false;

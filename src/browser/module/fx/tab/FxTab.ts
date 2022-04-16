@@ -3,7 +3,8 @@ import FxTabName from "./FxTabName";
 import Pubsub from "../../../../io/pubsub/Pubsub";
 import FxSerializer from "../FxSerializer";
 import MindFields from "../../mindfields/MindFields";
-import FxController from "../FxController";
+import FxController from "../control/FxController";
+import FxMutatorFactory from "../control/FxMutatorFactory";
 
 export default class FxTab {
 
@@ -14,7 +15,9 @@ export default class FxTab {
 
     constructor(tabName, contextUnit: U, pubsub: Pubsub, fxSerializer: FxSerializer, mindfields: MindFields) {
         this.fxTabName = new FxTabName(tabName, contextUnit);
-        this.fxController = new FxController(contextUnit, pubsub, fxSerializer, mindfields);
+        this.fxController = new FxController(
+            contextUnit, pubsub, fxSerializer, new FxMutatorFactory(pubsub), mindfields
+        );
 
         this.contextUnit = contextUnit;
     }
