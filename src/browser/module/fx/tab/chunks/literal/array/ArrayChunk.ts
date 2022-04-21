@@ -1,5 +1,6 @@
 import BaseChunk from "../../BaseChunk";
 import ArrayBody from "./ArrayBody";
+import ArrayItem from "./ArrayItem";
 
 export default class ArrayChunk extends BaseChunk {
 
@@ -13,6 +14,10 @@ export default class ArrayChunk extends BaseChunk {
         let closeBracket = new BaseChunk(']', {className:'bracket'});  super.insert(closeBracket);
     }
 
+    getBody() {
+        return this.arrayBody;
+    }
+
     isEmpty(): boolean {
         return this.arrayBody.isEmpty();
     }
@@ -24,7 +29,7 @@ export default class ArrayChunk extends BaseChunk {
         }
     }
 
-    insert(chunk: BaseChunk) {
-        this.arrayBody.insert(chunk);
+    insert(arrayItem: ArrayItem) {
+        this.arrayBody.insert(arrayItem);
     }
 }

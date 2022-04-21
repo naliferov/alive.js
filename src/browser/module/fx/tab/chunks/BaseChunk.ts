@@ -9,7 +9,7 @@ export default class BaseChunk {
     constructor(txt = '', options: any = {}) {
         this.id = uuid();
 
-        let classArr = ['inline', 'fxRuntime'];
+        let classArr = ['fx'];
 
         if (options.className && Array.isArray(options.className)) {
             classArr = [...options.className, ...classArr];

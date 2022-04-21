@@ -11,6 +11,10 @@ export default class ArrayItem extends BaseChunk {
         super.insert(new BaseChunk(', ', {className: 'comma'}));
     }
 
+    getItemParts(): BaseChunk {
+        return this.itemParts;
+    }
+
     serialize(): object {
         return {
             t: this.constructor.name,

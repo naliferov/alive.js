@@ -5,6 +5,8 @@ import ForConditionPartInternal from "../tab/chunks/conditionAndBody/loop/ForCon
 import Main from "../tab/chunks/Main";
 import FxController from "./FxController";
 import Pubsub from "../../../../io/pubsub/Pubsub";
+import ArrayItem from "../tab/chunks/literal/array/ArrayItem";
+import ArrayItemParts from "../tab/chunks/literal/array/ArrayItemParts";
 
 export default class FxMutatorFactory {
 
@@ -60,9 +62,9 @@ export default class FxMutatorFactory {
 
             const prevChunk = inserter.getPrevChunk();
             const parentChunk = inserter.getParentChunk();
+            fxController.removeChunk(inserter);
 
             let chunk = prevChunk ? prevChunk : parentChunk;
-            fxController.removeChunk(inserter);
 
             if (parentChunk instanceof ForConditionPartInternal) {
 
@@ -70,7 +72,7 @@ export default class FxMutatorFactory {
                 const prevForConditionPart = forConditionPart.getPrevChunk();
                 const nextForConditionPart = forConditionPart.getNextChunk();
 
-                if (parentChunk.isEmpty()) { //убираем conditionPart если в нём пусто
+                if (parentChunk.isEmpty()) {
 
                     const For = forConditionPart.getParentChunk().getParentChunk();
                     forConditionPart.remove();
@@ -78,13 +80,36 @@ export default class FxMutatorFactory {
                     if (For.getCondition().isEmpty()) {
                         chunk = For;
                     } else {
-                        chunk = prevForConditionPart ? prevForConditionPart.getLastChunk() : nextForConditionPart.getLastChunk();
+                        chunk = prevForConditionPart ? prevForConditionPart.getLastChunk() : nextForConditionPart.getFirstChunk();
                     }
 
                 } else if (prevChunk) {
                     chunk = prevChunk;
                 } else {
                     chunk = forConditionPart;
+                }
+
+            } else if (parentChunk instanceof ArrayItemParts) {
+
+                const arrayItem = parentChunk.getParentChunk();
+                const prevArrayItem = arrayItem.getPrevChunk();
+                const nextArrayItem = arrayItem.getNextChunk();
+                const arrayBody = arrayItem.getParentChunk();
+
+                if (parentChunk.isEmpty()) {
+                    fxController.removeChunk(arrayItem);
+
+                    if (arrayBody.isEmpty()) {
+                        chunk = arrayBody.getParentChunk();
+                    } else {
+                        if (prevArrayItem) chunk = prevArrayItem;
+                        if (nextArrayItem) chunk = nextArrayItem;
+                    }
+
+                } else if (prevChunk) {
+                    chunk = prevChunk;
+                } else {
+                    chunk = arrayItem;
                 }
             }
 

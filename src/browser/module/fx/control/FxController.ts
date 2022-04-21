@@ -27,6 +27,7 @@ import FxMutatorFactory from "./FxMutatorFactory";
 import ArrayChunk from "../tab/chunks/literal/array/ArrayChunk";
 import ArrayItem from "../tab/chunks/literal/array/ArrayItem";
 import ArrayItemParts from "../tab/chunks/literal/array/ArrayItemParts";
+import ArrayBody from "../tab/chunks/literal/array/ArrayBody";
 
 export type fxSerialized = {
     chunks: any[]
@@ -256,7 +257,7 @@ export default class FxController {
                         for (let i = 0; i < chunksCount; i++) {
                             parentAboveSurround.insertBefore(chunks[0], surroundChunk.getUnit().getDOM());
                         }
-                        surroundChunk.remove();
+                        this.removeChunk(surroundChunk);
                         return;
                     }
                 }
@@ -326,7 +327,7 @@ export default class FxController {
             const marked = this.marker.getFirst();
             const prevChunk = marked.getPrevChunk();
             if (prevChunk) {
-                prevChunk.remove();
+                this.removeChunk(prevChunk);
                 this.save();
             }
         }
@@ -356,7 +357,7 @@ export default class FxController {
 
             const inserter = this.fxMutatorFactory.createMutator(this);
 
-            if (parent instanceof ArrayItemParts) {
+            /*if (parent instanceof ArrayItemParts) {
 
                 const arrayItem = parent.getParentChunk();
                 const arrayBody = arrayItem.getParentChunk();
@@ -372,8 +373,21 @@ export default class FxController {
                 this.marker.unmarkAll().mark(inserter);
                 this.pubsub.pub(MINDFIELDS_INSERTING_CHUNK);
                 return;
-            }
+            }*/
+            if (parent instanceof ArrayBody) {
 
+                const newArrayItem = new ArrayItem();
+                newArrayItem.insert(inserter);
+
+                if (marked.getNextChunk()) {
+                    parent.insertBefore(newArrayItem, marked.getNextChunk())
+                } else {
+                    parent.insert(newArrayItem);
+                }
+                this.marker.unmarkAll().mark(inserter);
+                this.pubsub.pub(MINDFIELDS_INSERTING_CHUNK);
+                return;
+            }
             if (marked instanceof ForConditionPart) {
 
                 const forConditionPart = new ForConditionPart();
@@ -656,11 +670,15 @@ export default class FxController {
         if (this.marker.isEmpty()) return;
 
         if (isCtrl) {
-            let parentChunk = this.marker.getFirst().getParentChunk();
+
+            const marked = this.marker.getFirst();
+            let parentChunk = marked.getParentChunk();
             if (!parentChunk) return;
+
             if (
                 parentChunk instanceof ForConditionPartInternal ||
-                parentChunk instanceof SurroundInternal
+                parentChunk instanceof SurroundInternal ||
+                parentChunk instanceof ArrayItemParts
             ) {
                 parentChunk = parentChunk.getParentChunk();
             }
@@ -757,27 +775,33 @@ export default class FxController {
             } else if (marked instanceof Callable) {
 
                 if (marked.isConditionEmpty()) {
-                    this.marker.unmarkAll();
-
                     const callableConditionPart = new CallableConditionPart();
                     marked.insertInCondition(callableConditionPart);
 
                     const inserter = this.fxMutatorFactory.createMutator(this);
                     callableConditionPart.insert(inserter);
-                    this.marker.mark(inserter);
+                    this.marker.unmarkAll().mark(inserter);
                     this.pubsub.pub(MINDFIELDS_INSERTING_CHUNK);
                 }
 
             } else if (marked instanceof ArrayChunk) {
 
-                const inserter = this.fxMutatorFactory.createMutator(this);
-                const arrayItem = new ArrayItem();
-                arrayItem.insert(inserter);
-                marked.insert(arrayItem);
+                if (marked.isEmpty()) {
+                    const inserter = this.fxMutatorFactory.createMutator(this);
+                    const arrayItem = new ArrayItem();
 
-                this.marker.mark(inserter);
-                this.pubsub.pub(MINDFIELDS_INSERTING_CHUNK);
+                    arrayItem.insert(inserter);
+                    marked.insert(arrayItem);
 
+                    this.marker.unmarkAll().mark(inserter);
+                    this.pubsub.pub(MINDFIELDS_INSERTING_CHUNK);
+                } else {
+                    const body = marked.getBody();
+                    this.marker.unmarkAll().mark(body.getFirstChunk());
+                }
+
+            } else if (marked instanceof ArrayItem) {
+                this.marker.unmarkAll().mark(marked.getItemParts().getFirstChunk());
             } else {
                 const firstChunk = marked.getFirstChunk();
                 if (firstChunk) {

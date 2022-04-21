@@ -8,6 +8,8 @@ import If from "./tab/chunks/conditionAndBody/if/If";
 import ForConditionPart from "./tab/chunks/conditionAndBody/loop/ForConditionPart";
 import Callable from "./tab/chunks/conditionAndBody/call/callable/Callable";
 import CallableConditionPart from "./tab/chunks/conditionAndBody/call/callable/ConditionPart";
+import ArrayChunk from "./tab/chunks/literal/array/ArrayChunk";
+import ArrayItem from "./tab/chunks/literal/array/ArrayItem";
 
 export default class FxSerializer {
 
@@ -68,6 +70,25 @@ export default class FxSerializer {
         }
         const deserializeCall = () => {}
 
+        const deserializeArrayChunk = (data) => {
+
+            const array = new ArrayChunk();
+            const body = data.body;
+
+            if (!body) {
+                throw new Error('invalid ArrayChunk data ' + JSON.stringify(data));
+            }
+            for (let i = 0; i < body.length; i++) {
+
+                const arrayItem = new ArrayItem();
+                buildAST(arrayItem, body[i].itemParts);
+
+                array.insert(arrayItem);
+            }
+
+            return array;
+        }
+
 
 
         const buildAST = (chunk, data) => {
@@ -92,6 +113,8 @@ export default class FxSerializer {
                     chunk.insert(deserializeForChunk(d));
                 } else if (d.t === 'Callable') {
                     chunk.insert(deserializeCallable(d));
+                } else if (d.t === 'ArrayChunk') {
+                    chunk.insert(deserializeArrayChunk(d));
                 } else {
                     throw new Error(`No handler for chunk [${d.t}].`)
                 }
