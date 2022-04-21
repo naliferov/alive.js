@@ -69,7 +69,6 @@ export default class FxSerializer {
             return callable;
         }
         const deserializeCall = () => {}
-
         const deserializeArrayChunk = (data) => {
 
             const array = new ArrayChunk();
@@ -88,7 +87,6 @@ export default class FxSerializer {
 
             return array;
         }
-
 
 
         const buildAST = (chunk, data) => {

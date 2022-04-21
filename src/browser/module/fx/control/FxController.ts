@@ -93,6 +93,8 @@ export default class FxController {
         return this.contextUnit.getId();
     }
 
+    getUnit() { return this.unit; }
+
     async save() {
 
         console.log({
@@ -106,40 +108,6 @@ export default class FxController {
         });
         //await this.mindFields.save();
     }
-
-    addChunkAfterMarked(chunk) {
-        if (this.marker.isEmpty()) return;
-        if (this.marker.getLength() !== 1) return;
-
-        const marked = this.marker.getFirst();
-        if (marked.getNextChunk()) {
-            marked.getParentChunk().insertBefore(chunk, marked.getNextChunk());
-        } else {
-            marked.getParentChunk().insert(chunk);
-        }
-        return true;
-    }
-
-    getUnit() { return this.unit; }
-
-    removeChunk(chunk: BaseChunk) {
-        chunk.remove();
-        if (chunk.getId()) {
-            // @ts-ignore
-            window.chunkPool.delete(chunk.getId());
-        }
-    }
-
-    unmarkAll() { return this.marker.unmarkAll(); }
-    mark(chunk: BaseChunk) { this.marker.mark(chunk); }
-
-    //setCodeLinesMinHeight() { this.unit.getDOM().style.minHeight = '15em' }
-    /*buildLinesNumbers(js: string[], linesNumbers: V) {
-        linesNumbers.clear();
-        for (let i = 0; i < js.length; i++) {
-            linesNumbers.insert(new V({class: ['lineNumber'], txt: String(i + 1)}));
-        }
-    }*/
 
     triggerKeyPress(key: string) {
         const map = {
@@ -273,6 +241,38 @@ export default class FxController {
         }
     }
 
+    addChunkAfterMarked(chunk) {
+        if (this.marker.isEmpty()) return;
+        if (this.marker.getLength() !== 1) return;
+
+        const marked = this.marker.getFirst();
+        if (marked.getNextChunk()) {
+            marked.getParentChunk().insertBefore(chunk, marked.getNextChunk());
+        } else {
+            marked.getParentChunk().insert(chunk);
+        }
+        return true;
+    }
+
+    removeChunk(chunk: BaseChunk) {
+        chunk.remove();
+        if (chunk.getId()) {
+            // @ts-ignore
+            window.chunkPool.delete(chunk.getId());
+        }
+    }
+
+    unmarkAll() { return this.marker.unmarkAll(); }
+    mark(chunk: BaseChunk) { this.marker.mark(chunk); }
+
+    //setCodeLinesMinHeight() { this.unit.getDOM().style.minHeight = '15em' }
+    /*buildLinesNumbers(js: string[], linesNumbers: V) {
+        linesNumbers.clear();
+        for (let i = 0; i < js.length; i++) {
+            linesNumbers.insert(new V({class: ['lineNumber'], txt: String(i + 1)}));
+        }
+    }*/
+
     syncLinesNumbers(count) {
         this.linesNumbers.clear();
         for (let i = 0; i < count; i++) {
@@ -305,13 +305,27 @@ export default class FxController {
         if (this.marker.getLength() === 1) {
 
             const marked = this.marker.getFirst();
+            const parent = marked ? marked.getParentChunk() : null;
             const chunkForMarking = marked.getNextChunk() || marked.getPrevChunk();
 
-            if (chunkForMarking) {
-                this.marker.unmarkAll();
-                this.marker.mark(chunkForMarking);
+            if (parent instanceof ArrayItemParts) {
+
+                this.removeChunk(marked);
+                const arrayItem = parent.getParentChunk();
+
+                if (parent.isEmpty()) {
+                    const chunkForMarking = arrayItem.getNextChunk() || arrayItem.getPrevChunk();
+                    this.removeChunk(arrayItem);
+                    if (chunkForMarking) this.marker.unmarkAll().mark(chunkForMarking);
+                }
+
+                return;
             }
 
+
+            if (chunkForMarking) {
+                this.marker.unmarkAll().mark(chunkForMarking);
+            }
             if (! (marked instanceof Main)) {
                 this.removeChunk(marked);
             }
