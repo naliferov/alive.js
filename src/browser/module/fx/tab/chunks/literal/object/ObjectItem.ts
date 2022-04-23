@@ -1,23 +1,33 @@
 import BaseChunk from "../../BaseChunk";
+import ObjectKey from "./ObjectKey";
+import ObjectValue from "./ObjectValue";
 
 export default class ObjectItem extends BaseChunk {
 
-    itemParts: BaseChunk;
+    k: ObjectKey
+    v: ObjectValue
 
     constructor() {
-        super('', {className: 'arrayItem'});
-        this.itemParts = new BaseChunk(''); super.insert(this.itemParts);
-        let coma = new BaseChunk(',');  super.insert(coma);
+        super('', {className: 'objectItem'});
+        this.k = new ObjectKey; super.insert(this.k);
+        super.insert(new BaseChunk(':', {className: 'kvSeparator'}));
+        this.v = new ObjectValue; super.insert(this.v);
+        super.insert(new BaseChunk(','));
+    }
+
+    getKey() {
+        return this.k;
+    }
+
+    getValue() {
+        return this.v;
     }
 
     serialize(): object {
         return {
             t: this.constructor.name,
-            body: this.itemParts.serializeSubChunks(),
+            k: this.k.serializeSubChunks(),
+            v: this.v.serializeSubChunks(),
         }
-    }
-
-    insert(chunk: BaseChunk) {
-        this.itemParts.insert(chunk);
     }
 }

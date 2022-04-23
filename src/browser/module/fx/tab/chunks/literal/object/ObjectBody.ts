@@ -3,9 +3,9 @@ import ObjectItem from "./ObjectItem";
 
 export default class ObjectBody extends BaseChunk {
 
-    constructor() { super('', {className: 'arrayBody'}); }
+    constructor() { super('', {className: 'objectBody'}); }
 
-    insert(arrayItem: ObjectItem) {
-        super.insert(arrayItem);
+    insert(objectItem: ObjectItem) {
+        super.insert(objectItem);
     }
 }

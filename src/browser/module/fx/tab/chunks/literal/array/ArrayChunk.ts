@@ -5,6 +5,7 @@ import ArrayItem from "./ArrayItem";
 export default class ArrayChunk extends BaseChunk {
 
     arrayBody: BaseChunk;
+    isVertical: boolean = false;
 
     constructor() {
         super('', {className: 'array'});
@@ -26,7 +27,12 @@ export default class ArrayChunk extends BaseChunk {
         return {
             t: this.constructor.name,
             body: this.arrayBody.serializeSubChunks(),
+            isVertical: this.isVertical,
         }
+    }
+
+    switchViewMode() {
+        this.isVertical = !this.isVertical;
     }
 
     insert(arrayItem: ArrayItem) {

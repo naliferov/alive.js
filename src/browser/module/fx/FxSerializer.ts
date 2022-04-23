@@ -10,6 +10,8 @@ import Callable from "./tab/chunks/conditionAndBody/call/callable/Callable";
 import CallableConditionPart from "./tab/chunks/conditionAndBody/call/callable/ConditionPart";
 import ArrayChunk from "./tab/chunks/literal/array/ArrayChunk";
 import ArrayItem from "./tab/chunks/literal/array/ArrayItem";
+import ObjectItem from "./tab/chunks/literal/object/ObjectItem";
+import ObjectChunk from "./tab/chunks/literal/object/ObjectChunk";
 
 export default class FxSerializer {
 
@@ -87,6 +89,24 @@ export default class FxSerializer {
 
             return array;
         }
+        const deserializeObjectChunk = (data) => {
+
+            const object = new ObjectChunk();
+            const body = data.body;
+
+            if (!object) {
+                throw new Error('invalid ObjectChunk data ' + JSON.stringify(data));
+            }
+            /*for (let i = 0; i < body.length; i++) {
+
+                const objectItem = new ObjectItem;
+                buildAST(objectItem, object[i].itemParts);
+
+                object.insert(objectItem);
+            }*/
+
+            return object;
+        }
 
 
         const buildAST = (chunk, data) => {
@@ -113,6 +133,8 @@ export default class FxSerializer {
                     chunk.insert(deserializeCallable(d));
                 } else if (d.t === 'ArrayChunk') {
                     chunk.insert(deserializeArrayChunk(d));
+                } else if (d.t === 'ObjectChunk') {
+                    chunk.insert(deserializeObjectChunk(d));
                 } else {
                     throw new Error(`No handler for chunk [${d.t}].`)
                 }

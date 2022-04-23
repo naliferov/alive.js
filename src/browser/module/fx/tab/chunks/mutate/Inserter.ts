@@ -48,9 +48,9 @@ export default class Inserter extends BaseChunk {
         if (t === '()') return new Call();
         if (t === '=>') return new Callable();
 
-        //todo if prev element isName this is name usage else array creation
+        //todo if prev element isName this is dynamic object usage else array creation
         if (t === '[') return new ArrayChunk();
-        //if (t === '{') return new ObjectChunk();
+        if (t === '{') return new ObjectChunk();
 
         const num = Number(t);
         if (!isNaN(num)) return new Literal(t, 'number');
