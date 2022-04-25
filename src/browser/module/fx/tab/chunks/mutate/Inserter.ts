@@ -59,8 +59,9 @@ export default class Inserter extends BaseChunk {
         //creating object, array, NameOfProp
 
         const name = new Name(t);
-        if (this.contextChunk instanceof Name && this.contextChunk.isLet()) {
-            name.enableLet();
+        if (this.contextChunk instanceof Name) {
+            if (this.contextChunk.isLet()) name.enableLet();
+            if (this.contextChunk.isNew()) name.enableNew();
         }
 
         return name;

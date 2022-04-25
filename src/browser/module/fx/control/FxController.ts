@@ -186,7 +186,7 @@ export default class FxController {
             e.preventDefault(); if (this.marker.isEmpty()) return;
 
             const marked = this.marker.getFirst();
-            if (marked instanceof Name) marked.toggleLetDisplay();
+            if (marked instanceof Name) marked.switchKeyword();
             this.save();
             return;
         }

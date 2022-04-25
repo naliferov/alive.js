@@ -1,30 +1,26 @@
 import BaseChunk from "../BaseChunk";
-import SubName from "./SubName";
 
-export default class Name extends BaseChunk {
+export default class SubName extends BaseChunk {
 
-    letChunk: BaseChunk;
-    newChunk: BaseChunk;
-    nameChunk: BaseChunk;
-
-    subNames: SubName[];
+    subName: BaseChunk;
 
     constructor(name: string) {
         super('', {className: 'name'});
-        this.letChunk = new BaseChunk('let ', {className: 'keyword', hidden: true});
-        this.newChunk = new BaseChunk('new ', {className: 'keyword', hidden: true});
-        super.insert(this.letChunk);
-        super.insert(this.newChunk);
+        //this.letChunk = new BaseChunk('let ', {className: 'keyword', hidden: true});
+        //this.newChunk = new BaseChunk('new ', {className: 'keyword', hidden: true});
+        //super.insert(this.letChunk);
+        //super.insert(this.newChunk);
 
-        this.nameChunk = new BaseChunk(name, {className: 'namePart'});
-        super.insert(this.nameChunk);
+        //this.nameChunk = new BaseChunk(name, {className: 'namePart'});
+        //super.insert(this.nameChunk);
     }
 
     serialize() {
         return {
             t: this.constructor.name,
             name: this.nameChunk.getTxt(),
-            mode: this.isLet() ? 'let' : this.isNew() ? 'new' : '',
+            isLet: this.isLet(),
+            isNew: this.isNew()
         }
     }
 

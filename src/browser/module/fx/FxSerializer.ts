@@ -117,7 +117,8 @@ export default class FxSerializer {
                 if (d.t === 'Name') {
 
                     const nameChunk = new Name(d.name);
-                    if (d.isLet) nameChunk.toggleLetDisplay();
+                    if (d.mode === 'let') nameChunk.enableLet();
+                    if (d.mode === 'new') nameChunk.enableNew();
                     chunk.insert(nameChunk);
 
                 } else if (d.t === 'Op') {
