@@ -10,10 +10,18 @@ export default class ObjectKey extends BaseChunk {
         this.itemParts = new ObjectItemParts; super.insert(this.itemParts);
     }
 
+    getLastChunk(): BaseChunk {
+        return this.itemParts.getLastChunk();
+    }
+
+    isEmpty(): boolean {
+        return this.itemParts.isEmpty();
+    }
+
     serialize(): object {
         return {
             t: this.constructor.name,
-            body: this.itemParts.serializeSubChunks(),
+            itemParts: this.itemParts.serializeSubChunks(),
         }
     }
 

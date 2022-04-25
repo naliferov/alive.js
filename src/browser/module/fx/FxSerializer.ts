@@ -70,7 +70,9 @@ export default class FxSerializer {
 
             return callable;
         }
-        const deserializeCall = () => {}
+        const deserializeCall = (data) => {
+
+        }
         const deserializeArrayChunk = (data) => {
 
             const array = new ArrayChunk();
@@ -97,13 +99,12 @@ export default class FxSerializer {
             if (!object) {
                 throw new Error('invalid ObjectChunk data ' + JSON.stringify(data));
             }
-            /*for (let i = 0; i < body.length; i++) {
-
+            for (let i = 0; i < body.length; i++) {
                 const objectItem = new ObjectItem;
-                buildAST(objectItem, object[i].itemParts);
-
+                buildAST(objectItem.getKey(), body[i].k.itemParts);
+                buildAST(objectItem.getValue(), body[i].v.itemParts);
                 object.insert(objectItem);
-            }*/
+            }
 
             return object;
         }

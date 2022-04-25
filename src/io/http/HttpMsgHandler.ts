@@ -50,10 +50,6 @@ export default class HttpMsgHandler {
 
         const m = {
             'GET:/js': async () => res.send( await this.fs.readFile(this.appDir + '/min.js') ),
-            'GET:/process/start': async () => {
-                await this.logger.info(req.query);
-                res.send({ok: 1});
-            },
             'GET:/sign/in': async () => res.send( await this.fs.readFile(htmlFile) ),
             'GET:/sign/up': async () => res.send( await this.fs.readFile(htmlFile) ),
             'POST:/sign/in': async () => {
@@ -94,7 +90,13 @@ export default class HttpMsgHandler {
                 res.send({ok: 1});*/
             },
             'GET:/sign/out': async () => {},
-            'GET:/process/list': async () => res.send({}),
+            'GET:/process/start': async () => {
+
+                //запуск скрипта
+
+                await this.logger.info(req.query);
+                res.send({ok: 1});
+            },
             'GET:/process/stop': async () => {
 
                 const processName = req.query.processName;

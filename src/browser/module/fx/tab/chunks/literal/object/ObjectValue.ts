@@ -10,10 +10,18 @@ export default class ObjectValue extends BaseChunk {
         this.itemParts = new ObjectItemParts; super.insert(this.itemParts);
     }
 
+    isEmpty(): boolean {
+        return this.itemParts.isEmpty();
+    }
+
+    getFirstChunk(): BaseChunk {
+        return this.itemParts.getFirstChunk();
+    }
+
     serialize(): object {
         return {
             t: this.constructor.name,
-            body: this.itemParts.serializeSubChunks(),
+            itemParts: this.itemParts.serializeSubChunks(),
         }
     }
 

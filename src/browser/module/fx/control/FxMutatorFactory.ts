@@ -5,7 +5,6 @@ import ForConditionPartInternal from "../tab/chunks/conditionAndBody/loop/ForCon
 import Main from "../tab/chunks/Main";
 import FxController from "./FxController";
 import Pubsub from "../../../../io/pubsub/Pubsub";
-import ArrayItem from "../tab/chunks/literal/array/ArrayItem";
 import ArrayItemParts from "../tab/chunks/literal/array/ArrayItemParts";
 
 export default class FxMutatorFactory {
