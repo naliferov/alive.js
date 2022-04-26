@@ -1,4 +1,4 @@
-import FS from "../FS";
+import FS from "../fs/FS";
 import {STATE_FILE_PATH} from "../../AppConstants";
 
 export default class StateManager {

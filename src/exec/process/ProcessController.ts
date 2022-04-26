@@ -1,5 +1,5 @@
 import OsExec from "./OsExec";
-import FS from "../../io/FS";
+import FS from "../../io/fs/FS";
 import {PROCESS_DIR} from "../../AppConstants";
 import Logger from "../../log/Logger";
 

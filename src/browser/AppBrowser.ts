@@ -1,7 +1,6 @@
 import U from "./core/U";
 import State from "./module/outliner/state/State";
 import FxRuntime from "./module/astEditor/FxRuntime";
-import WSClient from "./core/io/WSClient";
 import Pubsub from "../io/pubsub/Pubsub";
 import Fields from "./module/outliner/Fields";
 import InputAction from "./core/io/InputAction";
@@ -40,11 +39,9 @@ class AppBrowser {
         const mindFields = new Fields(state, pubsub);
         await mindFields.init(app);
         const localState = new LocalState();
-        const wsClient = new WSClient();
-        await wsClient.connect();
 
         const fxTabManager = new FxTabManager(pubsub, mindFields, localState);
-        const fxRuntime = new FxRuntime(mindFields, wsClient, pubsub, fxTabManager);
+        const fxRuntime = new FxRuntime(mindFields, pubsub, fxTabManager);
         await fxRuntime.init(app);
         const inputAction = new InputAction(window);
 
@@ -94,11 +91,9 @@ class AppBrowser {
         await this.showFx(this.app);
 
         // if (!isAuthorized) {
-        //     this.showSignIn(app);
-        //     return;
+        //      this.showSignIn(app);
+        //      return;
         // }
-
-
     }
 }
 

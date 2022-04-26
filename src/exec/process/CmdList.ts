@@ -1,5 +1,5 @@
 import Logger from "../../log/Logger";
-import FS from "../../io/FS";
+import FS from "../../io/fs/FS";
 import OsExec from "./OsExec";
 import WebServerCmd from "../cmd/WebServerCmd";
 

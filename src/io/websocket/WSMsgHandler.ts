@@ -1,6 +1,6 @@
 import HttpServer from "../http/HttpServer";
 import { WebSocketServer } from 'ws';
-import FS from "../FS";
+import FS from "../fs/FS";
 import StateManager from "../state/StateManager";
 import Process from "../../exec/process/Process";
 import OsExec from "../../exec/process/OsExec";

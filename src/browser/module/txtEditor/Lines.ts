@@ -3,7 +3,6 @@ import Cursor from "./Cursor";
 import List from "../../core/List";
 import State from "../outliner/state/State";
 import Selector from "./Selector";
-import {DELETE_KEY, TAB_KEY, TAB_REVERSE_KEY} from "./controls/Keyboard";
 
 export default class Lines {
 
@@ -75,29 +74,6 @@ export default class Lines {
         for (let i = 0; i < js.length; i++) {
             linesNumbers.insert(new U({class: ['lineNumber'], txt: String(i + 1)}));
         }
-    }
-
-    triggerKeyPress(key: string) {
-
-        const map = {
-            'space': () => this.insertNewCharInLine(' '),
-            [DELETE_KEY]: () => this.backspaceBtn(),
-            'enter': () => this.enterBtn(),
-            '←': () => this.moveLeft(false),
-            '→': () => this.moveRight(false),
-            '↓': () => this.moveDown(false),
-            '↑': () => this.moveUp(false),
-            [TAB_KEY]: () => this.tabBtn(false),
-            [TAB_REVERSE_KEY]: () => this.tabBtn(true),
-            '!': () => {},
-        }
-
-        if (map[key]) {
-            map[key]();
-            return;
-        }
-
-        this.insertNewCharInLine(key);
     }
 
     enableControl() {

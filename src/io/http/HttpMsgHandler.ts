@@ -1,11 +1,9 @@
 import {NextFunction, Request, Response} from "express";
-import FS from "../FS";
+import FS from "../fs/FS";
 import Logger from "../../log/Logger";
-import {fSet} from "../../F";
-import OsExec from "../../exec/process/OsExec";
 import {STATE_FILE_PATH} from "../../AppConstants";
 
-const COOKIE_KEY = 'tok';
+const COOKIE_KEY = 'fx';
 
 export default class HttpMsgHandler {
 
@@ -19,9 +17,7 @@ export default class HttpMsgHandler {
         this.appDir = appDir;
     }
 
-    async isAuthorized(req: Request): Promise<boolean> {
-        return !!req.cookies[COOKIE_KEY];
-    }
+    isAuthorized(req: Request) { return !!req.cookies[COOKIE_KEY]; }
 
     async authorize(res: Response, authKey: string) {
         res.cookie(COOKIE_KEY, authKey, { maxAge: (60 * 60 * 24) * 15 * 1000, httpOnly: true, secure: true });
@@ -44,12 +40,11 @@ export default class HttpMsgHandler {
 
         const stateFile = this.appDir + STATE_FILE_PATH.substring(1);
         const htmlFile = this.appDir + '/src/browser/core/view/index.html';
-        const pwaManifest = this.appDir + '/public/manifest.json';
-
-        //const authKey = this.isAuthorized(req);
+        const isAuthorized = this.isAuthorized(req);
 
         const m = {
-            'GET:/js': async () => res.send( await this.fs.readFile(this.appDir + '/min.js') ),
+            'GET:/js': async () => res.send( await this.fs.readFile(this.appDir + '/public/min.js') ),
+            'GET:/sign/authorized': async () => res.send({isAuthorized}),
             'GET:/sign/in': async () => res.send( await this.fs.readFile(htmlFile) ),
             'GET:/sign/up': async () => res.send( await this.fs.readFile(htmlFile) ),
             'POST:/sign/in': async () => {
@@ -129,9 +124,6 @@ export default class HttpMsgHandler {
                 }*/
                 res.send( await this.fs.readFile(htmlFile) );
             },
-            'GET:/manifest.json': async() => res.send( await this.fs.readFile(pwaManifest) ),
-            'GET:/pwa.png': async() => res.sendFile(this.appDir + '/public/pwa.png'),
-            'GET:/serviceWorker.js': async() => res.send( await this.fs.readFile(this.appDir + '/public/serviceWorker.js'))
         };
 
         const reqName = `${req.method}:${req.path}`;

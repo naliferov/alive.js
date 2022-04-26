@@ -38,7 +38,7 @@ const frontendConf = {
     },
     output: {
         path: path.resolve('./'),
-        filename: 'min.js',
+        filename: './public/min.js',
     },
     target: 'web',
     mode: 'development',

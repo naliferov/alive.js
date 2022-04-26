@@ -1,4 +1,4 @@
-import HttpClientB from "../../../../io/http/client/HttpClientB";
+import HttpClient from "../../../../io/http/HttpClient";
 import U, {UnitData} from "../../../core/U";
 import {SELECTOR_TOGGLE, SELECTOR_STATUS_CHANGE, MOVER_TOGGLE, MOVER_STATUS_CHANGE} from "./Action";
 import {cloneObject, uuid} from "../../../../F";
@@ -66,7 +66,7 @@ export default class State {
     }
 
     async save(data) {
-        await new HttpClientB().post('/state', {data});
+        await new HttpClient().post('/state', {data});
     }
 
     getUnit(id: string) {

@@ -1,5 +1,4 @@
 import U from "../../../core/U";
-import {DELETE_KEY, TAB_KEY, TAB_REVERSE_KEY} from "../../txtEditor/controls/Keyboard";
 import NewLine from "../tab/chunks/NewLine";
 import Name from "../tab/chunks/literal/Name";
 import If from "../tab/chunks/conditionAndBody/if/If";
@@ -87,22 +86,12 @@ export default class FxController {
         this.fxSerializer.deserialize(this.mainChunk, fxSerialized.chunks);
     }
 
-    show() {
-        this.unit.show();
-    }
-
-    hide() {
-        this.unit.hide();
-    }
-
-    getContextUnitId(): string {
-        return this.contextUnit.getId();
-    }
-
+    show() { this.unit.show(); }
+    hide() { this.unit.hide(); }
+    getContextUnitId(): string { return this.contextUnit.getId(); }
     getUnit() { return this.unit; }
 
     async save() {
-
         console.log({
             chunks: this.fxSerializer.serialize(this.mainChunk),
             markedChunksIds: this.marker.getMarkedChunksIds(),
@@ -113,28 +102,6 @@ export default class FxController {
             markedChunksIds: this.marker.getMarkedChunksIds(),
         });
         await this.mindFields.save();
-    }
-
-    triggerKeyPress(key: string) {
-        const map = {
-            //'space': () => this.insertNewCharInLine(' '),
-            [DELETE_KEY]: () => this.deleteBtn(),
-            'enter': () => this.enterBtn(false),
-            '←': () => this.moveLeft(false, false),
-            '→': () => this.moveRight(false, false),
-            '↓': () => this.moveDown(false, false),
-            '↑': () => this.moveUp(false, false),
-            [TAB_KEY]: () => this.tabBtn(false),
-            [TAB_REVERSE_KEY]: () => this.tabBtn(true),
-            '!': () => {},
-        }
-
-        if (map[key]) {
-            map[key]();
-            return;
-        }
-
-        //this.insertNewCharInLine(key);
     }
 
     onKeyDown(e) {

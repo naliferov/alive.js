@@ -1,4 +1,4 @@
-import FS from "../io/FS";
+import FS from "../io/fs/FS";
 import {EOL} from "os";
 
 export default class Logger {

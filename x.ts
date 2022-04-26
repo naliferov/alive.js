@@ -1,6 +1,6 @@
 import {parseCliArgs} from "./src/F";
 import Logger from "./src/log/Logger";
-import FS from "./src/io/FS";
+import FS from "./src/io/fs/FS";
 import StateManager from "./src/io/state/StateManager";
 import ProcessController from "./src/exec/process/ProcessController";
 import {cmdList} from "./src/exec/process/CmdList";

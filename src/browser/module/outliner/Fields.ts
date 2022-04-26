@@ -3,9 +3,9 @@ import U, {UnitData} from "../../core/U";
 import {cloneObject, uuid} from "../../../F";
 import Field from "./Field";
 import MindfieldsDomHelper from "./FieldDomHelper";
-import HttpClientB from "../../../io/http/client/HttpClientB";
 import Pubsub from "../../../io/pubsub/Pubsub";
 import {FX_RUNTIME_OPEN_TAB} from "../../../io/pubsub/PubsubConstants";
+import HttpClient from "../../../io/http/HttpClient";
 
 export default class Fields {
 
@@ -29,7 +29,8 @@ export default class Fields {
         this.unit = new U({class: ['mindFields']});
         app.insert(this.unit);
 
-        const unitsData = JSON.parse(await new HttpClientB().get('/state'));
+        const response = await (new HttpClient).get('/state');
+        const unitsData = response.data;
         const rootMindField = new Field(new U({class: ['root'], units: unitsData, open: true}));
         this.unit.insert(rootMindField.getUnit());
         this.rootMindField = rootMindField;

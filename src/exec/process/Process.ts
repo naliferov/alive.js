@@ -1,6 +1,6 @@
 import OsExec from "./OsExec";
 import Logger from "../../log/Logger";
-import FS from "../../io/FS";
+import FS from "../../io/fs/FS";
 import {fSet} from "../../F";
 
 //Это тоже processControl, но для контроля запуска не текущего процесса, а запуска дочернего процесса.

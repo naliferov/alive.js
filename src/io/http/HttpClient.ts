@@ -1,15 +1,15 @@
 import {AxiosInstance, default as axios} from 'axios';
 
-export default class HttpClientN {
+export default class HttpClient {
 
     userAgent: string = '';
     api: AxiosInstance;
 
     constructor(baseURL: string = '', headers: {} = {}) {
 
-        //const headers = {'Content-Type': 'application/json'};
+        headers['Content-Type'] = 'application/json';
         //if (token) {
-         //   headers['Authorization'] = `Bearer ${token}`
+        //    headers['Authorization'] = `Bearer ${token}`
         //}
         this.api = axios.create({baseURL, headers});
     }
