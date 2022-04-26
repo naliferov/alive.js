@@ -12,6 +12,7 @@ import {
 import FxTabManager from "./module/astEditor/tab/FxTabManager";
 import BaseChunk from "./module/astEditor/tab/chunks/BaseChunk";
 import LocalState from "./module/outliner/state/Localstate";
+import HttpClient from "../io/http/HttpClient";
 
 class AppBrowser {
 
@@ -20,6 +21,16 @@ class AppBrowser {
 
     async showSignIn(app: U) {
 
+        app.inBr();
+
+        app.in(new U({txt: 'Email'}));
+        const email = new U({tagName: 'input', class: ['emailInput']});
+        app.in(email);
+        app.inBr();
+
+        app.in(new U({txt: 'Password'}));
+        const password = new U({tagName: 'input', class: ['emailInput']});
+        app.in(password);
     }
 
     async showSignUp(app: U) {
@@ -86,14 +97,15 @@ class AppBrowser {
         this.app = new U({});
         this.app.setDOM(document.getElementById('app'));
 
-        const isAuthorized = false;
+        const {data: {isAuthorized}} = await new HttpClient().get('/sign/authorized');
+        if (isAuthorized) {
 
-        await this.showFx(this.app);
 
-        // if (!isAuthorized) {
-        //      this.showSignIn(app);
-        //      return;
-        // }
+        } else {
+            await this.showSignIn(this.app);
+        }
+
+        //await this.showFx(this.app);
     }
 }
 
