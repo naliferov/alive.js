@@ -1,34 +1,43 @@
 import U from "./core/U";
-import State from "./module/mindfields/state/State";
-import FxRuntime from "./module/fx/FxRuntime";
+import State from "./module/outliner/state/State";
+import FxRuntime from "./module/astEditor/FxRuntime";
 import WSClient from "./core/io/WSClient";
 import Pubsub from "../io/pubsub/Pubsub";
-import MindFields from "./module/mindfields/MindFields";
+import Fields from "./module/outliner/Fields";
 import InputAction from "./core/io/InputAction";
 import {
     FX_RUNTIME_GET_FOCUS, FX_RUNTIME_OPEN_TAB,
     MINDFIELDS_GET_FOCUS,
     MINDFIELDS_INSERTING_CHUNK
 } from "../io/pubsub/PubsubConstants";
-import FxTabManager from "./module/fx/tab/FxTabManager";
-import BaseChunk from "./module/fx/tab/chunks/BaseChunk";
-import LocalState from "./module/mindfields/state/Localstate";
+import FxTabManager from "./module/astEditor/tab/FxTabManager";
+import BaseChunk from "./module/astEditor/tab/chunks/BaseChunk";
+import LocalState from "./module/outliner/state/Localstate";
 
 class AppBrowser {
 
-    async run(window: Window) {
-        
-        if ('serviceWorker' in window.navigator) window.navigator.serviceWorker.register('./serviceWorker.js');
+    app: U
+    input: InputAction
+
+    async showSignIn(app: U) {
+
+    }
+
+    async showSignUp(app: U) {
+
+    }
+
+    async showSettings(app: U) {
+
+    }
+
+    async showFx(app: U) {
 
         // @ts-ignore
         window.chunkPool = new Map<string, BaseChunk>();
-
-        const app = new U({});
-        app.setDOM(document.getElementById('app'));
-
         const state = new State();
         const pubsub = new Pubsub();
-        const mindFields = new MindFields(state, pubsub);
+        const mindFields = new Fields(state, pubsub);
         await mindFields.init(app);
         const localState = new LocalState();
         const wsClient = new WSClient();
@@ -64,7 +73,6 @@ class AppBrowser {
                 localState.closeTab(fxId);
                 continue;
             }
-
             await fxRuntime.openTab(unit);
             //todo restore marker position
         }
@@ -74,6 +82,23 @@ class AppBrowser {
             const unit = await mindFields.getById(activeTabId);
             await fxRuntime.focusTab(unit);
         }
+    }
+
+    async run(window: Window) {
+
+        this.app = new U({});
+        this.app.setDOM(document.getElementById('app'));
+
+        const isAuthorized = false;
+
+        await this.showFx(this.app);
+
+        // if (!isAuthorized) {
+        //     this.showSignIn(app);
+        //     return;
+        // }
+
+
     }
 }
 

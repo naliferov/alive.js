@@ -10,8 +10,8 @@ export const cmdList = {
         await fs.writeFile(shFile, runStr);
 
         await (new OsExec('sudo', ['chmod', '+x', shFile], '', logger)).run();
-        await (new OsExec('sudo', ['rm', '/usr/bin/fx'], '', logger)).run();
-        await (new OsExec('sudo', ['ln', '-s', shFile, '/usr/bin/fx'], '', logger)).run();
+        await (new OsExec('sudo', ['rm', '/usr/bin/astEditor'], '', logger)).run();
+        await (new OsExec('sudo', ['ln', '-s', shFile, '/usr/bin/astEditor'], '', logger)).run();
 
         await logger.info('Installation complete.');
     },

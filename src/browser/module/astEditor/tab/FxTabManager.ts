@@ -1,8 +1,8 @@
 import U from "../../../core/U";
 import Pubsub from "../../../../io/pubsub/Pubsub";
-import MindFields from "../../mindfields/MindFields";
+import Fields from "../../outliner/Fields";
 import FxSerializer from "../FxSerializer";
-import LocalState from "../../mindfields/state/Localstate";
+import LocalState from "../../outliner/state/Localstate";
 import FxTab from "./FxTab";
 
 export default class FxTabManager {
@@ -16,10 +16,10 @@ export default class FxTabManager {
 
     localState: LocalState;
     pubsub: Pubsub;
-    mindFields: MindFields;
+    mindFields: Fields;
     fxSerializer: FxSerializer;
 
-    constructor(pubsub: Pubsub, mindFields: MindFields, localState: LocalState) {
+    constructor(pubsub: Pubsub, mindFields: Fields, localState: LocalState) {
 
         this.u = new U({class: ['tabManager']});
 
@@ -34,7 +34,7 @@ export default class FxTabManager {
         this.tabs = new Map<string, FxTab>();
         this.fxSerializer = new FxSerializer();
 
-        //todo возможно это должно быть в mindfields, а mindfields должен уметь сохранять некоторые
+        //todo возможно это должно быть в outliner, а outliner должен уметь сохранять некоторые
         this.localState = localState;
     }
 

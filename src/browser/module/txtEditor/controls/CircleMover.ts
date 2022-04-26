@@ -1,5 +1,5 @@
 import U from "../../../core/U";
-import Console from "../../fx/Console";
+import Console from "../../astEditor/Console";
 
 export default class CircleMover {
 

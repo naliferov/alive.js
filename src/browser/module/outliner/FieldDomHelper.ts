@@ -1,4 +1,4 @@
-export default class MindfieldDomHelper {
+export default class FieldDomHelper {
 
     static getFieldByDataUnit(dataUnit: HTMLElement): HTMLElement|undefined {
         // @ts-ignore

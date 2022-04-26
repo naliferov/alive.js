@@ -1,6 +1,6 @@
 import U from "../../core/U";
 
-export default class MindField {
+export default class Field {
 
     unit: U;
     dataUnit: U;
@@ -69,7 +69,7 @@ export default class MindField {
     getId(): string {
         return this.dataUnit.getId();
     }
-    insert(mindField: MindField) { this.fields.insert(mindField.getUnit()) }
+    insert(mindField: Field) { this.fields.insert(mindField.getUnit()) }
     getDataUnit() { return this.dataUnit }
     getUnit() { return this.unit }
     getFields(): U { return this.fields }

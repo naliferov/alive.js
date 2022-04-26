@@ -1,7 +1,7 @@
 import U from "../../core/U";
 import Cursor from "./Cursor";
 import List from "../../core/List";
-import State from "../mindfields/state/State";
+import State from "../outliner/state/State";
 import Selector from "./Selector";
 import {DELETE_KEY, TAB_KEY, TAB_REVERSE_KEY} from "./controls/Keyboard";
 

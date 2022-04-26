@@ -8,14 +8,14 @@ import {
     PROCESS_BTN_CLICK,
     SCRIPTS_BTN_CLICK
 } from "../../../io/pubsub/PubsubConstants";
-import MindFields from "../mindfields/MindFields";
+import Fields from "../outliner/Fields";
 import FxTabManager from "./tab/FxTabManager";
 
 export default class FxRuntime {
 
     unit: U;
 
-    mindFields: MindFields;
+    mindFields: Fields;
     wsClient: WSClient;
     pubsub: Pubsub;
 
@@ -25,7 +25,7 @@ export default class FxRuntime {
 
     fxTabManager: FxTabManager;
 
-    constructor(mindFields: MindFields, wsClient: WSClient, pubsub: Pubsub, fxTabManager: FxTabManager) {
+    constructor(mindFields: Fields, wsClient: WSClient, pubsub: Pubsub, fxTabManager: FxTabManager) {
         this.mindFields = mindFields;
         this.wsClient = wsClient;
         this.pubsub = pubsub;

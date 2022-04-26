@@ -1,5 +1,5 @@
 import U from "../../../core/U";
-import {DELETE_KEY, TAB_KEY, TAB_REVERSE_KEY} from "../../txtMutator/controls/Keyboard";
+import {DELETE_KEY, TAB_KEY, TAB_REVERSE_KEY} from "../../txtEditor/controls/Keyboard";
 import NewLine from "../tab/chunks/NewLine";
 import Name from "../tab/chunks/literal/Name";
 import If from "../tab/chunks/conditionAndBody/if/If";
@@ -14,7 +14,7 @@ import Pubsub from "../../../../io/pubsub/Pubsub";
 import {MINDFIELDS_INSERTING_CHUNK} from "../../../../io/pubsub/PubsubConstants";
 import ForConditionPart from "../tab/chunks/conditionAndBody/loop/ForConditionPart";
 import ForConditionPartInternal from "../tab/chunks/conditionAndBody/loop/ForConditionPartInternal";
-import MindFields from "../../mindfields/MindFields";
+import Fields from "../../outliner/Fields";
 import FxSerializer from "../FxSerializer";
 import Callable from "../tab/chunks/conditionAndBody/call/callable/Callable";
 import CallableConditionPart from "../tab/chunks/conditionAndBody/call/callable/ConditionPart";
@@ -46,7 +46,7 @@ export default class FxController {
     pubsub: Pubsub;
 
     contextUnit;
-    mindFields: MindFields;
+    mindFields: Fields;
     linesNumbers: U;
 
     mainChunk: Main;
@@ -59,7 +59,7 @@ export default class FxController {
         pubsub: Pubsub,
         fxSerializer: FxSerializer,
         fxMutatorFactory: FxMutatorFactory,
-        mindFields: MindFields
+        mindFields: Fields
     ) {
         this.pubsub = pubsub;
 

@@ -1,16 +1,16 @@
 import State from "./state/State";
 import U, {UnitData} from "../../core/U";
 import {cloneObject, uuid} from "../../../F";
-import MindField from "./MindField";
-import MindfieldsDomHelper from "./MindfieldDomHelper";
+import Field from "./Field";
+import MindfieldsDomHelper from "./FieldDomHelper";
 import HttpClientB from "../../../io/http/client/HttpClientB";
 import Pubsub from "../../../io/pubsub/Pubsub";
 import {FX_RUNTIME_OPEN_TAB} from "../../../io/pubsub/PubsubConstants";
 
-export default class MindFields {
+export default class Fields {
 
     unit: U;
-    rootMindField: MindField;
+    rootMindField: Field;
 
     state: State;
     pubsub: Pubsub;
@@ -30,7 +30,7 @@ export default class MindFields {
         app.insert(this.unit);
 
         const unitsData = JSON.parse(await new HttpClientB().get('/state'));
-        const rootMindField = new MindField(new U({class: ['root'], units: unitsData, open: true}));
+        const rootMindField = new Field(new U({class: ['root'], units: unitsData, open: true}));
         this.unit.insert(rootMindField.getUnit());
         this.rootMindField = rootMindField;
         this.rootMindField.getDataUnit().oEditMode();
@@ -44,7 +44,7 @@ export default class MindFields {
         }
         accumulateUnits(unitsData);
 
-        const render = async (parentField: MindField) => {
+        const render = async (parentField: Field) => {
 
             const subUnits = parentField.getDataUnit().getUnits();
             if (!Array.isArray(subUnits)) return;
@@ -61,7 +61,7 @@ export default class MindFields {
                 }
 
                 const unit = new U(unitData);
-                const field = new MindField(unit);
+                const field = new Field(unit);
                 field.setIdToDom(unit.getId());
 
                 // @ts-ignore
@@ -187,7 +187,7 @@ export default class MindFields {
 
         //todo duplication code below
         const newUnit = new U(newUnitData);
-        const newField = new MindField(newUnit);
+        const newField = new Field(newUnit);
         newField.setIdToDom(newUnit.getId());
 
         if (fieldDOM.nextSibling) {
@@ -208,7 +208,7 @@ export default class MindFields {
         newUnitData.linkId = fieldDOM.id;
 
         const newUnit = new U(newUnitData);
-        const newField = new MindField(newUnit);
+        const newField = new Field(newUnit);
         newField.setIdToDom(newUnit.getId());
 
         if (fieldDOM.nextSibling) {
