@@ -21,10 +21,10 @@ export default class U {
     dom: HTMLElement|HTMLInputElement = null;
     observer: MutationObserver;
 
-    constructor(unitData: UnitData, dom: any = null) {
+    constructor(unitData?: UnitData, dom: any = null) {
 
         let self = this;
-        this.data = unitData;
+        this.data = unitData || {};
         if (dom) this.dom = dom;
 
         self['.'] = (...className) => {
@@ -120,6 +120,7 @@ export default class U {
 
     setAttr(k: string, v: string) {
         this.getDOM().setAttribute(k, v);
+        return this;
     }
 
     getAttr(k: string) {
@@ -153,10 +154,12 @@ export default class U {
 
     in(unit: U, index = null) {
         this.insert(unit, index);
+        return this;
     }
 
     inBr() {
         this.in(new U({tagName: 'br'}));
+        return this;
     }
 
     insertBefore(unit: U, beforeUnit: U) {

@@ -17,7 +17,7 @@ export default class BaseChunk {
 
         this.unit = new U({
             id: this.id,
-            tagName: (options.tagName ? options.tagName : 'div'),
+            tagName: (options.tagName ? options.tagName: 'div'),
             class: classArr,
             txt,
         });

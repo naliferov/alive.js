@@ -19,22 +19,47 @@ class AppBrowser {
     app: U
     input: InputAction
 
-    async showSignIn(app: U) {
+    async showSignPage(app: U, type: string) {
 
-        app.inBr();
+        const isSignIn = type === 'sign_in';
+        const formName = isSignIn ? 'Sign in': 'Sign up';
 
-        app.in(new U({txt: 'Email'}));
+        const pageSign = new U({class: ['pageSign']});
+        app.in(pageSign);
+
+        const signContainer = new U({class: ['signContainer']});
+        pageSign.in(signContainer);
+
+        const sign = new U({class: ['signBlock']});
+        signContainer.in(sign);
+
+        sign.in(new U({txt: formName})).inBr();
+
+        sign.in(new U({txt: 'Email'}));
         const email = new U({tagName: 'input', class: ['emailInput']});
-        app.in(email);
-        app.inBr();
+        sign.in(email).inBr();
 
-        app.in(new U({txt: 'Password'}));
+        sign.in(new U({txt: 'Password'}));
         const password = new U({tagName: 'input', class: ['emailInput']});
-        app.in(password);
-    }
+        sign.in(password);
 
-    async showSignUp(app: U) {
+        sign.inBr().inBr();
+        const btn = new U({tagName: 'button', txt: formName})
+        sign.in(btn);
 
+        btn.on('click', async () => {
+            const data = {email: email.getValue(), password: password.getValue()};
+            await new HttpClient().post(document.location.pathname, data);
+            document.location.reload();
+        });
+
+        if (isSignIn) {
+            sign.inBr().inBr();
+            sign.in(new U({tagName: 'span', txt: "Don't have an account? "}));
+            sign.in(new U({tagName: 'a', txt: "Sign up"}).setAttr('href', '/sign/up'));
+        }
+
+        //Don't have an account? Sign up
     }
 
     async showSettings(app: U) {
@@ -97,15 +122,13 @@ class AppBrowser {
         this.app = new U({});
         this.app.setDOM(document.getElementById('app'));
 
-        const {data: {isAuthorized}} = await new HttpClient().get('/sign/authorized');
-        if (isAuthorized) {
-
-
-        } else {
-            await this.showSignIn(this.app);
+        const path = document.location.pathname
+        const m = {
+            '/': () => this.showFx(this.app),
+            '/sign/in': () => this.showSignPage(this.app, 'sign_in'),
+            '/sign/up': () => this.showSignPage(this.app, 'sign_up'),
         }
-
-        //await this.showFx(this.app);
+        if (m[path]) m[path]();
     }
 }
 

@@ -2,6 +2,7 @@ import {NextFunction, Request, Response} from "express";
 import FS from "../fs/FS";
 import Logger from "../../log/Logger";
 import {STATE_FILE_PATH} from "../../AppConstants";
+import * as crypto from 'crypto';
 
 const COOKIE_KEY = 'fx';
 
@@ -39,22 +40,32 @@ export default class HttpMsgHandler {
     async handle(req: Request, res: Response, next: NextFunction) {
 
         const stateFile = this.appDir + STATE_FILE_PATH.substring(1);
-        const htmlFile = this.appDir + '/src/browser/core/view/index.html';
+        const htmlFile = await this.fs.readFile(this.appDir + '/src/browser/core/view/index.html');
         const isAuthorized = this.isAuthorized(req);
 
         const m = {
             'GET:/js': async () => res.send( await this.fs.readFile(this.appDir + '/public/min.js') ),
+            'GET:/': async() => {
+                if (!this.isAuthorized(req)) {
+                    res.redirect('/sign/in'); return;
+                }
+                res.send(htmlFile);
+            },
             'GET:/sign/authorized': async () => res.send({isAuthorized}),
-            'GET:/sign/in': async () => res.send( await this.fs.readFile(htmlFile) ),
-            'GET:/sign/up': async () => res.send( await this.fs.readFile(htmlFile) ),
+            'GET:/sign/in': async () => {
+                //если залогинен и пароль верный надо залогинить
+                res.send(htmlFile)
+            },
+            'GET:/sign/up': async () => res.send(htmlFile),
             'POST:/sign/in': async () => {
                 const {email, pass} = req.body;
+
+                console.log(email, pass);
 
                 if (!email) res.send({ok: 0, tx: 'Email is missing.'}); return;
                 if (!pass) res.send({ok: 0, tx: 'Password is missing.'}); return;
             },
             'POST:/sign/up': async () => {
-
                 //if user authorized perform redirect;
 
                 const {email, pass} = req.body;
@@ -71,6 +82,8 @@ export default class HttpMsgHandler {
                     res.send({ok: 0, tx: 'Password length limit is 20 symbols.'}); return;
                 }
 
+                const authKey = crypto.randomBytes(32);
+                console.log(authKey);
                 //const authKey = RandBytes(32);
                 /*const usersModel = new Users;
 
@@ -117,12 +130,6 @@ export default class HttpMsgHandler {
 
                 await this.fs.writeFile(stateFile, JSON.stringify(req.body.data))
                 res.send({});
-            },
-            'GET:/': async() => {
-                /*if (!await this.authCheck(req)) {
-                    res.redirect('/sign/in'); return;
-                }*/
-                res.send( await this.fs.readFile(htmlFile) );
             },
         };
 
