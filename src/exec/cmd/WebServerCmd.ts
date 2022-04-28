@@ -6,13 +6,17 @@ import FS from "../../io/fs/FS";
 import Logger from "../../log/Logger";
 import * as express from "express";
 import StateManager from "../../io/state/StateManager";
+import MongoManager from "../../io/db/MongoManager";
 
 export default class WebServerCmd {
-    async run(port: string, fs: FS, logger: Logger, stateManager: StateManager, appDir: string) {
 
-        await logger.info('Run webserver.');
+    async run(
+        port: string, fs: FS, logger: Logger, stateManager: StateManager, appDir: string, mongoManager: MongoManager
+    ) {
+        await mongoManager.connect();
+        await logger.info('Connected to mongo server.');
 
-        const httpMsgHandler = new HttpMsgHandler(fs, logger, appDir);
+        const httpMsgHandler = new HttpMsgHandler(fs, logger, appDir, mongoManager);
         const httpServer = new HttpServer(createServer, express, httpMsgHandler);
         new WSServer(httpServer, stateManager, fs);
 

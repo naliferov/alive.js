@@ -4,6 +4,10 @@ import FS from "./src/io/fs/FS";
 import StateManager from "./src/io/state/StateManager";
 import ProcessController from "./src/exec/process/ProcessController";
 import {cmdList} from "./src/exec/process/CmdList";
+import { MongoClient } from "mongodb";
+import MongoDbFactory from "./src/io/db/MongoManager";
+import {json} from "express";
+import MongoManager from "./src/io/db/MongoManager";
 
 const cmdRun = async (cliArgs, deps) => {
 
@@ -28,14 +32,20 @@ const cmdRun = async (cliArgs, deps) => {
     await deps.processController.run(cmd, cmdList[cmd], cliArgs, deps);
 };
 
-const fs = new FS();
-const cliArgs = parseCliArgs(process.argv);
+const main = async () => {
+    const fs = new FS();
+    const cliArgs = parseCliArgs(process.argv);
+    const config = JSON.parse(await fs.readFile('./config/config.json'));
 
-cmdRun(cliArgs, {
-    appDir: __dirname,
-    ctxDir: process.cwd(),
-    fs: fs,
-    logger: new Logger(fs),
-    processController: new ProcessController(),
-    stateManager: new StateManager(fs),
-});
+    cmdRun(cliArgs, {
+        appDir: __dirname,
+        ctxDir: process.cwd(),
+        fs: fs,
+        logger: new Logger(fs),
+        processController: new ProcessController(),
+        stateManager: new StateManager(fs),
+        mongoManager: new MongoManager().createMongoClient(config.mongodb),
+    });
+}
+
+main();

@@ -3,17 +3,20 @@ import FS from "../fs/FS";
 import Logger from "../../log/Logger";
 import {STATE_FILE_PATH} from "../../AppConstants";
 import * as crypto from 'crypto';
+import MongoManager from "../db/MongoManager";
 
 const COOKIE_KEY = 'fx';
 
 export default class HttpMsgHandler {
 
     fs: FS;
+    mongoManager: MongoManager;
     logger: Logger;
     appDir: string
 
-    constructor(fs: FS, logger: Logger, appDir: string) {
+    constructor(fs: FS, logger: Logger, appDir: string, mongoManager: MongoManager) {
         this.fs = fs;
+        this.mongoManager = mongoManager;
         this.logger = logger;
         this.appDir = appDir;
     }
@@ -56,7 +59,6 @@ export default class HttpMsgHandler {
                 //если залогинен и пароль верный надо залогинить
                 res.send(htmlFile)
             },
-            'GET:/sign/up': async () => res.send(htmlFile),
             'POST:/sign/in': async () => {
                 const {email, pass} = req.body;
 
@@ -65,26 +67,26 @@ export default class HttpMsgHandler {
                 if (!email) res.send({ok: 0, tx: 'Email is missing.'}); return;
                 if (!pass) res.send({ok: 0, tx: 'Password is missing.'}); return;
             },
+            'GET:/sign/up': async () => res.send(htmlFile),
             'POST:/sign/up': async () => {
-                //if user authorized perform redirect;
 
-                const {email, pass} = req.body;
+                const {email, password} = req.body;
+
                 if (!email) {
                     res.send({ok: 0, tx: 'Email is missing.'}); return;
                 }
                 if (email.length > 20) {
                     res.send({ok: 0, tx: 'Email length limit is 20 symbols.'}); return;
                 }
-                if (!pass) {
+                if (!password) {
                     res.send({ok: 0, tx: 'Password is missing.'}); return;
                 }
-                if (pass.length > 20) {
+                if (password.length > 20) {
                     res.send({ok: 0, tx: 'Password length limit is 20 symbols.'}); return;
                 }
 
-                const authKey = crypto.randomBytes(32);
-                console.log(authKey);
-                //const authKey = RandBytes(32);
+                const authKey = crypto.randomBytes(32).toString('hex');
+                res.send({ok: 1});
                 /*const usersModel = new Users;
 
                 if (await usersModel.findByEmail(email)) {

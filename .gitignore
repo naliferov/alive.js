@@ -9,7 +9,6 @@ lerna-debug.log*
 */**/*.js
 x.js
 min.js
-credentials.json
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
