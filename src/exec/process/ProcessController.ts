@@ -36,7 +36,6 @@ export default class ProcessController {
         const {logger} = deps;
         logger.info(`Run process [${processName}]. PID: [${process.pid.toString()}]. CliArgs:`, args);
         await callable(args, deps);
-
         return;
 
         const processDir = this.getProcessDir(processName);

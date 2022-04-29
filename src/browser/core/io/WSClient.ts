@@ -2,13 +2,9 @@ export default class WSClient {
 
     wsConnection;
 
-    constructor() {
-    }
-
     async handleWsMsg (msg) {
         const m = JSON.parse(msg.data);
         console.log(m);
-
         if (m.streamProcessLog) {
 
         }
@@ -19,10 +15,10 @@ export default class WSClient {
         return new Promise((resolve, reject) => {
             const wsConnection = new WebSocket(`${document.location.protocol === 'https:' ? 'wss' : 'ws'}://${document.location.host}`)
             wsConnection.onopen = () => {
-                wsConnection.onmessage = (msg) => this.handleWsMsg(msg);
                 resolve(wsConnection);
                 this.wsConnection = wsConnection;
             };
+            wsConnection.onmessage = (msg) => this.handleWsMsg(msg);
             wsConnection.onerror = (error) => {
                 console.log('Ws connection error.', error);
                 reject(error);

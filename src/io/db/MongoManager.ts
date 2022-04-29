@@ -20,7 +20,8 @@ export default class MongoManager {
             // @ts-ignore
             this.db = await this.client.db(this.conf.database);
             await this.db.command({ ping: 1 });
-        } finally {
+        } catch (e) {
+            //todo write to logger
             await this.client.close();
         }
     }

@@ -49,8 +49,9 @@ class AppBrowser {
 
         btn.on('click', async () => {
             const data = {email: email.getValue(), password: password.getValue()};
-            await new HttpClient().post(document.location.pathname, data);
-            document.location.reload();
+            const res = await new HttpClient().post(document.location.pathname, data);
+            // @ts-ignore
+            if (!res.err) document.location.href = '/';
         });
 
         if (isSignIn) {

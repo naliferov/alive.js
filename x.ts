@@ -4,9 +4,6 @@ import FS from "./src/io/fs/FS";
 import StateManager from "./src/io/state/StateManager";
 import ProcessController from "./src/exec/process/ProcessController";
 import {cmdList} from "./src/exec/process/CmdList";
-import { MongoClient } from "mongodb";
-import MongoDbFactory from "./src/io/db/MongoManager";
-import {json} from "express";
 import MongoManager from "./src/io/db/MongoManager";
 
 const cmdRun = async (cliArgs, deps) => {
@@ -36,8 +33,7 @@ const main = async () => {
     const fs = new FS();
     const cliArgs = parseCliArgs(process.argv);
     const config = JSON.parse(await fs.readFile('./config/config.json'));
-
-    cmdRun(cliArgs, {
+    await cmdRun(cliArgs, {
         appDir: __dirname,
         ctxDir: process.cwd(),
         fs: fs,

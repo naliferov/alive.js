@@ -16,7 +16,7 @@ export default class List {
         return this.getLength() - 1;
     }
     del(index){ this.list.splice(index, 1) };
-    delLast() { this.list.splice(this.getLastIndex(), 1) };
+    delLast() { this.list.pop(); };
 
     get(index) {
         return this.list[index];
@@ -28,7 +28,7 @@ export default class List {
         return this.list[0];
     }
     getLast() {
-        return this.list[ this.list.length - 1 ]
+        return this.list[this.getLastIndex()]
     }
     getLastIndex() {
         return this.list.length - 1;
