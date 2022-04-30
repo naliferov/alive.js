@@ -51,7 +51,11 @@ class AppBrowser {
             const data = {email: email.getValue(), password: password.getValue()};
             const res = await new HttpClient().post(document.location.pathname, data);
             // @ts-ignore
-            if (!res.err) document.location.href = '/';
+            if (!res.err) {
+                document.location.href = '/';
+                return;
+            }
+            document.location.reload();
         });
 
         if (isSignIn) {
@@ -59,8 +63,6 @@ class AppBrowser {
             sign.in(new U({tagName: 'span', txt: "Don't have an account? "}));
             sign.in(new U({tagName: 'a', txt: "Sign up"}).setAttr('href', '/sign/up'));
         }
-
-        //Don't have an account? Sign up
     }
 
     async showSettings(app: U) {

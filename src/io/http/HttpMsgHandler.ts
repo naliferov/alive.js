@@ -5,6 +5,7 @@ import {STATE_FILE_PATH} from "../../AppConstants";
 import * as crypto from 'crypto';
 import MongoManager from "../db/MongoManager";
 import UsersModel from "../db/model/UsersModel";
+import NodesModel from "../db/model/NodesModel";
 
 const COOKIE_KEY = 'fx';
 
@@ -14,47 +15,41 @@ export default class HttpMsgHandler {
     logger: Logger;
     appDir: string;
     usersModel: UsersModel;
+    nodesModel: NodesModel;
 
     constructor(fs: FS, logger: Logger, appDir: string, mongoManager: MongoManager) {
         this.fs = fs;
         this.logger = logger;
         this.appDir = appDir;
         this.usersModel = new UsersModel(mongoManager);
+        this.nodesModel = new NodesModel(mongoManager);
     }
 
-    isAuthorized(req: Request) { return !!req.cookies[COOKIE_KEY]; }
+    userHasAuthKey(req: Request) {
+        return req.cookies[COOKIE_KEY];
+    }
+
+    async getAuthorizedUser(req: Request) {
+        const key = req.cookies[COOKIE_KEY];
+        if (!key) return false;
+        return await this.usersModel.getByAuthKey(key);
+    }
 
     authorize(res: Response, authKey: string) {
         res.cookie(COOKIE_KEY, authKey, { maxAge: (60 * 60 * 24) * (15 * 1000), httpOnly: true, secure: true, sameSite: 'Strict'});
     }
 
-    /*async authCheck(req: Request): Promise<boolean> {
-
-        const authKey = req.cookies[COOKIE_KEY];
-        if (!authKey) {
-            return false;
-        }
-
-        const usersModel = new Users;
-        const user = await usersModel.findByAuthKey(authKey);
-
-        return !!user;
-    }*/
-
     async handle(req: Request, res: Response, next: NextFunction) {
 
-        const stateFile = this.appDir + STATE_FILE_PATH.substring(1);
         const htmlFile = await this.fs.readFile(this.appDir + '/src/browser/core/view/index.html');
-        const isAuthorized = this.isAuthorized(req);
+        const jsFile = await this.fs.readFile(this.appDir + '/public/min.js');
 
         const m = {
-            'GET:/js': async () => res.send( await this.fs.readFile(this.appDir + '/public/min.js') ),
             'GET:/': async() => {
-                if (!this.isAuthorized(req)) {
-                    res.redirect('/sign/in'); return;
-                }
+                if (!this.userHasAuthKey(req)) { res.redirect('/sign/in'); return; }
                 res.send(htmlFile);
             },
+            'GET:/js': async () => res.send(jsFile),
             'GET:/sign/in': async () => res.send(htmlFile),
             'POST:/sign/in': async () => {
                 let {email, password} = req.body;
@@ -76,7 +71,6 @@ export default class HttpMsgHandler {
             'POST:/sign/up': async () => {
 
                 const {email, password} = req.body;
-
                 if (!email) {
                     res.send({err: 'Email is missing.'}); return;
                 }
@@ -91,16 +85,14 @@ export default class HttpMsgHandler {
                 }
 
                 const authKey = crypto.randomBytes(32).toString('hex');
-                await this.usersModel.insert(email, password, authKey);
+                const userId = await this.usersModel.insert(email, password, authKey);
+                await this.nodesModel.insert(userId, []);
 
                 this.authorize(res, authKey);
                 res.send();
             },
-            'GET:/sign/out': async () => {},
+            //'GET:/sign/out': async () => {},
             'GET:/process/start': async () => {
-
-                //запуск скрипта
-
                 await this.logger.info(req.query);
                 res.send();
             },
@@ -115,17 +107,27 @@ export default class HttpMsgHandler {
                 }
                 await (new OsExec('kill', [pid], '', new Logger())).run();
                 await fileSet.d(processName);*/
-
                 res.send({ok: processName});
             },
             'GET:/state': async () => {
-                res.send( await this.fs.readFile(stateFile) );
+                const user = await this.getAuthorizedUser(req);
+                if (!user) { res.send({err: 'User not found.'}); return; }
+                const userNodes = await this.nodesModel.getByUserId(user._id.toString('hex'));
+                res.send(userNodes.nodes);
             },
             'POST:/state': async () => {
-                //security
-                if (!req.body.data) { res.send({code: 1, tx: 'Data is empty.'}); return; }
 
-                await this.fs.writeFile(stateFile, JSON.stringify(req.body.data))
+                const user = await this.getAuthorizedUser(req);
+
+                if (!user) { res.send({err: 'User not found.'}); return; }
+                if (!req.body.data) { res.send({err: 'Data is empty.'}); return; }
+
+                const userId = user._id.toString('hex');
+                const userNodes = await this.nodesModel.getByUserId(userId);
+                if (!userNodes) {
+                    res.send({err: `User nodes not found for userId [${userId}]`});
+                }
+                await this.nodesModel.update(userId, req.body.data);
                 res.send({code: 0});
             },
         };
