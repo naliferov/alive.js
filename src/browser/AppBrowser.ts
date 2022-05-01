@@ -71,17 +71,20 @@ class AppBrowser {
 
     async showFx(app: U) {
 
+        const pageFx = new U();
+        app.in(pageFx);
+
         // @ts-ignore
         window.chunkPool = new Map<string, BaseChunk>();
         const state = new State();
         const pubsub = new Pubsub();
         const mindFields = new Fields(state, pubsub);
-        await mindFields.init(app);
+        await mindFields.init(pageFx);
         const localState = new LocalState();
 
         const fxTabManager = new FxTabManager(pubsub, mindFields, localState);
         const fxRuntime = new FxRuntime(mindFields, pubsub, fxTabManager);
-        await fxRuntime.init(app);
+        await fxRuntime.init(pageFx);
         const inputAction = new InputAction(window);
 
         const mindFieldsFocus = () => {

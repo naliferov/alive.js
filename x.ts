@@ -33,14 +33,16 @@ const main = async () => {
     const fs = new FS();
     const cliArgs = parseCliArgs(process.argv);
     const config = JSON.parse(await fs.readFile('./config/config.json'));
+    const logger = new Logger(fs);
+
     await cmdRun(cliArgs, {
         appDir: __dirname,
         ctxDir: process.cwd(),
         fs: fs,
-        logger: new Logger(fs),
+        logger: logger,
         processController: new ProcessController(),
         stateManager: new StateManager(fs),
-        mongoManager: new MongoManager().createMongoClient(config.mongodb),
+        mongoManager: new MongoManager().createMongoClient(config.mongodb, logger),
     });
 }
 
