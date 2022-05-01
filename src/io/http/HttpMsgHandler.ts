@@ -43,6 +43,7 @@ export default class HttpMsgHandler {
 
         const htmlFile = await this.fs.readFile(this.appDir + '/src/browser/core/view/index.html');
         const jsFile = await this.fs.readFile(this.appDir + '/public/min.js');
+        const fontFilePath = this.appDir + '/public/font/JetBrainsMono-Medium.woff2';
 
         const m = {
             'GET:/': async() => {
@@ -50,6 +51,7 @@ export default class HttpMsgHandler {
                 res.send(htmlFile);
             },
             'GET:/js': async () => res.send(jsFile),
+            'GET:/font/JetBrainsMono-Medium.woff2': async () => res.sendFile(fontFilePath),
             'GET:/sign/in': async () => res.send(htmlFile),
             'POST:/sign/in': async () => {
                 let {email, password} = req.body;
