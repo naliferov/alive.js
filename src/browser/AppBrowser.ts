@@ -71,7 +71,7 @@ class AppBrowser {
 
     async showFx(app: U) {
 
-        const pageFx = new U();
+        const pageFx = new U({class: ['pageFx']});
         app.in(pageFx);
 
         // @ts-ignore
