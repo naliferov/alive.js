@@ -18,7 +18,7 @@ export default class OsExec {
         this.logger = logger;
     }
 
-    async run(childCallback = null, detach = false): Promise<ExecResult> {
+    async run(detach = false, childCallback = null): Promise<ExecResult> {
 
         return new Promise((resolve) => {
             const proc = spawn(this.cmd, this.args, {cwd: this.cwd, detached: detach});

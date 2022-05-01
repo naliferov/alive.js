@@ -6,6 +6,7 @@ import * as crypto from 'crypto';
 import MongoManager from "../db/MongoManager";
 import UsersModel from "../db/model/UsersModel";
 import NodesModel from "../db/model/NodesModel";
+import OsExec from "../../exec/process/OsExec";
 
 const COOKIE_KEY = 'fx';
 
@@ -100,6 +101,7 @@ export default class HttpMsgHandler {
                 await this.logger.info(req.query);
                 res.send();
             },
+
             'GET:/process/stop': async () => {
 
                 const processName = req.query.processName;
@@ -112,6 +114,25 @@ export default class HttpMsgHandler {
                 await (new OsExec('kill', [pid], '', new Logger())).run();
                 await fileSet.d(processName);*/
                 res.send({ok: processName});
+            },
+            'GET:/deploy': async () => {
+
+                if (!await this.getAuthorizedUser(req)) {
+                    res.send({err: 'forbidden'});
+                    return;
+                }
+                //await (new OsExec('node x.js webServer ', [], '', this.logger)).run();
+
+                res.send();
+                /*const fileSet = fSet(PIDS_FILE);
+                const pid = await fileSet.r(processName);
+                if (!pid) {
+                    res.send({ok: `PID not found for process name ${processName}.`});
+                    return;
+                }
+                await (new OsExec('kill', [pid], '', new Logger())).run();
+                await fileSet.d(processName);*/
+                //res.send({ok: processName});
             },
             'GET:/state': async () => {
                 const user = await this.getAuthorizedUser(req);
