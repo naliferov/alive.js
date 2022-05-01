@@ -55,9 +55,9 @@ export default class HttpMsgHandler {
             'GET:/sign/in': async () => res.send(htmlFile),
             'POST:/sign/in': async () => {
                 let {email, password} = req.body;
-                email.trim(); password.trim();
+                email = email.trim();
+                password = password.trim();
 
-                console.log(email, password);
                 if (!email) { res.send({err: 'Email is missing.'}); return; }
                 if (!password) { res.send({err: 'Password is missing.'}); return; }
 
@@ -71,8 +71,10 @@ export default class HttpMsgHandler {
             },
             'GET:/sign/up': async () => res.send(htmlFile),
             'POST:/sign/up': async () => {
+                let {email, password} = req.body;
+                email = email.trim();
+                password = password.trim();
 
-                const {email, password} = req.body;
                 if (!email) {
                     res.send({err: 'Email is missing.'}); return;
                 }
