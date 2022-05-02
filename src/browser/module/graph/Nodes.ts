@@ -19,10 +19,7 @@ export default class Nodes {
         this.state = state;
         this.pubsub = pubsub;
     }
-
-    getUnit() {
-        return this.t;
-    }
+    getUnit() { return this.t; }
 
     async init(app: T) {
 
@@ -65,9 +62,7 @@ export default class Nodes {
                 field.setIdToDom(unit.getId());
 
                 // @ts-ignore
-                if (unitData.linkId) {
-                    field.markAsLink();
-                }
+                if (unitData.linkId) field.markAsLink();
 
                 parentField.insert(field);
                 await this.state.setUnit(unit);

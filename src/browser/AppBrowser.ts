@@ -71,10 +71,6 @@ class AppBrowser {
         }
     }
 
-    async showSettings(app: T) {
-
-    }
-
     async showFx(app: T) {
 
         const pageFx = new T({class: ['pageFx']});
@@ -130,8 +126,7 @@ class AppBrowser {
     }
 
     async run(window: Window) {
-
-        this.app = new T({});
+        this.app = new T();
         this.app.setDOM(document.getElementById('app'));
 
         const path = document.location.pathname
