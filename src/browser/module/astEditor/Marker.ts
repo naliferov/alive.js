@@ -1,14 +1,14 @@
-import List from "../../core/List";
+import List from "../../List";
 import BaseChunk from "./tab/chunks/BaseChunk";
-import U from "../../core/U";
+import T from "../../../T";
 
 export default class Marker {
 
-    monitor: U;
+    monitor: T;
     markedChunks: List;
     direction: string = null;
 
-    constructor(monitor: U) {
+    constructor(monitor: T) {
         this.markedChunks = new List();
         this.monitor = monitor;
     }

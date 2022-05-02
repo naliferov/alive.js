@@ -132,13 +132,13 @@ export default class HttpMsgHandler {
                 await fileSet.d(processName);*/
                 //res.send({ok: processName});
             },
-            'GET:/state': async () => {
+            'GET:/nodes': async () => {
                 const user = await this.getAuthorizedUser(req);
                 if (!user) { res.send({err: 'User not found.'}); return; }
                 const userNodes = await this.nodesModel.getByUserId(user._id.toString('hex'));
                 res.send(userNodes.nodes);
             },
-            'POST:/state': async () => {
+            'POST:/nodes': async () => {
 
                 const user = await this.getAuthorizedUser(req);
 

@@ -1,23 +1,23 @@
-import U from "../../core/U";
+import T from "../../../T";
 
-export default class Field {
+export default class Node {
 
-    unit: U;
-    dataUnit: U;
+    unit: T;
+    dataUnit: T;
 
-    fields: U;
-    openClose: U;
+    fields: T;
+    openClose: T;
 
-    constructor(unit: U) {
+    constructor(unit: T) {
 
         this.dataUnit = unit;
         this.dataUnit.addClass('dataUnit');
 
-        this.unit = new U({class: ['mindField']});
-        const flex = new U({class: ['mindFieldStructure', 'flex']});
+        this.unit = new T({class: ['mindField']});
+        const flex = new T({class: ['mindFieldStructure', 'flex']});
         this.unit.insert(flex);
 
-        this.openClose = new U({txt: '>', class: ['openClose']});
+        this.openClose = new T({txt: '>', class: ['openClose']});
         this.openClose.on('click', async () => {
             if (this.openClose.hasClass('disabled')) {
                 return
@@ -37,7 +37,7 @@ export default class Field {
         flex.insert(unit);
         unit.toggleEdit();
 
-        this.fields = new U({class: ['subFields']});
+        this.fields = new T({class: ['subFields']});
         if (!this.dataUnit.isOpen()) {
             this.fields.hide();
         }
@@ -69,8 +69,8 @@ export default class Field {
     getId(): string {
         return this.dataUnit.getId();
     }
-    insert(mindField: Field) { this.fields.insert(mindField.getUnit()) }
+    insert(mindField: Node) { this.fields.insert(mindField.getUnit()) }
     getDataUnit() { return this.dataUnit }
     getUnit() { return this.unit }
-    getFields(): U { return this.fields }
+    getFields(): T { return this.fields }
 }

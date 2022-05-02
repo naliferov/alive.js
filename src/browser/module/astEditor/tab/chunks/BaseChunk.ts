@@ -1,10 +1,10 @@
-import U from "../../../../core/U";
+import T from "../../../../../T";
 import {uuid} from "../../../../../F";
 
 export default class BaseChunk {
 
     id: string
-    unit: U;
+    unit: T;
 
     constructor(txt = '', options: any = {}) {
         this.id = uuid();
@@ -15,7 +15,7 @@ export default class BaseChunk {
             classArr = [...options.className, ...classArr];
         } else if (options.className) classArr.push(options.className);
 
-        this.unit = new U({
+        this.unit = new T({
             id: this.id,
             tagName: (options.tagName ? options.tagName: 'div'),
             class: classArr,
@@ -74,7 +74,7 @@ export default class BaseChunk {
     }
 
     getParentUnit() {
-        return new U({}, this.unit.getDOM().parentNode);
+        return new T({}, this.unit.getDOM().parentNode);
     }
 
     getFirstChunk() {

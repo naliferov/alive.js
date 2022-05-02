@@ -1,13 +1,13 @@
 import HttpClient from "../../../../io/http/HttpClient";
-import U, {UnitData} from "../../../core/U";
+import T, {UnitData} from "../../../../T";
 import {SELECTOR_TOGGLE, SELECTOR_STATUS_CHANGE, MOVER_TOGGLE, MOVER_STATUS_CHANGE} from "./Action";
 import {cloneObject, uuid} from "../../../../F";
 
-export type UnitsType = Map<string, U>;
+export type UnitsType = Map<string, T>;
 
 export default class State {
 
-    units: UnitsType = new Map<string, U>();
+    units: UnitsType = new Map<string, T>();
 
     modifiers: {
         selector: boolean,
@@ -73,7 +73,7 @@ export default class State {
         return this.units.get(id);
     }
 
-    getUnitByName(name: string): U|undefined {
+    getUnitByName(name: string): T|undefined {
         for (const [_, unit] of this.units) {
             if (unit.getName() === name) return unit;
         }
@@ -83,7 +83,7 @@ export default class State {
         return this.units;
     }
 
-    async setUnit(unit: U) {
+    async setUnit(unit: T) {
         this.units.set(unit.getId(), unit);
     }
 
@@ -100,7 +100,7 @@ export default class State {
         newUnitData.id = uuid();
         newUnitData.name = newUnitData.name + '_copy';
 
-        const newUnit = new U(newUnitData);
+        const newUnit = new T(newUnitData);
         await this.setUnit(newUnit);
 
         return newUnit;

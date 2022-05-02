@@ -1,8 +1,8 @@
-import U from "../../core/U";
+import T from "../../../T";
 
 export default class Cursor {
 
-    unit: U;
+    unit: T;
 
     x: number;
     y: number;
@@ -15,7 +15,7 @@ export default class Cursor {
     changeCursorPosHandler;
 
     constructor() {
-        this.unit = new U({class: ['cursor'], style: {width: '1px', height: '18px', background: 'black', position: 'absolute', 'z-index': '3'}});
+        this.unit = new T({class: ['cursor'], style: {width: '1px', height: '18px', background: 'black', position: 'absolute', 'z-index': '3'}});
 
         this.x = 0;
         this.y = 0;

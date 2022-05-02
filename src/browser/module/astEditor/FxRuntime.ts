@@ -1,24 +1,24 @@
-import U from "../../core/U";
+import T from "../../../T";
 import Button from "../../core/view/ui/Button";
 import Pubsub from "../../../io/pubsub/Pubsub";
-import Fields from "../outliner/Fields";
+import Nodes from "../graph/Nodes";
 import FxTabManager from "./tab/FxTabManager";
 
 export default class FxRuntime {
 
-    unit: U;
+    unit: T;
 
-    mindFields: Fields;
+    mindFields: Nodes;
     pubsub: Pubsub;
 
     iphone: boolean = false;
 
     fxTabManager: FxTabManager;
 
-    constructor(mindFields: Fields, pubsub: Pubsub, fxTabManager: FxTabManager) {
+    constructor(mindFields: Nodes, pubsub: Pubsub, fxTabManager: FxTabManager) {
         this.mindFields = mindFields;
         this.pubsub = pubsub;
-        this.unit = new U({class: ['fxRuntimeContainer']});
+        this.unit = new T({class: ['fxRuntimeContainer']});
         this.fxTabManager = fxTabManager;
 
         const consoleBtn = new Button('console');
@@ -34,14 +34,14 @@ export default class FxRuntime {
         return this.unit;
     }
 
-    async init(app: U) {
+    async init(app: T) {
         app.in(this.unit);
         this.unit.in(this.fxTabManager.getUnit());
     }
 
-    async openTab(unit: U) { this.fxTabManager.openTab(unit); }
+    async openTab(unit: T) { this.fxTabManager.openTab(unit); }
 
-    async focusTab(unit: U) {
+    async focusTab(unit: T) {
         const openedTab = this.fxTabManager.getTabByContextUnit(unit);
         if (!openedTab) return;
         this.fxTabManager.focusTab(openedTab);

@@ -1,15 +1,15 @@
-import U from "../../core/U";
+import T from "../../../T";
 import Tab from "./tabs/tab/Tab";
-import State from "../outliner/state/State";
+import State from "../graph/state/State";
 
 export default class Editor {
 
     activeTab: Tab;
     tabs: Map<string, Tab>;
 
-    unit: U;
-    tabsNames: U;
-    tabsContent: U;
+    unit: T;
+    tabsNames: T;
+    tabsContent: T;
 
     closeTabHandler;
     makeTabActiveHandler;
@@ -19,10 +19,10 @@ export default class Editor {
 
         this.tabs = new Map<string, Tab>();
 
-        this.unit = new U({class: ['tabs']});
+        this.unit = new T({class: ['tabs']});
 
-        this.tabsNames = new U({id: 'tabsNames'});
-        this.tabsContent = new U({class: ['tabsContent']});
+        this.tabsNames = new T({id: 'tabsNames'});
+        this.tabsContent = new T({class: ['tabsContent']});
 
         this.unit.insert(this.tabsNames);
         this.unit.insert(this.tabsContent);
@@ -62,7 +62,7 @@ export default class Editor {
         this.changeCursorPosHandler = changeCursorPosHandler;
     }
 
-    addTab(contextUnit: U, cursorPos = null) {
+    addTab(contextUnit: T, cursorPos = null) {
 
         if (this.tabs.get(contextUnit.getId())) {
             return;

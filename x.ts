@@ -1,7 +1,6 @@
 import {parseCliArgs} from "./src/F";
 import Logger from "./src/log/Logger";
 import FS from "./src/io/fs/FS";
-import StateManager from "./src/io/state/StateManager";
 import ProcessController from "./src/exec/process/ProcessController";
 import {cmdList} from "./src/exec/process/CmdList";
 import MongoManager from "./src/io/db/MongoManager";
@@ -41,7 +40,6 @@ const main = async () => {
         fs: fs,
         logger: logger,
         processController: new ProcessController(),
-        stateManager: new StateManager(fs),
         mongoManager: new MongoManager().createMongoClient(config.mongodb, logger),
     });
 }

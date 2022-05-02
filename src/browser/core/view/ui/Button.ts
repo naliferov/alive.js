@@ -1,9 +1,9 @@
-import U from "../../U";
+import T from "../../../../T";
 import Pubsub from "../../../../io/pubsub/Pubsub";
 
 export default class Button {
 
-    unit: U;
+    unit: T;
 
     txt: {
         active: string,
@@ -14,7 +14,7 @@ export default class Button {
     }
 
     constructor(txt: string, inactiveTxt: string = '') {
-        this.unit = new U({txt: txt, class: ['btn', 'noselect']});
+        this.unit = new T({txt: txt, class: ['btn', 'noselect']});
         this.txt.active = txt;
         this.txt.inactive = inactiveTxt;
     }

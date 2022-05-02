@@ -15,7 +15,7 @@ export interface UnitData {
     linkId?: string
 }
 
-export default class U {
+export default class T {
 
     data: UnitData;
     dom: HTMLElement|HTMLInputElement = null;
@@ -143,7 +143,7 @@ export default class U {
         this.data.value = v;
     }
 
-    insert(unit: U, index = null) {
+    insert(unit: T, index = null) {
         if (index !== null) {
             this.getDOM().insertBefore(unit.getDOM(), this.getDOM().children[index]);
             return;
@@ -152,17 +152,17 @@ export default class U {
         this.getDOM().append(unit.getDOM());
     }
 
-    in(unit: U, index = null) {
+    in(unit: T, index = null) {
         this.insert(unit, index);
         return this;
     }
 
     inBr() {
-        this.in(new U({tagName: 'br'}));
+        this.in(new T({tagName: 'br'}));
         return this;
     }
 
-    insertBefore(unit: U, beforeUnit: U) {
+    insertBefore(unit: T, beforeUnit: T) {
         this.getDOM().insertBefore(unit.getDOM(), beforeUnit.getDOM());
     }
 

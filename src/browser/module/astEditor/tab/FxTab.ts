@@ -1,8 +1,8 @@
-import U from "../../../core/U";
+import T from "../../../../T";
 import FxTabName from "./FxTabName";
 import Pubsub from "../../../../io/pubsub/Pubsub";
 import FxSerializer from "../FxSerializer";
-import Fields from "../../outliner/Fields";
+import Nodes from "../../graph/Nodes";
 import FxController from "../control/FxController";
 import FxMutatorFactory from "../control/FxMutatorFactory";
 
@@ -11,9 +11,9 @@ export default class FxTab {
     fxTabName: FxTabName;
     fxController: FxController;
 
-    contextUnit: U;
+    contextUnit: T;
 
-    constructor(tabName, contextUnit: U, pubsub: Pubsub, fxSerializer: FxSerializer, mindfields: Fields) {
+    constructor(tabName, contextUnit: T, pubsub: Pubsub, fxSerializer: FxSerializer, mindfields: Nodes) {
         this.fxTabName = new FxTabName(tabName, contextUnit);
         this.fxController = new FxController(
             contextUnit, pubsub, fxSerializer, new FxMutatorFactory(pubsub), mindfields

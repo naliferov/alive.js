@@ -1,16 +1,16 @@
 import State from "./state/State";
-import U, {UnitData} from "../../core/U";
+import T, {UnitData} from "../../../T";
 import {cloneObject, uuid} from "../../../F";
-import Field from "./Field";
+import Node from "./Node";
 import MindfieldsDomHelper from "./FieldDomHelper";
 import Pubsub from "../../../io/pubsub/Pubsub";
 import {FX_RUNTIME_OPEN_TAB} from "../../../io/pubsub/PubsubConstants";
 import HttpClient from "../../../io/http/HttpClient";
 
-export default class Fields {
+export default class Nodes {
 
-    unit: U;
-    rootMindField: Field;
+    t: T;
+    rootNode: Node;
 
     state: State;
     pubsub: Pubsub;
@@ -21,20 +21,19 @@ export default class Fields {
     }
 
     getUnit() {
-        return this.unit;
+        return this.t;
     }
 
-    async init(app: U) {
+    async init(app: T) {
 
-        this.unit = new U({class: ['mindFields']});
-        app.insert(this.unit);
+        this.t = new T({class: ['mindFields']});
+        app.insert(this.t);
 
-        const response = await (new HttpClient).get('/state');
-        const unitsData = response.data;
-        const rootMindField = new Field(new U({class: ['root'], units: unitsData, open: true}));
-        this.unit.insert(rootMindField.getUnit());
-        this.rootMindField = rootMindField;
-        this.rootMindField.getDataUnit().oEditMode();
+        const unitsData = (await (new HttpClient).get('/state')).data;
+        const rootNode = new Node(new T({class: ['root'], units: unitsData, open: true}));
+        this.t.insert(rootNode.getUnit());
+        this.rootNode = rootNode;
+        this.rootNode.getDataUnit().oEditMode();
 
         let allUnits = {};
         const accumulateUnits = (units) => {
@@ -45,7 +44,7 @@ export default class Fields {
         }
         accumulateUnits(unitsData);
 
-        const render = async (parentField: Field) => {
+        const render = async (parentField: Node) => {
 
             const subUnits = parentField.getDataUnit().getUnits();
             if (!Array.isArray(subUnits)) return;
@@ -61,8 +60,8 @@ export default class Fields {
                     unitData = {...targetUnitData, ...{id: unitData.id, linkId: unitData.linkId}};
                 }
 
-                const unit = new U(unitData);
-                const field = new Field(unit);
+                const unit = new T(unitData);
+                const field = new Node(unit);
                 field.setIdToDom(unit.getId());
 
                 // @ts-ignore
@@ -75,7 +74,7 @@ export default class Fields {
                 await render(field);
             }
         }
-        await render(rootMindField);
+        await render(rootNode);
     }
 
     async handleKeyDown(e) {
@@ -127,7 +126,8 @@ export default class Fields {
     async handleKeyUp(e) {
 
         if (!e.target.classList.contains('dataUnit')) return;
-        if (new Set(['Enter', 'Tab', 'Control', 'Meta']).has(e.key)) return;
+        const ignoreKeys = ['Enter', 'Tab', 'Control', 'Meta', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'];
+        if (new Set(ignoreKeys).has(e.key)) return;
 
         const fieldDOM = MindfieldsDomHelper.getFieldByDataUnit(e.target);
         const unit = this.state.getUnit(fieldDOM.id);
@@ -187,8 +187,8 @@ export default class Fields {
         delete newUnitData.units;
 
         //todo duplication code below
-        const newUnit = new U(newUnitData);
-        const newField = new Field(newUnit);
+        const newUnit = new T(newUnitData);
+        const newField = new Node(newUnit);
         newField.setIdToDom(newUnit.getId());
 
         if (fieldDOM.nextSibling) {
@@ -208,8 +208,8 @@ export default class Fields {
         newUnitData.id = uuid();
         newUnitData.linkId = fieldDOM.id;
 
-        const newUnit = new U(newUnitData);
-        const newField = new Field(newUnit);
+        const newUnit = new T(newUnitData);
+        const newField = new Node(newUnit);
         newField.setIdToDom(newUnit.getId());
 
         if (fieldDOM.nextSibling) {
@@ -236,10 +236,10 @@ export default class Fields {
             return data;
         }
 
-        return getIds(this.rootMindField.getFields().getDOM().children);
+        return getIds(this.rootNode.getFields().getDOM().children);
     }
 
-    async getById(id: string): Promise<U> {
+    async getById(id: string): Promise<T> {
         return this.state.getUnit(id);
     }
 

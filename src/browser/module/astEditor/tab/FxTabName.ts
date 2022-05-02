@@ -1,21 +1,21 @@
-import U from "../../../core/U";
+import T from "../../../../T";
 
 export default class FxTabName {
 
-    u: U;
+    u: T;
 
-    tabName: U;
-    closeBtn: U;
+    tabName: T;
+    closeBtn: T;
 
     contextUnitId: string;
 
-    constructor(txt: string, contextUnit: U) {
-        this.u = new U({class: ['tab']});
+    constructor(txt: string, contextUnit: T) {
+        this.u = new T({class: ['tab']});
 
-        this.tabName = new U({class: ['tabName'], txt});
+        this.tabName = new T({class: ['tabName'], txt});
         this.u.in(this.tabName);
 
-        this.closeBtn = new U({class: ['tabCloseBtn'], txt: 'x'});
+        this.closeBtn = new T({class: ['tabCloseBtn'], txt: 'x'});
         this.u.in(this.closeBtn);
 
         this.contextUnitId = contextUnit.getId();

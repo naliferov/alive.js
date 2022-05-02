@@ -1,4 +1,4 @@
-import U from "../../../core/U";
+import T from "../../../../T";
 import NewLine from "../tab/chunks/NewLine";
 import Name from "../tab/chunks/literal/Name";
 import If from "../tab/chunks/conditionAndBody/if/If";
@@ -13,7 +13,7 @@ import Pubsub from "../../../../io/pubsub/Pubsub";
 import {MINDFIELDS_INSERTING_CHUNK} from "../../../../io/pubsub/PubsubConstants";
 import ForConditionPart from "../tab/chunks/conditionAndBody/loop/ForConditionPart";
 import ForConditionPartInternal from "../tab/chunks/conditionAndBody/loop/ForConditionPartInternal";
-import Fields from "../../outliner/Fields";
+import Nodes from "../../graph/Nodes";
 import FxSerializer from "../FxSerializer";
 import Callable from "../tab/chunks/conditionAndBody/call/callable/Callable";
 import CallableConditionPart from "../tab/chunks/conditionAndBody/call/callable/ConditionPart";
@@ -41,12 +41,12 @@ export type fxSerialized = {
 
 export default class FxController {
 
-    unit: U;
+    unit: T;
     pubsub: Pubsub;
 
     contextUnit;
-    mindFields: Fields;
-    linesNumbers: U;
+    mindFields: Nodes;
+    linesNumbers: T;
 
     mainChunk: Main;
     marker: Marker;
@@ -54,20 +54,20 @@ export default class FxController {
     fxMutatorFactory: FxMutatorFactory;
 
     constructor(
-        context: U,
+        context: T,
         pubsub: Pubsub,
         fxSerializer: FxSerializer,
         fxMutatorFactory: FxMutatorFactory,
-        mindFields: Fields
+        mindFields: Nodes
     ) {
         this.pubsub = pubsub;
 
-        this.unit = new U({class: ['fxRuntimeController']});
+        this.unit = new T({class: ['fxRuntimeController']});
 
-        const markerMonitor = new U({class: ['markerMonitor'], txt: 'markerMonitor'});
+        const markerMonitor = new T({class: ['markerMonitor'], txt: 'markerMonitor'});
         this.unit.in(markerMonitor);
 
-        const chunkContainer = new U({class: ['chunksContainer']});
+        const chunkContainer = new T({class: ['chunksContainer']});
         this.unit.in(chunkContainer);
 
         this.mainChunk = new Main();
@@ -249,7 +249,7 @@ export default class FxController {
     syncLinesNumbers(count) {
         this.linesNumbers.clear();
         for (let i = 0; i < count; i++) {
-            this.linesNumbers.insert(new U({class: ['lineNumber'], txt: String(i + 1)}));
+            this.linesNumbers.insert(new T({class: ['lineNumber'], txt: String(i + 1)}));
         }
     }
 

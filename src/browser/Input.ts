@@ -1,4 +1,4 @@
-export default class InputAction {
+export default class Input {
 
     win: Window;
 

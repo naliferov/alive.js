@@ -1,11 +1,11 @@
-import U from "../../U";
+import T from "../../../../T";
 
 export default class Text {
 
-    unit: U;
+    unit: T;
 
     constructor(txt: string) {
-        this.unit = new U({text: txt});
+        this.unit = new T({text: txt});
     }
 
     getDOM() {

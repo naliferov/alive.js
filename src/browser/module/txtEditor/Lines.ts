@@ -1,40 +1,40 @@
-import U from "../../core/U";
+import T from "../../../T";
 import Cursor from "./Cursor";
-import List from "../../core/List";
-import State from "../outliner/state/State";
+import List from "../../List";
+import State from "../graph/state/State";
 import Selector from "./Selector";
 
 export default class Lines {
 
-    unit: U;
+    unit: T;
 
     cursor: Cursor;
     selector: Selector;
 
     linesList: List;
 
-    linesNumbers: U;
-    linesView: U;
+    linesNumbers: T;
+    linesView: T;
 
     contextUnit;
     state: State;
 
-    constructor(contextUnit: U) {
+    constructor(contextUnit: T) {
 
-        this.unit = new U({class: ['lines']});
+        this.unit = new T({class: ['lines']});
         this.linesList = new List();
 
-        this.linesNumbers = new U({class: ['lineNumbers']});
+        this.linesNumbers = new T({class: ['lineNumbers']});
         //this.unit.insert(this.linesNumbers);
 
-        this.linesView = new U({class: ['lines']});
+        this.linesView = new T({class: ['lines']});
         this.unit.insert(this.linesView);
 
         const jsArray = contextUnit.getJs().split('\n');
         this.buildLinesNumbers(jsArray, this.linesNumbers);
 
         for (let i = 0; i < jsArray.length; i++) {
-            const codeLine = new U({tagName: 'pre', class: ['line', 'noselect'], txt: jsArray[i]});
+            const codeLine = new T({tagName: 'pre', class: ['line', 'noselect'], txt: jsArray[i]});
             this.linesView.insert(codeLine);
             this.linesList.add(codeLine);
         }
@@ -69,10 +69,10 @@ export default class Lines {
 
     getUnit() { return this.unit; }
 
-    buildLinesNumbers(js: string[], linesNumbers: U) {
+    buildLinesNumbers(js: string[], linesNumbers: T) {
         linesNumbers.clear();
         for (let i = 0; i < js.length; i++) {
-            linesNumbers.insert(new U({class: ['lineNumber'], txt: String(i + 1)}));
+            linesNumbers.insert(new T({class: ['lineNumber'], txt: String(i + 1)}));
         }
     }
 
@@ -156,7 +156,7 @@ export default class Lines {
                 const {y} = cursor.getPos();
 
                 const oldLine = this.linesList.get(y);
-                const newLine = new U({tagName: 'pre', class: ['line'], txt: oldLine.getText()});
+                const newLine = new T({tagName: 'pre', class: ['line'], txt: oldLine.getText()});
 
                 this.linesView.insert(newLine, y);
                 this.linesList.add(newLine, y);
@@ -181,7 +181,7 @@ export default class Lines {
     syncLinesNumbers(count) {
         this.linesNumbers.clear();
         for (let i = 0; i < count; i++) {
-            this.linesNumbers.insert(new U({class: ['lineNumber'], txt: String(i + 1)}));
+            this.linesNumbers.insert(new T({class: ['lineNumber'], txt: String(i + 1)}));
         }
     }
 
@@ -243,7 +243,7 @@ export default class Lines {
         const rightPart = lineArr.splice(x, lineArr.length);
         line.setText(leftPart.join(''));
 
-        const codeLine = new U({tagName: 'pre', class: ['line'], txt: rightPart.join('')});
+        const codeLine = new T({tagName: 'pre', class: ['line'], txt: rightPart.join('')});
 
         this.linesView.insert(codeLine, y + 1);
         this.linesList.add(codeLine, y + 1);

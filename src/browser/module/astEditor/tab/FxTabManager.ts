@@ -1,31 +1,31 @@
-import U from "../../../core/U";
+import T from "../../../../T";
 import Pubsub from "../../../../io/pubsub/Pubsub";
-import Fields from "../../outliner/Fields";
+import Nodes from "../../graph/Nodes";
 import FxSerializer from "../FxSerializer";
-import LocalState from "../../outliner/state/Localstate";
+import LocalState from "../../graph/state/Localstate";
 import FxTab from "./FxTab";
 
 export default class FxTabManager {
 
-    u: U;
-    tabsNamesBlock: U;
-    tabsContentBlock: U;
+    u: T;
+    tabsNamesBlock: T;
+    tabsContentBlock: T;
 
     activeTab: FxTab;
     tabs: Map<string, FxTab>; //key is contextUnitId
 
     localState: LocalState;
     pubsub: Pubsub;
-    mindFields: Fields;
+    mindFields: Nodes;
     fxSerializer: FxSerializer;
 
-    constructor(pubsub: Pubsub, mindFields: Fields, localState: LocalState) {
+    constructor(pubsub: Pubsub, mindFields: Nodes, localState: LocalState) {
 
-        this.u = new U({class: ['tabManager']});
+        this.u = new T({class: ['tabManager']});
 
-        this.tabsNamesBlock = new U({class: ['tabs']});
+        this.tabsNamesBlock = new T({class: ['tabs']});
         this.u.in(this.tabsNamesBlock);
-        this.tabsContentBlock = new U({class: ['tabsContent']});
+        this.tabsContentBlock = new T({class: ['tabsContent']});
         this.u.in(this.tabsContentBlock);
 
         this.pubsub = pubsub;
@@ -34,11 +34,11 @@ export default class FxTabManager {
         this.tabs = new Map<string, FxTab>();
         this.fxSerializer = new FxSerializer();
 
-        //todo возможно это должно быть в outliner, а outliner должен уметь сохранять некоторые
+        //todo возможно это должно быть в graph, а graph должен уметь сохранять некоторые
         this.localState = localState;
     }
 
-    openTab(unit: U) {
+    openTab(unit: T) {
 
         let openedTab = this.tabs.get(unit.getId());
         if (openedTab && this.activeTab.getContextUnitId() === openedTab.getContextUnitId()) {
@@ -69,7 +69,7 @@ export default class FxTabManager {
         this.localState.openTab(this.activeTab.getContextUnitId());
     }
 
-    getTabByContextUnit(unit: U): FxTab|null {
+    getTabByContextUnit(unit: T): FxTab|null {
         return this.tabs.get(unit.getId());
     }
 

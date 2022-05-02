@@ -18,7 +18,7 @@ export const cmdList = {
     'webpack': async (cliArgs, {logger}) => {
         await (new OsExec('webpack', [], '', logger)).run();
     },
-    'webServer': async (cliArgs, {logger, fs, stateManager, appDir, mongoManager}) => {
-        await new WebServerCmd().run(cliArgs.port ?? '8080', fs, logger, stateManager, appDir, mongoManager)
+    'webServer': async (cliArgs, {logger, fs, appDir, mongoManager}) => {
+        await new WebServerCmd().run(cliArgs.port ?? '8080', fs, logger, appDir, mongoManager)
     },
 }

@@ -1,13 +1,13 @@
-import U from "../../U";
+import T from "../../../../T";
 import Pubsub from "../../../../io/pubsub/Pubsub";
 
 export default class File {
 
-    unit: U;
+    unit: T;
 
     constructor(text: string) {
 
-        this.unit = new U({
+        this.unit = new T({
             text: text
         });
     }

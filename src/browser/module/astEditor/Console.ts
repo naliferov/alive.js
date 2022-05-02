@@ -1,17 +1,17 @@
-import U from "../../core/U";
+import T from "../../../T";
 
 export default class Console {
 
-    unit: U;
+    unit: T;
 
     constructor(limit: number) {
-        this.unit = new U({class: ['console']});
-        const header = new U({txt: '[console]'});
+        this.unit = new T({class: ['console']});
+        const header = new T({txt: '[console]'});
         this.unit.insert(header);
     }
 
     log(str: string) {
-        this.unit.insert(new U({txt: str}));
+        this.unit.insert(new T({txt: str}));
     }
 
     getUnit() {
