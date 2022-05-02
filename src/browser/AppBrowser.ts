@@ -41,13 +41,14 @@ class AppBrowser {
 
         sign.in(new U({txt: 'Password'}));
         const password = new U({tagName: 'input', class: ['emailInput']});
+        password.setAttr('type', 'password');
         sign.in(password);
 
         sign.inBr().inBr();
         const btn = new U({tagName: 'button', txt: formName})
         sign.in(btn);
 
-        btn.on('click', async () => {
+        const submit = async () => {
             const data = {email: email.getValue(), password: password.getValue()};
             const res = await new HttpClient().post(document.location.pathname, data);
             // @ts-ignore
@@ -56,7 +57,12 @@ class AppBrowser {
                 return;
             }
             document.location.reload();
-        });
+        };
+        const inputProcess = async (e) => e.key === 'Enter' ? submit() : null;
+
+        email.on('keydown', (e) => inputProcess(e));
+        password.on('keydown', (e) => inputProcess(e));
+        btn.on('click', async () => submit());
 
         if (isSignIn) {
             sign.inBr().inBr();

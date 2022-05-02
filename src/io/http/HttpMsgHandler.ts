@@ -92,9 +92,7 @@ export default class HttpMsgHandler {
                 const authKey = crypto.randomBytes(32).toString('hex');
                 const userId = await this.usersModel.insert(email, password, authKey);
                 await this.nodesModel.insert(userId, []);
-
                 this.authorize(res, authKey);
-                res.send();
             },
             //'GET:/sign/out': async () => {},
             'GET:/process/start': async () => {
