@@ -26,7 +26,7 @@ export default class Nodes {
         this.t = new T({class: ['mindFields']});
         app.insert(this.t);
 
-        const unitsData = (await (new HttpClient).get('/state')).data;
+        const unitsData = (await (new HttpClient).get('/nodes')).data;
         const rootNode = new Node(new T({class: ['root'], units: unitsData, open: true}));
         this.t.insert(rootNode.getUnit());
         this.rootNode = rootNode;

@@ -6,7 +6,7 @@
   "version": "0.0.9",
   "description": "",
   "author": "Nick Aliferov",
-  "license": "ISC",
+  "license": "MIT",
   "main": "",
   "scripts": {
     "build": "",
@@ -20,12 +20,7 @@
     "esbuild": "^0.11.9",
     "express": "*",
     "mongodb": "^4.5.0",
-    "sass": "^1.32.11",
-    "sass-loader": "^11.0.1",
-    "urlcat": "^2.0.4",
-    "uuid": "^3.4.0",
-    "webpack": "^5.35.0",
-    "ws": "^8.2.3"
+    "webpack": "^5.35.0"
   },
   "devDependencies": {
     "@types/react-css-modules": "^4.6.3",

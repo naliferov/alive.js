@@ -66,7 +66,7 @@ export default class State {
     }
 
     async save(data) {
-        await new HttpClient().post('/state', {data});
+        await new HttpClient().post('/nodes', {data});
     }
 
     getUnit(id: string) {
