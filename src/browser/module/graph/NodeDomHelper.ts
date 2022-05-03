@@ -1,4 +1,4 @@
-export default class FieldDomHelper {
+export default class NodeDomHelper {
 
     static getFieldByDataUnit(dataUnit: HTMLElement): HTMLElement|undefined {
         // @ts-ignore

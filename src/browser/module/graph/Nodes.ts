@@ -1,8 +1,8 @@
 import State from "./state/State";
-import T, {UnitData} from "../../../T";
+import T, {TDataSerialized, UnitData} from "../../../T";
 import {cloneObject, uuid} from "../../../F";
 import Node from "./Node";
-import MindfieldsDomHelper from "./FieldDomHelper";
+import MindfieldsDomHelper from "./NodeDomHelper";
 import Pubsub from "../../../io/pubsub/Pubsub";
 import {FX_RUNTIME_OPEN_TAB} from "../../../io/pubsub/PubsubConstants";
 import HttpClient from "../../../io/http/HttpClient";
@@ -159,12 +159,9 @@ export default class Nodes {
     async handleClick(e) {
 
         if (e.target.classList.contains('dataUnit')) {
-
             const fieldDOM = MindfieldsDomHelper.getFieldByDataUnit(e.target);
             const unit = this.state.getUnit(fieldDOM.id);
-            if (unit.getData().fx) {
-                this.pubsub.pub(FX_RUNTIME_OPEN_TAB, {unit});
-            }
+            this.pubsub.pub(FX_RUNTIME_OPEN_TAB, {unit});
             return;
         }
 
@@ -246,26 +243,30 @@ export default class Nodes {
             for (let unitId of unitsIds) {
 
                 const unitData = this.state.getUnit(unitId.id).getData();
-                let dItem: {
-                    id: string,
-                    linkId?: string,
-                    units?: any[],
-                    txt?: string,
-                    fx?: {}
-                    open?: boolean,
-                } = {id: unitData.id};
+                let tData: TDataSerialized = {
+                    id: unitData.id,
+                    fx: {
+                        chunks: [],
+                        markedChunksIds: []
+                    }
+                };
 
                 if (unitData.linkId) {
-                    dItem.linkId = unitData.linkId;
+                    tData.linkId = unitData.linkId;
                 } else {
                     const subIds = getUnitsData(unitId.subIds);
-                    if (subIds.length > 0) dItem.units = subIds;
-                    if (unitData.txt) dItem.txt = unitData.txt;
-                    if (unitData.open) dItem.open = true;
-                    if (unitData.fx) dItem.fx = unitData.fx;
+                    if (subIds.length > 0) tData.units = subIds;
+                    if (unitData.txt) tData.txt = unitData.txt;
+                    if (unitData.open) tData.open = true;
+
+                    // @ts-ignore
+                    if (unitData.fx && unitData.fx.chunks) {
+                        // @ts-ignore
+                        tData.fx = unitData.fx;
+                    }
                 }
 
-                data.push(dItem);
+                data.push(tData);
             }
 
             return data;

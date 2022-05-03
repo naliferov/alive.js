@@ -1,5 +1,9 @@
-export interface UnitData {
+import {fxSerialized} from "./browser/module/astEditor/control/FxController";
+
+export type UnitData = {
     id?: string
+    tName?: string
+
     class?: string[]
     name?: string
 
@@ -8,11 +12,21 @@ export interface UnitData {
 
     txt?: string
     value?: string|number
-    fx?: {}
+    fx?: []
 
     open?: boolean
     units?: []
     linkId?: string
+}
+
+export type TDataSerialized = {
+    id: string,
+    txt?: string,
+    fx: fxSerialized,
+
+    open?: boolean,
+    units?: any[],
+    linkId?: string,
 }
 
 export default class T {

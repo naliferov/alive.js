@@ -72,6 +72,7 @@ export default class FxController {
 
         this.mainChunk = new Main();
         chunkContainer.in(this.mainChunk.getUnit());
+
         this.fxSerializer = fxSerializer;
         this.fxMutatorFactory = fxMutatorFactory;
 
@@ -82,6 +83,8 @@ export default class FxController {
 
         const fxSerialized: fxSerialized = this.contextUnit.getDataField('fx');
         if (!fxSerialized) console.log(`fxSerialized not found in unit ${this.contextUnit.getId()}`);
+
+        console.log(fxSerialized);
 
         this.fxSerializer.deserialize(this.mainChunk, fxSerialized.chunks);
     }
