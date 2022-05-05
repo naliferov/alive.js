@@ -1,11 +1,11 @@
-import BaseChunk from "../tab/chunks/BaseChunk";
-import Inserter from "../tab/chunks/mutate/Inserter";
+import BaseNode from "../tab/nodes/BaseNode";
+import Inserter from "../tab/nodes/mutate/Inserter";
 import {FX_RUNTIME_GET_FOCUS} from "../../../../io/pubsub/PubsubConstants";
-import ForConditionPartInternal from "../tab/chunks/conditionAndBody/loop/ForConditionPartInternal";
-import Main from "../tab/chunks/Main";
+import ForConditionPartInternal from "../tab/nodes/conditionAndBody/loop/ForConditionPartInternal";
+import Main from "../tab/nodes/Main";
 import FxController from "./FxController";
 import Pubsub from "../../../../io/pubsub/Pubsub";
-import ArrayItemParts from "../tab/chunks/literal/array/ArrayItemParts";
+import ArrayItemParts from "../tab/nodes/literal/array/ArrayItemParts";
 
 export default class FxMutatorFactory {
 
@@ -15,7 +15,7 @@ export default class FxMutatorFactory {
         this.pubsub = pubsub;
     }
 
-    createMutator(fxController: FxController, contextChunk?: BaseChunk) {
+    createMutator(fxController: FxController, contextChunk?: BaseNode) {
 
         const inserter = new Inserter();
 
@@ -27,7 +27,7 @@ export default class FxMutatorFactory {
 
         //todo make one method instead setInsertHandler and setNewChunkHandler
         //todo this.pubsub.pub(FX_RUNTIME_GET_FOCUS) doesn't make sense because method mark starts listen on keydown events
-        inserter.setInsertHandler(async (newChunk: BaseChunk, contextChunk?: BaseChunk) => {
+        inserter.setInsertHandler(async (newChunk: BaseNode, contextChunk?: BaseNode) => {
 
             inserter.getParentChunk().insertBefore(newChunk, inserter);
             fxController.removeChunk(inserter);
@@ -55,7 +55,7 @@ export default class FxMutatorFactory {
             fxController.marker.unmarkAll().mark(newInserter);
             await fxController.save();
         });
-        inserter.setExitHandler((contextChunk: BaseChunk) => {
+        inserter.setExitHandler((contextChunk: BaseNode) => {
 
             if (contextChunk) contextChunk.show();
 

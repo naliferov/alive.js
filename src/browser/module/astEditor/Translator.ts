@@ -1,4 +1,4 @@
-import Main from "./tab/chunks/Main";
+import Main from "./tab/nodes/Main";
 
 export default class Translator {
 

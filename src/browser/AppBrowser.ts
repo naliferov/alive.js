@@ -7,10 +7,10 @@ import Input from "./Input";
 import {
     FX_RUNTIME_GET_FOCUS, FX_RUNTIME_OPEN_TAB,
     MINDFIELDS_GET_FOCUS,
-    MINDFIELDS_INSERTING_CHUNK
+    EDITING_AST_NODE
 } from "../io/pubsub/PubsubConstants";
 import FxTabManager from "./module/astEditor/tab/FxTabManager";
-import BaseChunk from "./module/astEditor/tab/chunks/BaseChunk";
+import BaseNode from "./module/astEditor/tab/nodes/BaseNode";
 import LocalState from "./module/graph/state/Localstate";
 import HttpClient from "../io/http/HttpClient";
 
@@ -77,7 +77,7 @@ class AppBrowser {
         app.in(pageFx);
 
         // @ts-ignore
-        window.chunkPool = new Map<string, BaseChunk>();
+        window.chunkPool = new Map<string, BaseNode>();
         const state = new State();
         const pubsub = new Pubsub();
         const mindFields = new Nodes(state, pubsub);
@@ -99,7 +99,7 @@ class AppBrowser {
         pubsub.sub(FX_RUNTIME_GET_FOCUS, () => fxRuntimeFocus());
         pubsub.sub(FX_RUNTIME_OPEN_TAB, ({unit}) => fxRuntime.openTab(unit));
         pubsub.sub(MINDFIELDS_GET_FOCUS, () => mindFieldsFocus());
-        pubsub.sub(MINDFIELDS_INSERTING_CHUNK, () => inputAction.disableHandlers());
+        pubsub.sub(EDITING_AST_NODE, () => inputAction.disableHandlers());
 
         fxRuntime.onClick(() => pubsub.pub(FX_RUNTIME_GET_FOCUS));
         mindFields.getUnit().on('click', () => pubsub.pub(MINDFIELDS_GET_FOCUS));

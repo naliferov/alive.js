@@ -1,5 +1,5 @@
 import List from "../../List";
-import BaseChunk from "./tab/chunks/BaseChunk";
+import BaseNode from "./tab/nodes/BaseNode";
 import T from "../../../T";
 
 export default class Marker {
@@ -19,13 +19,13 @@ export default class Marker {
         return ids;
     }
 
-    mark(chunk: BaseChunk) {
+    mark(chunk: BaseNode) {
         chunk.mark();
         this.markedChunks.add(chunk);
         this.monitor.setTxt(chunk.getName());
     }
 
-    unmark(chunk: BaseChunk) {
+    unmark(chunk: BaseNode) {
         chunk.unmark();
         //todo тут удаление происходит в зависимости от дирекшена
         //todo также для точного удаления можно взять индекс по порядку dom.

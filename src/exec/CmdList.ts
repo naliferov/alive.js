@@ -28,7 +28,8 @@ export const cmdList = {
         const httpMsgHandler = new HttpMsgHandler(fs, logger, appDir, mongoManager);
         const httpServer = new HttpServer(createServer, express, httpMsgHandler);
 
-        httpServer.getServer().listen(`${cliArgs.port}`);
-        await logger.info(`Webserver start on port: [${cliArgs.port}]`);
+        const port = cliArgs.port || '8080';
+        httpServer.getServer().listen(port);
+        await logger.info(`Webserver start on port: [${port}]`);
     },
 }
