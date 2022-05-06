@@ -7,13 +7,17 @@ export default class Op extends BaseNode {
     constructor(op: string) {
         super('', {className: 'op'});
 
-        const openSpace = new BaseNode(' ');
+        const openSpace = new BaseNode('.').visibilityHide();
         this.opType = new BaseNode(op, {className: 'opType'});
-        const closeSpace = new BaseNode(' ');
+        const closeSpace = new BaseNode('.').visibilityHide();
 
         super.insert(openSpace);
         super.insert(this.opType);
         super.insert(closeSpace);
+    }
+
+    iEditTxt() {
+        this.opType.iEditTxt();
     }
 
     serialize() {

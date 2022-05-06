@@ -6,7 +6,7 @@ import Nodes from "./module/graph/Nodes";
 import Input from "./Input";
 import {
     FX_RUNTIME_GET_FOCUS, FX_RUNTIME_OPEN_TAB,
-    MINDFIELDS_GET_FOCUS,
+    AST_FOCUS,
     EDITING_AST_NODE
 } from "../io/pubsub/PubsubConstants";
 import FxTabManager from "./module/astEditor/tab/FxTabManager";
@@ -80,36 +80,38 @@ class AppBrowser {
         window.chunkPool = new Map<string, BaseNode>();
         const state = new State();
         const pubsub = new Pubsub();
-        const mindFields = new Nodes(state, pubsub);
-        await mindFields.init(pageFx);
+        const nodes = new Nodes(state, pubsub);
+        await nodes.init(pageFx);
         const localState = new LocalState();
 
-        const fxTabManager = new FxTabManager(pubsub, mindFields, localState);
-        const fxRuntime = new FxRuntime(mindFields, pubsub, fxTabManager);
+        const fxTabManager = new FxTabManager(pubsub, nodes, localState);
+        const fxRuntime = new FxRuntime(nodes, pubsub, fxTabManager);
         await fxRuntime.init(pageFx);
-        const inputAction = new Input(window);
 
-        const mindFieldsFocus = () => {
-            inputAction.onKeyDown(async (e) => await mindFields.handleKeyDown(e));
-            inputAction.onKeyUp(async (e) => await mindFields.handleKeyUp(e));
-            inputAction.onClick(async (e) => await mindFields.handleClick(e));
-        }
-        const fxRuntimeFocus = () => inputAction.onKeyDown(async (e) => await fxRuntime.onKeyDown(e));
 
-        pubsub.sub(FX_RUNTIME_GET_FOCUS, () => fxRuntimeFocus());
+        const input = new Input(window);
+
+        pubsub.sub(FX_RUNTIME_GET_FOCUS, () => {
+            input.onKeyDown(async (e) => await fxRuntime.onKeyDown(e))
+        });
         pubsub.sub(FX_RUNTIME_OPEN_TAB, ({unit}) => fxRuntime.openTab(unit));
-        pubsub.sub(MINDFIELDS_GET_FOCUS, () => mindFieldsFocus());
-        pubsub.sub(EDITING_AST_NODE, () => inputAction.disableHandlers());
+        pubsub.sub(AST_FOCUS, () => {
+            input.onKeyDown(async (e) => await nodes.handleKeyDown(e));
+            input.onKeyUp(async (e) => await nodes.handleKeyUp(e));
+            input.onClick(async (e) => await nodes.handleClick(e));
+        });
+        pubsub.sub(EDITING_AST_NODE, () => input.disableHandlers());
+
 
         fxRuntime.onClick(() => pubsub.pub(FX_RUNTIME_GET_FOCUS));
-        mindFields.getUnit().on('click', () => pubsub.pub(MINDFIELDS_GET_FOCUS));
+        nodes.getUnit().on('click', () => pubsub.pub(AST_FOCUS));
 
         pubsub.pub(FX_RUNTIME_GET_FOCUS);
 
         const openedFx = localState.getOpenedTabs();
 
         for (let fxId in openedFx) {
-            const unit = await mindFields.getById(fxId);
+            const unit = await nodes.getById(fxId);
             if (!unit) {
                 localState.closeTab(fxId);
                 continue;
@@ -120,7 +122,7 @@ class AppBrowser {
 
         const activeTabId = localState.getActiveTabId();
         if (activeTabId) {
-            const unit = await mindFields.getById(activeTabId);
+            const unit = await nodes.getById(activeTabId);
             await fxRuntime.focusTab(unit);
         }
     }

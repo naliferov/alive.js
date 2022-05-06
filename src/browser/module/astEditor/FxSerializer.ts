@@ -138,7 +138,8 @@ export default class FxSerializer {
                 } else if (d.t === 'ObjectChunk') {
                     chunk.insert(deserializeObjectChunk(d));
                 } else {
-                    throw new Error(`No handler for chunk [${d.t}].`)
+                    console.error(`No handler for chunk [${d.t}].`);
+                    //throw new Error(`No handler for chunk [${d.t}].`)
                 }
             }
         }

@@ -7,8 +7,6 @@ export default class Name extends BaseNode {
     newChunk: BaseNode;
     nameChunk: BaseNode;
 
-    subNames: SubName[];
-
     constructor(name: string) {
         super('', {className: 'name'});
         this.letChunk = new BaseNode('let ', {className: 'keyword', hidden: true});
@@ -26,6 +24,15 @@ export default class Name extends BaseNode {
             name: this.nameChunk.getTxt(),
             mode: this.isLet() ? 'let' : this.isNew() ? 'new' : '',
         }
+    }
+
+    iEditTxt() {
+        this.nameChunk.iEditTxt();
+        this.nameChunk.focus();
+    }
+
+    oEditTxt() {
+        this.nameChunk.oEditTxt();
     }
 
     getTxt(): string {

@@ -4,7 +4,7 @@ import Pubsub from "../../../../io/pubsub/Pubsub";
 import FxSerializer from "../FxSerializer";
 import Nodes from "../../graph/Nodes";
 import FxController from "../control/FxController";
-import FxMutatorFactory from "../control/FxMutatorFactory";
+import AstNodeEditor from "../control/AstNodeEditor";
 
 export default class FxTab {
 
@@ -16,7 +16,7 @@ export default class FxTab {
     constructor(tabName, contextUnit: T, pubsub: Pubsub, fxSerializer: FxSerializer, mindfields: Nodes) {
         this.fxTabName = new FxTabName(tabName, contextUnit);
         this.fxController = new FxController(
-            contextUnit, pubsub, fxSerializer, new FxMutatorFactory(pubsub), mindfields
+            contextUnit, pubsub, fxSerializer, new AstNodeEditor(pubsub), mindfields
         );
 
         this.contextUnit = contextUnit;

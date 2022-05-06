@@ -271,6 +271,10 @@ export default class T {
         this.getDOM().classList.add('hidden');
     }
 
+    visibilityHide() {
+        this.getDOM().classList.add('visibilityHidden');
+    }
+
     removeFromDom() {
         this.dom.parentNode.removeChild(this.dom);
     }

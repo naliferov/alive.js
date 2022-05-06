@@ -1,5 +1,6 @@
 import T from "../../../../../T";
 import {uuid} from "../../../../../F";
+import Inserter from "./Inserter";
 
 export default class BaseNode {
 
@@ -48,7 +49,6 @@ export default class BaseNode {
         for (let i = 0; i < subChildren.length; i++) {
             // @ts-ignore
             const chunk = window.chunkPool.get(subChildren[i].id);
-
             if (chunk.constructor.name === 'Inserter') {
                 continue;
             }
@@ -133,11 +133,19 @@ export default class BaseNode {
     }
 
     iEditTxt() {
-        this.unit.toggleEdit();
+        this.unit.iEditMod();
+    }
+
+    oEditTxt() {
+        this.unit.oEditMode();
     }
 
     toggleEditTxt() {
         this.unit.toggleEdit();
+    }
+
+    focus() {
+        this.unit.focus();
     }
 
     toggleDisplay() { this.unit.toggleDisplay() }
@@ -163,6 +171,11 @@ export default class BaseNode {
 
     iKeyup(fn) {
         this.unit.on('keyup', fn);
+    }
+
+    visibilityHide() {
+        this.unit.visibilityHide();
+        return this;
     }
 
     /*oKeyUp(fn) {

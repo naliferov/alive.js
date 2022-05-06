@@ -52,31 +52,31 @@ export default class Cursor {
     }
 
     up() {
-        this.pauseBlinking();
+        //this.pauseBlinking();
         if ((this.y - 1) < 0) return;
         this.unit.getDOM().style['margin-top'] = (this.yStep * --this.y) + 'px';
-        this.startBlinking();
+        //this.startBlinking();
         if (this.changeCursorPosHandler) this.changeCursorPosHandler(this.getPos());
     }
 
     down() {
-        this.pauseBlinking();
+        //this.pauseBlinking();
         this.unit.getDOM().style['margin-top'] = (this.yStep * ++this.y) + 'px';
-        this.startBlinking();
+        //this.startBlinking();
         if (this.changeCursorPosHandler) this.changeCursorPosHandler(this.getPos());
     }
 
     left() {
-        this.pauseBlinking();
+        //this.pauseBlinking();
         this.unit.getDOM().style['margin-left'] = (this.xStep * --this.x) + 'px';
-        this.startBlinking();
+        //this.startBlinking();
         if (this.changeCursorPosHandler) this.changeCursorPosHandler(this.getPos());
     }
 
     right() {
-        this.pauseBlinking();
+        //this.pauseBlinking();
         this.unit.getDOM().style['margin-left'] = (this.xStep * ++this.x) + 'px';
-        this.startBlinking();
+        //this.startBlinking();
         if (this.changeCursorPosHandler) this.changeCursorPosHandler(this.getPos());
     }
 

@@ -22,7 +22,7 @@ import SurroundInternal from "../tab/nodes/surround/SurroundInternal";
 import ConditionAndBodyNode from "../tab/nodes/conditionAndBody/ConditionAndBodyNode";
 import ConditionNode from "../tab/nodes/conditionAndBody/ConditionNode";
 import BodyNode from "../tab/nodes/conditionAndBody/BodyNode";
-import FxMutatorFactory from "./FxMutatorFactory";
+import AstNodeEditor from "./AstNodeEditor";
 import ArrayChunk from "../tab/nodes/literal/array/ArrayChunk";
 import ArrayItem from "../tab/nodes/literal/array/ArrayItem";
 import ArrayItemParts from "../tab/nodes/literal/array/ArrayItemParts";
@@ -51,13 +51,13 @@ export default class FxController {
     mainChunk: Main;
     marker: Marker;
     fxSerializer: FxSerializer;
-    fxMutatorFactory: FxMutatorFactory;
+    fxMutatorFactory: AstNodeEditor;
 
     constructor(
         context: T,
         pubsub: Pubsub,
         fxSerializer: FxSerializer,
-        fxMutatorFactory: FxMutatorFactory,
+        fxMutatorFactory: AstNodeEditor,
         mindFields: Nodes
     ) {
         this.pubsub = pubsub;
@@ -133,27 +133,16 @@ export default class FxController {
         }
         if (ctrl && code === 'KeyE') {
             e.preventDefault();
-
             if (this.marker.isEmpty()) return;
             if (this.marker.getLength() > 1) return;
+            this.fxMutatorFactory.editNode(this.marker.getFirst(), this);
+            //setTimeout(() => this.pubsub.pub(FX_RUNTIME_GET_FOCUS), 300);
 
-            const mutator = this.fxMutatorFactory.createMutator(this, this.marker.getFirst());
-            this.addChunkAfterMarked(mutator);
-            this.marker.unmarkAll().mark(mutator);
-
-            //todo string below don't make sense because method mark in inserter starts listen for events. need to fix this
-            this.pubsub.pub(EDITING_AST_NODE);
-
-            //implement method marked.enableInputProcessing and marked.onStopEditing to clarify
-            /*marked.onControlBack(() => {
-                setTimeout(() => this.pubsub.pub(FX_RUNTIME_GET_FOCUS), 300);
-                marked.toggleEditTxt();
-                this.save();
-            });*/
             return;
         }
         if (ctrl && code === 'KeyL') {
-            e.preventDefault(); if (this.marker.isEmpty()) return;
+            e.preventDefault();
+            if (this.marker.isEmpty()) return;
 
             const marked = this.marker.getFirst();
             if (marked instanceof Name) marked.switchKeyword();
@@ -324,7 +313,7 @@ export default class FxController {
     }
 
     switchToInsertingMode(chunk: BaseNode) {
-        const inserter = this.fxMutatorFactory.createMutator(this);
+        const inserter = this.fxMutatorFactory.createEditNode(this);
         chunk.insert(inserter);
         this.marker.mark(inserter);
         this.pubsub.pub(EDITING_AST_NODE);
@@ -332,7 +321,13 @@ export default class FxController {
 
     enterBtn(shift = false, ctrl = false) {
 
-        if (this.marker.isEmpty()) return;
+        if (this.marker.isEmpty()) {
+            const inserter = this.fxMutatorFactory.createEditNode(this);
+            this.mainChunk.insert(inserter);
+            this.marker.mark(inserter);
+            this.pubsub.pub(EDITING_AST_NODE);
+            return;
+        }
         if (this.marker.getLength() === 1) {
 
             const marked = this.marker.getFirst();
@@ -345,7 +340,7 @@ export default class FxController {
                 return;
             }
 
-            const inserter = this.fxMutatorFactory.createMutator(this);
+            const inserter = this.fxMutatorFactory.createEditNode(this);
 
             if (
                 marked instanceof ObjectKey ||
@@ -455,7 +450,13 @@ export default class FxController {
 
     moveLeft(isShift: boolean, isCtrl: boolean) {
 
-        if (this.marker.isEmpty()) return;
+        if (this.marker.isEmpty()) {
+            const inserter = this.fxMutatorFactory.createEditNode(this);
+            this.mainChunk.insert(inserter);
+            this.marker.mark(inserter);
+            this.pubsub.pub(EDITING_AST_NODE);
+            return;
+        }
         if (this.marker.getLength() === 1) {
 
             const marked = this.marker.getFirst();
@@ -529,7 +530,7 @@ export default class FxController {
 
                 const objectKey = objectKeyOrValue.getPrevChunk().getPrevChunk();
                 if (objectKey.isEmpty()) {
-                    const inserter = this.fxMutatorFactory.createMutator(this);
+                    const inserter = this.fxMutatorFactory.createEditNode(this);
                     objectKey.insert(inserter);
                     this.marker.unmarkAll().mark(inserter);
                     this.pubsub.pub(EDITING_AST_NODE);
@@ -553,7 +554,7 @@ export default class FxController {
         if (this.marker.isEmpty()) {
             const chunk = this.mainChunk.getFirstChunk();
             if (!chunk) {
-                const inserter = this.fxMutatorFactory.createMutator(this);
+                const inserter = this.fxMutatorFactory.createEditNode(this);
                 this.mainChunk.insert(inserter);
                 this.marker.mark(inserter);
                 this.pubsub.pub(EDITING_AST_NODE);
@@ -579,7 +580,7 @@ export default class FxController {
                     const ifChunk = parent.getParentChunk();
 
                     if (ifChunk.isBodyEmpty()) {
-                        const inserter = this.fxMutatorFactory.createMutator(this);
+                        const inserter = this.fxMutatorFactory.createEditNode(this);
                         ifChunk.getBody().insert(inserter);
                         this.marker.mark(inserter);
                         this.pubsub.pub(EDITING_AST_NODE);
@@ -598,7 +599,7 @@ export default class FxController {
 
                     if (forChunk.isBodyEmpty()) {
                         this.pubsub.pub(EDITING_AST_NODE);
-                        const inserter = this.fxMutatorFactory.createMutator(this);
+                        const inserter = this.fxMutatorFactory.createEditNode(this);
                         forChunk.getBody().insert(inserter);
                         this.marker.mark(inserter);
                     }
@@ -610,7 +611,7 @@ export default class FxController {
                     const forChunk = parent.getParentChunk().getParentChunk().getParentChunk();
                     if (forChunk.isBodyEmpty()) {
                         this.pubsub.pub(EDITING_AST_NODE);
-                        const inserter = this.fxMutatorFactory.createMutator(this);
+                        const inserter = this.fxMutatorFactory.createEditNode(this);
                         forChunk.getBody().insert(inserter);
                         this.marker.mark(inserter);
                     }
@@ -648,7 +649,7 @@ export default class FxController {
                     const newForConditionPart = new ForConditionPart();
                     forCondition.getParentChunk().insertInCondition(newForConditionPart);
 
-                    const inserter = this.fxMutatorFactory.createMutator(this);
+                    const inserter = this.fxMutatorFactory.createEditNode(this);
                     newForConditionPart.insert(inserter);
                     this.marker.unmarkAll().mark(inserter);
                     this.pubsub.pub(EDITING_AST_NODE);
@@ -706,7 +707,7 @@ export default class FxController {
 
                 const objectValue = objectKeyOrValue.getNextChunk().getNextChunk();
                 if (objectValue.isEmpty()) {
-                    const inserter = this.fxMutatorFactory.createMutator(this);
+                    const inserter = this.fxMutatorFactory.createEditNode(this);
                     objectValue.insert(inserter);
                     this.marker.unmarkAll().mark(inserter);
                     this.pubsub.pub(EDITING_AST_NODE);
@@ -783,7 +784,7 @@ export default class FxController {
         }
 
         const marked = this.marker.getFirst();
-        const inserter = this.fxMutatorFactory.createMutator(this);
+        const inserter = this.fxMutatorFactory.createEditNode(this);
 
         if (isCtrl && !isShift) {
 
