@@ -1,7 +1,7 @@
-import BaseNode from "../../BaseNode";
+import AstNode from "../../AstNode";
 import ForConditionPartInternal from "./ForConditionPartInternal";
 
-export default class ForConditionPart extends BaseNode {
+export default class ForConditionPart extends AstNode {
 
     internal: ForConditionPartInternal;
 
@@ -10,7 +10,7 @@ export default class ForConditionPart extends BaseNode {
 
         this.internal = new ForConditionPartInternal();
         super.insert(this.internal);
-        let closePart = new BaseNode('; ');
+        let closePart = new AstNode('; ');
         super.insert(closePart);
     }
 
@@ -29,7 +29,7 @@ export default class ForConditionPart extends BaseNode {
         return this.internal.getLastChunk();
     }
 
-    insert(chunk: BaseNode) {
+    insert(chunk: AstNode) {
         this.internal.insert(chunk);
     }
 }

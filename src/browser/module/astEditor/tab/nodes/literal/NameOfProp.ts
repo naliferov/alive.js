@@ -1,16 +1,16 @@
-import BaseNode from "../BaseNode";
+import AstNode from "../AstNode";
 
-export default class NameOfProp extends BaseNode {
+export default class NameOfProp extends AstNode {
 
-    nameChunk: BaseNode;
+    nameChunk: AstNode;
 
     constructor(name: string) {
         super();
 
-        const dotChunk = new BaseNode('.');
+        const dotChunk = new AstNode('.');
         this.insert(dotChunk);
 
-        this.nameChunk = new BaseNode(name, {className: 'propName'});
+        this.nameChunk = new AstNode(name, {className: 'propName'});
         this.insert(this.nameChunk);
     }
 

@@ -1,3 +1,3 @@
-import BaseNode from "../BaseNode";
+import AstNode from "../AstNode";
 
-export default class ConditionNode extends BaseNode {}
+export default class ConditionNode extends AstNode {}

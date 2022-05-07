@@ -1,15 +1,15 @@
-import BaseNode from "./BaseNode";
+import AstNode from "./AstNode";
 
-export default class Op extends BaseNode {
+export default class Op extends AstNode {
 
-    opType: BaseNode;
+    opType: AstNode;
 
     constructor(op: string) {
         super('', {className: 'op'});
 
-        const openSpace = new BaseNode('.').visibilityHide();
-        this.opType = new BaseNode(op, {className: 'opType'});
-        const closeSpace = new BaseNode('.').visibilityHide();
+        const openSpace = new AstNode('.').visibilityHide();
+        this.opType = new AstNode(op, {className: 'opType'});
+        const closeSpace = new AstNode('.').visibilityHide();
 
         super.insert(openSpace);
         super.insert(this.opType);

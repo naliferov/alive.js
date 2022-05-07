@@ -1,6 +1,6 @@
-# f(x)
+# fx.js
 
-Futuristic code editor for javascript.
+AST-editor for javascript* and env for javascript execution.
 
 ## How to run this project?
 

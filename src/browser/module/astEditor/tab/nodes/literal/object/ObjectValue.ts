@@ -1,9 +1,9 @@
-import BaseNode from "../../BaseNode";
+import AstNode from "../../AstNode";
 import ObjectItemParts from "./ObjectItemParts";
 
-export default class ObjectValue extends BaseNode {
+export default class ObjectValue extends AstNode {
 
-    itemParts: BaseNode;
+    itemParts: AstNode;
 
     constructor() {
         super('', {className: 'objectValue'});
@@ -14,7 +14,7 @@ export default class ObjectValue extends BaseNode {
         return this.itemParts.isEmpty();
     }
 
-    getFirstChunk(): BaseNode {
+    getFirstChunk(): AstNode {
         return this.itemParts.getFirstChunk();
     }
 
@@ -25,7 +25,7 @@ export default class ObjectValue extends BaseNode {
         }
     }
 
-    insert(chunk: BaseNode) {
+    insert(chunk: AstNode) {
         this.itemParts.insert(chunk);
     }
 }

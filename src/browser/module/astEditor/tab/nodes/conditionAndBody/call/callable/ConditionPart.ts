@@ -1,7 +1,7 @@
-import BaseNode from "../../../BaseNode";
+import AstNode from "../../../AstNode";
 import CallableConditionPartInternal from "./ConditionPartInternal";
 
-export default class CallableConditionPart extends BaseNode {
+export default class CallableConditionPart extends AstNode {
 
     internal: CallableConditionPartInternal;
 
@@ -10,7 +10,7 @@ export default class CallableConditionPart extends BaseNode {
 
         this.internal = new CallableConditionPartInternal;
         super.insert(this.internal);
-        let closePart = new BaseNode(', ');
+        let closePart = new AstNode(', ');
         super.insert(closePart);
     }
 
@@ -23,5 +23,5 @@ export default class CallableConditionPart extends BaseNode {
     }
 
     getLastChunk() { return this.internal.getLastChunk(); }
-    insert(chunk: BaseNode) { this.internal.insert(chunk); }
+    insert(chunk: AstNode) { this.internal.insert(chunk); }
 }

@@ -1,19 +1,19 @@
-import BaseNode from "../BaseNode";
+import AstNode from "../AstNode";
 import T from "../../../../../../T";
 import {subst} from "urlcat";
 
-export default class NameOfDynProp extends BaseNode {
+export default class NameOfDynProp extends AstNode {
 
     constructor(name: string) {
         super();
 
-        const openBracket = new BaseNode('[');
+        const openBracket = new AstNode('[');
         this.insert(openBracket);
 
-        const nameChunk = new BaseNode(`'${name}'`);
+        const nameChunk = new AstNode(`'${name}'`);
         this.insert(nameChunk);
 
-        const closeBracket = new BaseNode(']');
+        const closeBracket = new AstNode(']');
         this.insert(closeBracket);
     }
 }

@@ -1,7 +1,7 @@
-import BaseNode from "../../BaseNode";
+import AstNode from "../../AstNode";
 import ObjectItem from "./ObjectItem";
 
-export default class ObjectBody extends BaseNode {
+export default class ObjectBody extends AstNode {
 
     constructor() { super('', {className: 'objectBody'}); }
 

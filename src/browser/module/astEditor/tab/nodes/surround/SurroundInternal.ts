@@ -1,6 +1,6 @@
-import BaseNode from "../BaseNode";
+import AstNode from "../AstNode";
 
-export default class SurroundInternal extends BaseNode {
+export default class SurroundInternal extends AstNode {
     constructor() {
         super('', {className: 'surroundInternal'});
     }

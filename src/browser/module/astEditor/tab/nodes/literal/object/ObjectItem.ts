@@ -1,8 +1,8 @@
-import BaseNode from "../../BaseNode";
+import AstNode from "../../AstNode";
 import ObjectKey from "./ObjectKey";
 import ObjectValue from "./ObjectValue";
 
-export default class ObjectItem extends BaseNode {
+export default class ObjectItem extends AstNode {
 
     k: ObjectKey
     v: ObjectValue
@@ -10,9 +10,9 @@ export default class ObjectItem extends BaseNode {
     constructor() {
         super('', {className: 'objectItem'});
         this.k = new ObjectKey; super.insert(this.k);
-        super.insert(new BaseNode(': ', {className: 'kvSeparator'}));
+        super.insert(new AstNode(': ', {className: 'kvSeparator'}));
         this.v = new ObjectValue; super.insert(this.v);
-        super.insert(new BaseNode(', ', {className: 'comma'}));
+        super.insert(new AstNode(', ', {className: 'comma'}));
     }
 
     getKey() {

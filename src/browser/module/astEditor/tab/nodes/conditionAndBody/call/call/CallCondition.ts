@@ -1,6 +1,6 @@
-import BaseNode from "../../../BaseNode";
+import AstNode from "../../../AstNode";
 
-export default class CallCondition extends BaseNode {
+export default class CallCondition extends AstNode {
 
     type: string;
 

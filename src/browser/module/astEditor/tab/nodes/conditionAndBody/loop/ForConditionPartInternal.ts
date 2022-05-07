@@ -1,6 +1,6 @@
-import BaseNode from "../../BaseNode";
+import AstNode from "../../AstNode";
 
-export default class ForConditionPartInternal extends BaseNode {
+export default class ForConditionPartInternal extends AstNode {
     constructor() {
         super('', {className: 'forConditionPartInternal'});
     }

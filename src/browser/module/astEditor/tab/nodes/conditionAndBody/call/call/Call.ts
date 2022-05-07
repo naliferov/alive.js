@@ -1,7 +1,7 @@
-import BaseNode from "../../../BaseNode";
+import AstNode from "../../../AstNode";
 import CallCondition from "./CallCondition";
 
-export default class Call extends BaseNode {
+export default class Call extends AstNode {
 
     type: string;
     args: CallCondition;
@@ -9,9 +9,9 @@ export default class Call extends BaseNode {
     constructor() {
         super('', {className: 'call'});
 
-        const openBracket = new BaseNode('(');
+        const openBracket = new AstNode('(');
         this.args = new CallCondition;
-        const closeBracket = new BaseNode(')');
+        const closeBracket = new AstNode(')');
 
         super.insert(openBracket);
         super.insert(this.args);
@@ -25,7 +25,7 @@ export default class Call extends BaseNode {
         };
     }
 
-    insert(chunk: BaseNode) {
+    insert(chunk: AstNode) {
         this.args.insert(chunk);
     }
 }

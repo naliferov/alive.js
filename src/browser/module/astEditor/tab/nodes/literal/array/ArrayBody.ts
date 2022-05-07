@@ -1,8 +1,8 @@
-import BaseNode from "../../BaseNode";
+import AstNode from "../../AstNode";
 import IfCondition from "../../conditionAndBody/if/IfCondition";
 import ArrayItem from "./ArrayItem";
 
-export default class ArrayBody extends BaseNode {
+export default class ArrayBody extends AstNode {
 
     constructor() { super('', {className: 'arrayBody'}); }
 

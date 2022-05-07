@@ -4,7 +4,7 @@ import {cloneObject, uuid} from "../../../F";
 import Node from "./Node";
 import MindfieldsDomHelper from "./NodeDomHelper";
 import Pubsub from "../../../io/pubsub/Pubsub";
-import {FX_RUNTIME_OPEN_TAB} from "../../../io/pubsub/PubsubConstants";
+import {OPEN_TAB} from "../../../io/pubsub/PubsubConstants";
 import HttpClient from "../../../io/http/HttpClient";
 
 export default class Nodes {
@@ -161,7 +161,7 @@ export default class Nodes {
         if (e.target.classList.contains('dataUnit')) {
             const fieldDOM = MindfieldsDomHelper.getFieldByDataUnit(e.target);
             const unit = this.state.getUnit(fieldDOM.id);
-            this.pubsub.pub(FX_RUNTIME_OPEN_TAB, {unit});
+            this.pubsub.pub(OPEN_TAB, {unit});
             return;
         }
 

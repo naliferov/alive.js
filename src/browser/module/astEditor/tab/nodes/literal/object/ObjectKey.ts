@@ -1,16 +1,16 @@
-import BaseNode from "../../BaseNode";
+import AstNode from "../../AstNode";
 import ObjectItemParts from "./ObjectItemParts";
 
-export default class ObjectKey extends BaseNode {
+export default class ObjectKey extends AstNode {
 
-    itemParts: BaseNode;
+    itemParts: AstNode;
 
     constructor() {
         super('', {className: 'objectKey'});
         this.itemParts = new ObjectItemParts; super.insert(this.itemParts);
     }
 
-    getLastChunk(): BaseNode {
+    getLastChunk(): AstNode {
         return this.itemParts.getLastChunk();
     }
 
@@ -25,7 +25,7 @@ export default class ObjectKey extends BaseNode {
         }
     }
 
-    insert(chunk: BaseNode) {
+    insert(chunk: AstNode) {
         this.itemParts.insert(chunk);
     }
 }

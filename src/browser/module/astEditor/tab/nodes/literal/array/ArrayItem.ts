@@ -1,19 +1,19 @@
-import BaseNode from "../../BaseNode";
+import AstNode from "../../AstNode";
 import ArrayItemParts from "./ArrayItemParts";
 import NewLine from "../../NewLine";
 
-export default class ArrayItem extends BaseNode {
+export default class ArrayItem extends AstNode {
 
-    itemParts: BaseNode;
-    newLineChunk: BaseNode|null
+    itemParts: AstNode;
+    newLineChunk: AstNode|null
 
     constructor() {
         super('', {className: 'arrayItem'});
         this.itemParts = new ArrayItemParts; super.insert(this.itemParts);
-        super.insert(new BaseNode(', ', {className: 'comma'}));
+        super.insert(new AstNode(', ', {className: 'comma'}));
     }
 
-    getItemParts(): BaseNode {
+    getItemParts(): AstNode {
         return this.itemParts;
     }
 
@@ -33,7 +33,7 @@ export default class ArrayItem extends BaseNode {
         }
     }
 
-    insert(chunk: BaseNode) {
+    insert(chunk: AstNode) {
         this.itemParts.insert(chunk);
     }
 }

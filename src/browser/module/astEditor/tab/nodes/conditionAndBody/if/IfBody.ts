@@ -1,4 +1,4 @@
-import BaseNode from "../../BaseNode";
+import AstNode from "../../AstNode";
 import NewLine from "../../NewLine";
 import Space from "../../Space";
 import BodyNode from "../BodyNode";

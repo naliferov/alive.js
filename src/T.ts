@@ -1,4 +1,4 @@
-import {fxSerialized} from "./browser/module/astEditor/control/FxController";
+import {fxSerialized} from "./browser/module/astEditor/control/AstController";
 
 export type UnitData = {
     id?: string

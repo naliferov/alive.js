@@ -1,18 +1,18 @@
-import BaseNode from "../BaseNode";
+import AstNode from "../AstNode";
 import SurroundInternal from "./SurroundInternal";
 
-export default class Surround extends BaseNode {
+export default class Surround extends AstNode {
 
     internal: SurroundInternal;
 
     constructor() {
         super('', {className: 'surround'});
-        let openBracket = new BaseNode('('); super.insert(openBracket);
+        let openBracket = new AstNode('('); super.insert(openBracket);
         this.internal = new SurroundInternal; super.insert(this.internal);
-        let closeBracket = new BaseNode(')');  super.insert(closeBracket);
+        let closeBracket = new AstNode(')');  super.insert(closeBracket);
     }
 
-    insert(chunk: BaseNode) {
+    insert(chunk: AstNode) {
         this.internal.insert(chunk);
     }
 

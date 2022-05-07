@@ -1,13 +1,13 @@
-import BaseNode from "../BaseNode";
+import AstNode from "../AstNode";
 
-export default class ConditionAndBodyNode extends BaseNode {
+export default class ConditionAndBodyNode extends AstNode {
 
     condition;
     body;
 
     getFirstChunk() { return this.condition; }
-    insertInCondition(chunk: BaseNode) { this.condition.insert(chunk); }
-    insertInBody(chunk: BaseNode) { this.body.insert(chunk); }
+    insertInCondition(chunk: AstNode) { this.condition.insert(chunk); }
+    insertInBody(chunk: AstNode) { this.body.insert(chunk); }
 
     isConditionEmpty() { return this.condition.getChildrenCount() < 1; }
     isBodyEmpty() { return this.body.getChildrenCount() < 1; }

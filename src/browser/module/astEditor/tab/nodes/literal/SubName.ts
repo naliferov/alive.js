@@ -1,17 +1,17 @@
-import BaseNode from "../BaseNode";
+import AstNode from "../AstNode";
 
-export default class SubName extends BaseNode {
+export default class SubName extends AstNode {
 
-    subName: BaseNode;
+    subName: AstNode;
 
     constructor(name: string) {
         super('', {className: 'name'});
-        //this.letChunk = new BaseNode('let ', {className: 'keyword', hidden: true});
-        //this.newChunk = new BaseNode('new ', {className: 'keyword', hidden: true});
+        //this.letChunk = new AstNode('let ', {className: 'keyword', hidden: true});
+        //this.newChunk = new AstNode('new ', {className: 'keyword', hidden: true});
         //super.insert(this.letChunk);
         //super.insert(this.newChunk);
 
-        //this.nameChunk = new BaseNode(name, {className: 'namePart'});
+        //this.nameChunk = new AstNode(name, {className: 'namePart'});
         //super.insert(this.nameChunk);
     }
 

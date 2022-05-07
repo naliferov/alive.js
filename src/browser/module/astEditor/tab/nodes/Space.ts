@@ -1,6 +1,6 @@
-import BaseNode from "./BaseNode";
+import AstNode from "./AstNode";
 
-export default class Space extends BaseNode {
+export default class Space extends AstNode {
 
     constructor() {
         super(' ', {className: 'space'});

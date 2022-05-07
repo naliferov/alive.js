@@ -5,14 +5,15 @@ import Pubsub from "../io/pubsub/Pubsub";
 import Nodes from "./module/graph/Nodes";
 import Input from "./Input";
 import {
-    FX_RUNTIME_GET_FOCUS, FX_RUNTIME_OPEN_TAB,
-    AST_FOCUS,
+    AST_CONTROL_MODE, OPEN_TAB,
+    NODES_CONTROL,
     EDITING_AST_NODE
 } from "../io/pubsub/PubsubConstants";
 import FxTabManager from "./module/astEditor/tab/FxTabManager";
-import BaseNode from "./module/astEditor/tab/nodes/BaseNode";
+import AstNode from "./module/astEditor/tab/nodes/AstNode";
 import LocalState from "./module/graph/state/Localstate";
 import HttpClient from "../io/http/HttpClient";
+import Node from "./module/graph/Node";
 
 class AppBrowser {
 
@@ -77,7 +78,10 @@ class AppBrowser {
         app.in(pageFx);
 
         // @ts-ignore
-        window.chunkPool = new Map<string, BaseNode>();
+        window.nodesPool = new Map<string, Node>();
+        // @ts-ignore //todo rename to astNodes
+        window.astNodesPool = new Map<string, AstNode>();
+
         const state = new State();
         const pubsub = new Pubsub();
         const nodes = new Nodes(state, pubsub);
@@ -91,11 +95,11 @@ class AppBrowser {
 
         const input = new Input(window);
 
-        pubsub.sub(FX_RUNTIME_GET_FOCUS, () => {
+        pubsub.sub(AST_CONTROL_MODE, () => {
             input.onKeyDown(async (e) => await fxRuntime.onKeyDown(e))
         });
-        pubsub.sub(FX_RUNTIME_OPEN_TAB, ({unit}) => fxRuntime.openTab(unit));
-        pubsub.sub(AST_FOCUS, () => {
+        pubsub.sub(OPEN_TAB, ({unit}) => fxRuntime.openTab(unit));
+        pubsub.sub(NODES_CONTROL, () => {
             input.onKeyDown(async (e) => await nodes.handleKeyDown(e));
             input.onKeyUp(async (e) => await nodes.handleKeyUp(e));
             input.onClick(async (e) => await nodes.handleClick(e));
@@ -103,10 +107,10 @@ class AppBrowser {
         pubsub.sub(EDITING_AST_NODE, () => input.disableHandlers());
 
 
-        fxRuntime.onClick(() => pubsub.pub(FX_RUNTIME_GET_FOCUS));
-        nodes.getUnit().on('click', () => pubsub.pub(AST_FOCUS));
+        fxRuntime.onClick(() => pubsub.pub(AST_CONTROL_MODE));
+        nodes.getUnit().on('click', () => pubsub.pub(NODES_CONTROL));
 
-        pubsub.pub(FX_RUNTIME_GET_FOCUS);
+        pubsub.pub(AST_CONTROL_MODE);
 
         const openedFx = localState.getOpenedTabs();
 

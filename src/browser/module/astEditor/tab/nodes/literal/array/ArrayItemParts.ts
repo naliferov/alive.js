@@ -1,6 +1,6 @@
-import BaseNode from "../../BaseNode";
+import AstNode from "../../AstNode";
 
-export default class ArrayItemParts extends BaseNode {
+export default class ArrayItemParts extends AstNode {
 
     constructor() {
         super('', {className: 'arrayItemParts'});

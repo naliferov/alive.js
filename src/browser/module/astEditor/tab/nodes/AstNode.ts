@@ -2,7 +2,7 @@ import T from "../../../../../T";
 import {uuid} from "../../../../../F";
 import Inserter from "./Inserter";
 
-export default class BaseNode {
+export default class AstNode {
 
     id: string
     unit: T;
@@ -25,7 +25,7 @@ export default class BaseNode {
         if (options.hidden) this.unit.hide();
 
         // @ts-ignore
-        window.chunkPool.set(this.id, this);
+        window.astNodesPool.set(this.id, this);
     }
 
     getId() {
@@ -48,7 +48,7 @@ export default class BaseNode {
 
         for (let i = 0; i < subChildren.length; i++) {
             // @ts-ignore
-            const chunk = window.chunkPool.get(subChildren[i].id);
+            const chunk = window.astNodesPool.get(subChildren[i].id);
             if (chunk.constructor.name === 'Inserter') {
                 continue;
             }
@@ -63,14 +63,14 @@ export default class BaseNode {
         return this.unit.getDOM().children.length === 0;
     }
 
-    insert(chunk: BaseNode) { this.unit.insert(chunk.getUnit()) }
-    insertBefore(chunk: BaseNode, beforeChunk: BaseNode) {
+    insert(chunk: AstNode) { this.unit.insert(chunk.getUnit()) }
+    insertBefore(chunk: AstNode, beforeChunk: AstNode) {
         this.unit.insertBefore(chunk.getUnit(), beforeChunk.getUnit());
     }
 
     getParentChunk() {
         // @ts-ignore
-        return window.chunkPool.get(this.unit.getDOM().parentNode.id);
+        return window.astNodesPool.get(this.unit.getDOM().parentNode.id);
     }
 
     getParentUnit() {
@@ -81,28 +81,28 @@ export default class BaseNode {
         const first = this.unit.getDOM().firstChild;
         if (!first) return;
         // @ts-ignore
-        return window.chunkPool.get(first.id);
+        return window.astNodesPool.get(first.id);
     }
 
     getLastChunk() {
         const last = this.unit.getDOM().lastChild
         if (!last) return;
         // @ts-ignore
-        return window.chunkPool.get(last.id);
+        return window.astNodesPool.get(last.id);
     }
 
     getNextChunk() {
         const next = this.unit.getDOM().nextSibling;
         if (!next) return;
         // @ts-ignore
-        return window.chunkPool.get(next.id);
+        return window.astNodesPool.get(next.id);
     }
 
     getPrevChunk() {
         const prev = this.unit.getDOM().previousSibling;
         if (!prev) return;
         // @ts-ignore
-        return window.chunkPool.get(prev.id);
+        return window.astNodesPool.get(prev.id);
     }
 
     getChildrenCount() {
@@ -169,8 +169,16 @@ export default class BaseNode {
         this.unit.on('keydown', fn);
     }
 
+    iKeydownDisable(fn) {
+        this.unit.off('keydown', fn);
+    }
+
     iKeyup(fn) {
         this.unit.on('keyup', fn);
+    }
+
+    iKeyupDisable(fn) {
+        this.unit.off('keyup', fn);
     }
 
     visibilityHide() {

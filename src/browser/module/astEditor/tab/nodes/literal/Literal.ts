@@ -1,6 +1,6 @@
-import BaseNode from "../BaseNode";
+import AstNode from "../AstNode";
 
-export default class Literal extends BaseNode {
+export default class Literal extends AstNode {
 
     type: string
 

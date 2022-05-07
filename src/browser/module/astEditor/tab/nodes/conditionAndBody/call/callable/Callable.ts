@@ -1,4 +1,4 @@
-import BaseNode from "../../../BaseNode";
+import AstNode from "../../../AstNode";
 import NewLine from "../../../NewLine";
 import Space from "../../../Space";
 import CallableCondition from "./CallableCondition";
@@ -13,18 +13,18 @@ export default class Callable extends ConditionAndBodyNode {
     constructor() {
         super('', {className: 'callable'});
 
-        let openBracket = new BaseNode('('); super.insert(openBracket);
+        let openBracket = new AstNode('('); super.insert(openBracket);
         this.condition = new CallableCondition(); super.insert(this.condition);
-        let closeBracket = new BaseNode(')');  super.insert(closeBracket);
+        let closeBracket = new AstNode(')');  super.insert(closeBracket);
 
         super.insert(new Space());
-        let arrow = new BaseNode('=>');  super.insert(arrow);
+        let arrow = new AstNode('=>');  super.insert(arrow);
         super.insert(new Space());
 
-        openBracket = new BaseNode('{'); super.insert(openBracket);
+        openBracket = new AstNode('{'); super.insert(openBracket);
         super.insert(new NewLine());
         this.body = new CallableBody(); super.insert(this.body);
         super.insert(new NewLine());
-        openBracket = new BaseNode('}'); super.insert(openBracket);
+        openBracket = new AstNode('}'); super.insert(openBracket);
     }
 }

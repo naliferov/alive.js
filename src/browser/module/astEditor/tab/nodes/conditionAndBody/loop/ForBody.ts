@@ -1,6 +1,6 @@
-import BaseNode from "../../BaseNode";
+import AstNode from "../../AstNode";
 
-export default class ForBody extends BaseNode {
+export default class ForBody extends AstNode {
     constructor() {
         super('', {className: ['forBody', 'shift']});
     }

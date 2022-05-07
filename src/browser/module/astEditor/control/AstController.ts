@@ -17,7 +17,7 @@ import Nodes from "../../graph/Nodes";
 import FxSerializer from "../FxSerializer";
 import Callable from "../tab/nodes/conditionAndBody/call/callable/Callable";
 import CallableConditionPart from "../tab/nodes/conditionAndBody/call/callable/ConditionPart";
-import BaseNode from "../tab/nodes/BaseNode";
+import AstNode from "../tab/nodes/AstNode";
 import SurroundInternal from "../tab/nodes/surround/SurroundInternal";
 import ConditionAndBodyNode from "../tab/nodes/conditionAndBody/ConditionAndBodyNode";
 import ConditionNode from "../tab/nodes/conditionAndBody/ConditionNode";
@@ -39,7 +39,7 @@ export type fxSerialized = {
     markedChunksIds: string[]
 };
 
-export default class FxController {
+export default class AstController {
 
     unit: T;
     pubsub: Pubsub;
@@ -136,7 +136,7 @@ export default class FxController {
             if (this.marker.isEmpty()) return;
             if (this.marker.getLength() > 1) return;
             this.fxMutatorFactory.editNode(this.marker.getFirst(), this);
-            //setTimeout(() => this.pubsub.pub(FX_RUNTIME_GET_FOCUS), 300);
+            //setTimeout(() => this.pubsub.pub(AST_CONTROL_MODE), 300);
 
             return;
         }
@@ -219,16 +219,16 @@ export default class FxController {
         return true;
     }
 
-    removeChunk(chunk: BaseNode) {
+    removeChunk(chunk: AstNode) {
         chunk.remove();
         if (chunk.getId()) {
             // @ts-ignore
-            window.chunkPool.delete(chunk.getId());
+            window.astNodesPool.delete(chunk.getId());
         }
     }
 
     unmarkAll() { return this.marker.unmarkAll(); }
-    mark(chunk: BaseNode) { this.marker.mark(chunk); }
+    mark(chunk: AstNode) { this.marker.mark(chunk); }
 
     //setCodeLinesMinHeight() { this.unit.getDOM().style.minHeight = '15em' }
     /*buildLinesNumbers(js: string[], linesNumbers: V) {
@@ -312,7 +312,7 @@ export default class FxController {
         }
     }
 
-    switchToInsertingMode(chunk: BaseNode) {
+    switchToInsertingMode(chunk: AstNode) {
         const inserter = this.fxMutatorFactory.createEditNode(this);
         chunk.insert(inserter);
         this.marker.mark(inserter);
@@ -521,7 +521,7 @@ export default class FxController {
         }
     }
 
-    moveLeftButNoNextChunk(marked: BaseNode, parent: BaseNode) {
+    moveLeftButNoNextChunk(marked: AstNode, parent: AstNode) {
 
         if (parent instanceof ObjectItemParts) {
 
@@ -698,7 +698,7 @@ export default class FxController {
         }
     }
 
-    moveRightButNoNextChunk(marked: BaseNode, parent: BaseNode) {
+    moveRightButNoNextChunk(marked: AstNode, parent: AstNode) {
 
         if (parent instanceof ObjectItemParts) {
 

@@ -1,4 +1,5 @@
-export const FX_RUNTIME_GET_FOCUS = 'fx_runtime_get_focus';
-export const FX_RUNTIME_OPEN_TAB = 'fx_runtime_open_tab';
-export const AST_FOCUS = 'AST_FOCUS';
+export const OPEN_TAB = 'open_tab';
+export const NODES_CONTROL = 'nodes_control';
+
+export const AST_CONTROL_MODE = 'ast_control_mode';
 export const EDITING_AST_NODE = 'editing_ast_node';

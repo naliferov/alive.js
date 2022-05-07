@@ -1,9 +1,9 @@
-import BaseNode from "../tab/nodes/BaseNode";
+import AstNode from "../tab/nodes/AstNode";
 import Inserter from "../tab/nodes/Inserter";
-import {EDITING_AST_NODE, FX_RUNTIME_GET_FOCUS} from "../../../../io/pubsub/PubsubConstants";
+import {EDITING_AST_NODE, AST_CONTROL_MODE} from "../../../../io/pubsub/PubsubConstants";
 import ForConditionPartInternal from "../tab/nodes/conditionAndBody/loop/ForConditionPartInternal";
 import Main from "../tab/nodes/Main";
-import FxController from "./FxController";
+import AstController from "./AstController";
 import Pubsub from "../../../../io/pubsub/Pubsub";
 import Name from "../tab/nodes/literal/Name";
 import Op from "../tab/nodes/Op";
@@ -16,31 +16,36 @@ import ObjectChunk from "../tab/nodes/literal/object/ObjectChunk";
 import Literal from "../tab/nodes/literal/Literal";
 import ArrayItemParts from "../tab/nodes/literal/array/ArrayItemParts";
 
+const MODE_INSERT = 'insert';
+const MODE_EDIT = 'edit';
+
 export default class AstNodeEditor {
 
     pubsub: Pubsub;
-    node: BaseNode;
+    node: AstNode;
     mode;
 
     constructor(pubsub: Pubsub) {
         this.pubsub = pubsub;
     }
 
-    createEditNode(fxController: FxController) {
+    createEditNode(fxController: AstController) {
         this.node = new Inserter();
+        this.mode = MODE_INSERT;
         this.processNodeInput(this.node, fxController);
         return this.node;
     }
 
-    editNode(node: BaseNode, fxController: FxController) {
+    editNode(node: AstNode, fxController: AstController) {
 
         if (node instanceof Name ||
             node instanceof Op
         ) {
-            this.mode = 'edit';
+            this.mode = MODE_EDIT;
             this.node = node;
             this.node.iEditTxt();
         } else {
+
             return;
         }
 
@@ -48,7 +53,7 @@ export default class AstNodeEditor {
         this.processNodeInput(node, fxController);
     }
 
-    async newChunkHandler(newChunk: BaseNode, insertAgain: boolean = false, fxController: FxController) {
+    async newChunkHandler(newChunk: AstNode, insertAgain: boolean = false, fxController: AstController) {
 
         const node = this.node;
 
@@ -67,155 +72,96 @@ export default class AstNodeEditor {
             fxController.unmarkAll().mark(newInserter);
         }
 
-        setTimeout(() => this.pubsub.pub(FX_RUNTIME_GET_FOCUS), 300);
+        setTimeout(() => this.pubsub.pub(AST_CONTROL_MODE), 300);
         await fxController.save();
     }
 
-    processNodeInput(node: BaseNode, fxController: FxController) {
-
-        //setTimeout(() => this.iEditTxt(), 150);
-
-        node.iKeydown((e) => {
-
-            if (e.key === 'Escape') {
-
-                const inserter = node;
-
-                const prevChunk = inserter.getPrevChunk();
-                const parentChunk = inserter.getParentChunk();
-
-                if (this.mode !== 'edit') {
-                    fxController.removeChunk(inserter);
-                }
-
-                return;
-
-                let chunk = prevChunk ? prevChunk: parentChunk;
-
-                if (parentChunk instanceof ForConditionPartInternal) {
-
-                    const forConditionPart = parentChunk.getParentChunk();
-                    const prevForConditionPart = forConditionPart.getPrevChunk();
-                    const nextForConditionPart = forConditionPart.getNextChunk();
-
-                    if (parentChunk.isEmpty()) {
-
-                        const For = forConditionPart.getParentChunk().getParentChunk();
-                        forConditionPart.remove();
-
-                        if (For.getCondition().isEmpty()) {
-                            chunk = For;
-                        } else {
-                            chunk = prevForConditionPart ? prevForConditionPart.getLastChunk() : nextForConditionPart.getFirstChunk();
-                        }
-
-                    } else if (prevChunk) {
-                        chunk = prevChunk;
-                    } else {
-                        chunk = forConditionPart;
-                    }
-
-                } else if (parentChunk instanceof ArrayItemParts) {
-
-                    const arrayItem = parentChunk.getParentChunk();
-                    const prevArrayItem = arrayItem.getPrevChunk();
-                    const nextArrayItem = arrayItem.getNextChunk();
-                    const arrayBody = arrayItem.getParentChunk();
-
-                    if (parentChunk.isEmpty()) {
-                        fxController.removeChunk(arrayItem);
-
-                        if (arrayBody.isEmpty()) {
-                            chunk = arrayBody.getParentChunk();
-                        } else {
-                            if (prevArrayItem) chunk = prevArrayItem;
-                            if (nextArrayItem) chunk = nextArrayItem;
-                        }
-
-                    } else if (prevChunk) {
-                        chunk = prevChunk;
-                    } else {
-                        chunk = arrayItem;
-                    }
-                }
-
-                fxController.unmarkAll();
-
-                if (chunk && !(chunk instanceof Main)) {
-                    fxController.mark(chunk);
-                }
-                setTimeout(() => this.pubsub.pub(FX_RUNTIME_GET_FOCUS), 300);
-
-            } else if (e.key === 'Enter') {
-
-                const prevNode = node.getPrevChunk();
-                const parentNode = node.getParentChunk();
-                fxController.removeChunk(node);
-
-                let markIt = prevNode ? prevNode : parentNode;
-
-                if (parentNode instanceof ForConditionPartInternal) {
-
-                    const forConditionPart = parentNode.getParentChunk();
-                    const prevForConditionPart = forConditionPart.getPrevChunk();
-                    const nextForConditionPart = forConditionPart.getNextChunk();
-
-                    if (parentNode.isEmpty()) {
-
-                        const For = forConditionPart.getParentChunk().getParentChunk();
-                        forConditionPart.remove();
-
-                        if (For.getCondition().isEmpty()) {
-                            markIt = For;
-                        } else {
-                            markIt = prevForConditionPart ? prevForConditionPart.getLastChunk() : nextForConditionPart.getFirstChunk();
-                        }
-
-                    } else if (parentNode) {
-                        markIt = parentNode;
-                    } else {
-                        markIt = forConditionPart;
-                    }
-
-                } else if (parentNode instanceof ArrayItemParts) {
-
-                    const arrayItem = parentNode.getParentChunk();
-                    const prevArrayItem = arrayItem.getPrevChunk();
-                    const nextArrayItem = arrayItem.getNextChunk();
-                    const arrayBody = arrayItem.getParentChunk();
-
-                    if (parentNode.isEmpty()) {
-                        fxController.removeChunk(arrayItem);
-
-                        if (arrayBody.isEmpty()) {
-                            markIt = arrayBody.getParentChunk();
-                        } else {
-                            if (prevArrayItem) markIt = prevArrayItem;
-                            if (nextArrayItem) markIt = nextArrayItem;
-                        }
-
-                    } else if (prevNode) {
-                        markIt = prevNode;
-                    } else {
-                        markIt = arrayItem;
-                    }
-                }
-
-                fxController.unmarkAll();
-
-                if (markIt && !(markIt instanceof Main)) {
-                    fxController.mark(markIt);
-                }
-                setTimeout(() => this.pubsub.pub(FX_RUNTIME_GET_FOCUS), 300);
-                e.preventDefault();
-            }
-
-        });
-
+    processNodeInput(node: AstNode, fxController: AstController) {
 
         let isCaretOnLastChar = false;
 
-        this.node.iKeyup((e) => {
+        const keyDown = (e) => {
+
+            const key = e.key;
+            if (key === 'Escape') {
+
+                const prevChunk = node.getPrevChunk();
+                const parentChunk = node.getParentChunk();
+                let chunk;
+
+                if (this.mode === MODE_INSERT) {
+
+                    fxController.removeChunk(node);
+                    chunk = prevChunk ? prevChunk: parentChunk;
+
+                    if (parentChunk instanceof ForConditionPartInternal) {
+
+                        const forConditionPart = parentChunk.getParentChunk();
+                        const prevForConditionPart = forConditionPart.getPrevChunk();
+                        const nextForConditionPart = forConditionPart.getNextChunk();
+
+                        if (parentChunk.isEmpty()) {
+
+                            const For = forConditionPart.getParentChunk().getParentChunk();
+                            forConditionPart.remove();
+
+                            if (For.getCondition().isEmpty()) {
+                                chunk = For;
+                            } else {
+                                chunk = prevForConditionPart ? prevForConditionPart.getLastChunk() : nextForConditionPart.getFirstChunk();
+                            }
+
+                        } else if (prevChunk) {
+                            chunk = prevChunk;
+                        } else {
+                            chunk = forConditionPart;
+                        }
+
+                    } else if (parentChunk instanceof ArrayItemParts) {
+
+                        const arrayItem = parentChunk.getParentChunk();
+                        const prevArrayItem = arrayItem.getPrevChunk();
+                        const nextArrayItem = arrayItem.getNextChunk();
+                        const arrayBody = arrayItem.getParentChunk();
+
+                        if (parentChunk.isEmpty()) {
+                            fxController.removeChunk(arrayItem);
+
+                            if (arrayBody.isEmpty()) {
+                                chunk = arrayBody.getParentChunk();
+                            } else {
+                                if (prevArrayItem) chunk = prevArrayItem;
+                                if (nextArrayItem) chunk = nextArrayItem;
+                            }
+
+                        } else if (prevChunk) {
+                            chunk = prevChunk;
+                        } else {
+                            chunk = arrayItem;
+                        }
+                    }
+
+                    fxController.unmarkAll();
+                    if (chunk && !(chunk instanceof Main)) {
+                        fxController.mark(chunk);
+                    }
+
+                } else if (this.mode === MODE_EDIT) {
+
+                    console.log('edit stop');
+                    node.oEditTxt();
+                    node.iKeydownDisable(keyDown);
+                    node.iKeyupDisable(keyUp);
+                    fxController.save();
+                }
+
+                this.mode = null;
+                this.node = null;
+                setTimeout(() => this.pubsub.pub(AST_CONTROL_MODE), 300);
+            }
+
+        };
+        const keyUp = (e) => {
 
             const isArrowRight = e.key === 'ArrowRight';
             const isSpace = e.key === ' ';
@@ -246,10 +192,13 @@ export default class AstNodeEditor {
                 isCaretOnLastChar = true;
                 return;
             }
-        })
+        }
+
+        node.iKeydown(keyDown);
+        node.iKeyup(keyUp);
     }
 
-    getNewChunkByTxt(t: string): BaseNode {
+    getNewChunkByTxt(t: string): AstNode {
 
         if (!t.length) return;
 
