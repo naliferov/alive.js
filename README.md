@@ -1,6 +1,6 @@
 # fx.js
 
-AST-editor for javascript* and env for javascript execution.
+AST-editor for javascript* and env for execution.
 
 ## How to run this project?
 

@@ -2,9 +2,9 @@ import AstNode from "./AstNode";
 
 export default class Op extends AstNode {
 
-    opType: AstNode;
+    opType;
 
-    constructor(op: string) {
+    constructor(op) {
         super('', {className: 'op'});
 
         const openSpace = new AstNode('.').visibilityHide();
@@ -18,6 +18,11 @@ export default class Op extends AstNode {
 
     iEditTxt() {
         this.opType.iEditTxt();
+        this.opType.focus();
+    }
+
+    oEditTxt() {
+        this.opType.oEditTxt();
     }
 
     serialize() {
@@ -27,7 +32,7 @@ export default class Op extends AstNode {
         }
     }
 
-    getTxt(): string {
+    getTxt() {
         return this.opType.getTxt();
     }
 

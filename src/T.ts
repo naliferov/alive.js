@@ -293,8 +293,8 @@ export default class T {
         }
     }
 
-    iEditMod() { this.dom.contentEditable = 'true' }
-    oEditMode() { this.dom.contentEditable = 'false' }
+    iEditMod() { this.getDOM().contentEditable = 'true' }
+    oEditMode() { this.getDOM().contentEditable = 'false' }
 
     toggleView() {
         this.dom.classList.toggle('hidden');

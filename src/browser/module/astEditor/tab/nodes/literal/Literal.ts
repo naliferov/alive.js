@@ -19,6 +19,11 @@ export default class Literal extends AstNode {
         }
     }
 
+    iEditTxt() {
+        super.iEditTxt();
+        this.focus();
+    }
+
     serialize(): object {
         return {
             t: this.constructor.name,

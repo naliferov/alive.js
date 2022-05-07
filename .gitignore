@@ -6,7 +6,6 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 .idea
-src/**/*.js
 x.js
 min.js
 

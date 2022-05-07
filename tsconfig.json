@@ -5,6 +5,7 @@
   "compilerOptions": {
     "outDir": "./",
     "downlevelIteration": true,
+    "allowJs": true,
 
     "typeRoots" : ["src", "node_modules/@types"],
     "module": "commonjs",

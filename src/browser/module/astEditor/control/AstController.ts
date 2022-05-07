@@ -341,7 +341,6 @@ export default class AstController {
             }
 
             const inserter = this.fxMutatorFactory.createEditNode(this);
-
             if (
                 marked instanceof ObjectKey ||
                 marked instanceof ObjectValue
@@ -381,7 +380,6 @@ export default class AstController {
                 }
                 return;
             }
-
             if (parent instanceof ArrayBody) {
 
                 const newArrayItem = new ArrayItem();
@@ -425,7 +423,7 @@ export default class AstController {
                 return;
             }
 
-            //INSERT INTO MARKED CHUNK
+            //INSERT INTO MARKED
             if (ctrl && marked) {
 
                 if (marked instanceof If) {
@@ -444,17 +442,21 @@ export default class AstController {
             if (this.addChunkAfterMarked(inserter)) {
                 this.marker.unmarkAll().mark(inserter);
                 this.pubsub.pub(EDITING_AST_NODE);
+                inserter.focus();
             }
         }
     }
 
     moveLeft(isShift: boolean, isCtrl: boolean) {
 
-        if (this.marker.isEmpty()) {
+        if (this.mainChunk.isEmpty()) {
             const inserter = this.fxMutatorFactory.createEditNode(this);
             this.mainChunk.insert(inserter);
             this.marker.mark(inserter);
             this.pubsub.pub(EDITING_AST_NODE);
+            return;
+        }
+        if (this.marker.isEmpty()) {
             return;
         }
         if (this.marker.getLength() === 1) {
@@ -740,6 +742,7 @@ export default class AstController {
             if (
                 parentChunk instanceof ForConditionPartInternal ||
                 parentChunk instanceof SurroundInternal ||
+                parentChunk instanceof ArrayBody ||
                 parentChunk instanceof ArrayItemParts ||
                 parentChunk instanceof ObjectItemParts ||
                 parentChunk instanceof ObjectBody
