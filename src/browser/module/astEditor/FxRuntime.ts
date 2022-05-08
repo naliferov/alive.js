@@ -2,7 +2,7 @@ import T from "../../../T";
 import Button from "../../core/view/ui/Button";
 import Pubsub from "../../../io/pubsub/Pubsub";
 import Nodes from "../graph/Nodes";
-import FxTabManager from "./tab/FxTabManager";
+import TabManager from "./tab/TabManager";
 
 export default class FxRuntime {
 
@@ -13,9 +13,9 @@ export default class FxRuntime {
 
     iphone: boolean = false;
 
-    fxTabManager: FxTabManager;
+    fxTabManager: TabManager;
 
-    constructor(mindFields: Nodes, pubsub: Pubsub, fxTabManager: FxTabManager) {
+    constructor(mindFields: Nodes, pubsub: Pubsub, fxTabManager: TabManager) {
         this.mindFields = mindFields;
         this.pubsub = pubsub;
         this.unit = new T({class: ['fxRuntimeContainer']});

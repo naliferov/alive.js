@@ -1,4 +1,4 @@
-import Main from "./tab/nodes/Main";
+import Main from "./nodes/Main";
 
 export default class Translator {
 

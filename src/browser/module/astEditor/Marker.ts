@@ -1,5 +1,5 @@
 import List from "../../List";
-import AstNode from "./tab/nodes/AstNode";
+import AstNode from "./nodes/AstNode";
 import T from "../../../T";
 
 export default class Marker {

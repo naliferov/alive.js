@@ -1,5 +1,5 @@
-import T from "../../../../../T";
-import {uuid} from "../../../../../F";
+import T from "../../../../T";
+import {uuid} from "../../../../F";
 import Inserter from "./Inserter";
 
 export default class AstNode {

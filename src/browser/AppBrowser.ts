@@ -9,8 +9,8 @@ import {
     NODES_CONTROL,
     EDITING_AST_NODE
 } from "../io/pubsub/PubsubConstants";
-import FxTabManager from "./module/astEditor/tab/FxTabManager";
-import AstNode from "./module/astEditor/tab/nodes/AstNode";
+import TabManager from "./module/astEditor/tab/TabManager";
+import AstNode from "./module/astEditor/nodes/AstNode";
 import LocalState from "./module/graph/state/Localstate";
 import HttpClient from "../io/http/HttpClient";
 import Node from "./module/graph/Node";
@@ -88,7 +88,7 @@ class AppBrowser {
         await nodes.init(pageFx);
         const localState = new LocalState();
 
-        const fxTabManager = new FxTabManager(pubsub, nodes, localState);
+        const fxTabManager = new TabManager(pubsub, nodes, localState);
         const fxRuntime = new FxRuntime(nodes, pubsub, fxTabManager);
         await fxRuntime.init(pageFx);
 

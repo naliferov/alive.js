@@ -3,16 +3,16 @@ import Pubsub from "../../../../io/pubsub/Pubsub";
 import Nodes from "../../graph/Nodes";
 import FxSerializer from "../FxSerializer";
 import LocalState from "../../graph/state/Localstate";
-import FxTab from "./FxTab";
+import Tab from "./Tab";
 
-export default class FxTabManager {
+export default class TabManager {
 
     u: T;
     tabsNamesBlock: T;
     tabsContentBlock: T;
 
-    activeTab: FxTab;
-    tabs: Map<string, FxTab>; //key is contextUnitId
+    activeTab: Tab;
+    tabs: Map<string, Tab>; //key is contextUnitId
 
     localState: LocalState;
     pubsub: Pubsub;
@@ -31,7 +31,7 @@ export default class FxTabManager {
         this.pubsub = pubsub;
         this.mindFields = mindFields;
 
-        this.tabs = new Map<string, FxTab>();
+        this.tabs = new Map<string, Tab>();
         this.fxSerializer = new FxSerializer();
 
         //todo возможно это должно быть в graph, а graph должен уметь сохранять некоторые
@@ -51,7 +51,7 @@ export default class FxTabManager {
             openedTab.activate();
             this.activeTab = openedTab;
         } else {
-            let newTab = new FxTab(unit.getTxt(), unit, this.pubsub, this.fxSerializer, this.mindFields);
+            let newTab = new Tab(unit.getTxt(), unit, this.pubsub, this.fxSerializer, this.mindFields);
             newTab.onClick((e) => this.focusTab(newTab));
             newTab.onClickClose((e) => {
                 e.stopPropagation();
@@ -69,11 +69,11 @@ export default class FxTabManager {
         this.localState.openTab(this.activeTab.getContextUnitId());
     }
 
-    getTabByContextUnit(unit: T): FxTab|null {
+    getTabByContextUnit(unit: T): Tab|null {
         return this.tabs.get(unit.getId());
     }
 
-    focusTab(tab: FxTab) {
+    focusTab(tab: Tab) {
 
         if (this.activeTab) {
             if (this.activeTab.getContextUnitId() === tab.getContextUnitId()) {
@@ -87,7 +87,7 @@ export default class FxTabManager {
         this.localState.setActiveTabId(this.activeTab.getContextUnitId());
     }
 
-    closeTab(tab: FxTab) {
+    closeTab(tab: Tab) {
 
         const contextUnitId = tab.getContextUnitId();
         const isActiveTab = this.activeTab && this.activeTab.getContextUnitId() === contextUnitId;

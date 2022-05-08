@@ -2,12 +2,11 @@ import AstNode from "../AstNode";
 
 export default class Literal extends AstNode {
 
-    type: string
+    type;
 
-    constructor(str: string, type: string) {
+    constructor(str, type) {
 
         //todo Если убрать if и добавить отдельные классы, тогда markerMonitor будет показывать точный тип литерала исходя из более точного названия класса. (к примеру LiteralString. LiteralNumber)
-
         if (type === 'string') {
             super(str, {className: 'string'});
             this.type = 'string';
@@ -24,7 +23,7 @@ export default class Literal extends AstNode {
         this.focus();
     }
 
-    serialize(): object {
+    serialize() {
         return {
             t: this.constructor.name,
             txt: this.getTxt(),

@@ -1,6 +1,6 @@
 import T from "../../../../T";
 
-export default class FxTabName {
+export default class TabName {
 
     u: T;
 

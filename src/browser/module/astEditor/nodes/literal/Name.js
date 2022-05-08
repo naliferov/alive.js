@@ -1,13 +1,12 @@
 import AstNode from "../AstNode";
-import SubName from "./SubName";
 
 export default class Name extends AstNode {
 
-    letChunk: AstNode;
-    newChunk: AstNode;
-    nameChunk: AstNode;
+    letChunk;
+    newChunk;
+    nameChunk;
 
-    constructor(name: string) {
+    constructor(name) {
         super('', {className: 'name'});
         this.letChunk = new AstNode('let ', {className: 'keyword', hidden: true});
         this.newChunk = new AstNode('new ', {className: 'keyword', hidden: true});
@@ -35,7 +34,7 @@ export default class Name extends AstNode {
         this.nameChunk.oEditTxt();
     }
 
-    getTxt(): string {
+    getTxt() {
         return this.nameChunk.getTxt();
     }
 
