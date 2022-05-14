@@ -1,6 +1,6 @@
 # fx.js
 
-AST-editor for javascript* and env for execution.
+Structural code editor for javascript and env for its execution. Using nodejs.
 
 ## How to run this project?
 

@@ -1,8 +1,8 @@
-import T from "../../../../T";
+import T from "../../../../type/T";
 import Pubsub from "../../../../io/pubsub/Pubsub";
-import Nodes from "../../graph/Nodes";
+import Nodes from "../../nodes/Nodes";
 import FxSerializer from "../FxSerializer";
-import LocalState from "../../graph/state/Localstate";
+import LocalState from "../../../Localstate";
 import Tab from "./Tab";
 
 export default class TabManager {
@@ -12,7 +12,7 @@ export default class TabManager {
     tabsContentBlock: T;
 
     activeTab: Tab;
-    tabs: Map<string, Tab>; //key is contextUnitId
+    tabs: Map<string, Tab>;
 
     localState: LocalState;
     pubsub: Pubsub;
@@ -34,7 +34,7 @@ export default class TabManager {
         this.tabs = new Map<string, Tab>();
         this.fxSerializer = new FxSerializer();
 
-        //todo возможно это должно быть в graph, а graph должен уметь сохранять некоторые
+        //todo возможно это должно быть в nodes, а nodes должен уметь сохранять некоторые
         this.localState = localState;
     }
 

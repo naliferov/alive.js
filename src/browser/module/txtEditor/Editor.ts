@@ -1,6 +1,5 @@
-import T from "../../../T";
+import T from "../../../type/T";
 import Tab from "./tabs/tab/Tab";
-import State from "../graph/state/State";
 
 export default class Editor {
 

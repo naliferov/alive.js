@@ -1,16 +1,16 @@
 export default class NodeDomHelper {
 
-    static getFieldByDataUnit(dataUnit: HTMLElement): HTMLElement|undefined {
+    static getFieldByDataUnit(dataUnit) {
         // @ts-ignore
         return dataUnit.parentNode.parentNode;
     }
 
-    static getParentFieldByField(field: HTMLElement): HTMLElement|undefined {
+    static getParentFieldByField(field) {
         // @ts-ignore
         return field.parentNode.parentNode;
     }
 
-    static getSubfieldsByFied(field: ChildNode): HTMLElement|undefined {
+    static getSubfieldsByFied(field) {
         // @ts-ignore
         return field.children[1];
     }

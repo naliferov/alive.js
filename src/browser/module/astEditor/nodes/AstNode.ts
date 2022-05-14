@@ -1,4 +1,4 @@
-import T from "../../../../T";
+import T from "../../../../type/T";
 import {uuid} from "../../../../F";
 import Inserter from "./Inserter";
 
@@ -118,7 +118,9 @@ export default class AstNode {
     unmark() { this.unit.removeClass('chunkSelected') }
     show() { this.unit.show() }
     hide() { this.unit.hide() }
-    remove() { this.unit.removeFromDom() }
+    remove() {
+        this.unit.removeFromDom()
+    }
 
     getTxt() {
         return this.unit.getTxt();

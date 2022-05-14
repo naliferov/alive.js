@@ -1,4 +1,4 @@
-import T from "../../../../T";
+import T from "../../../../type/T";
 import NewLine from "../nodes/NewLine";
 import Name from "../nodes/literal/Name";
 import If from "../nodes/conditionAndBody/if/If";
@@ -13,7 +13,7 @@ import Pubsub from "../../../../io/pubsub/Pubsub";
 import {EDITING_AST_NODE} from "../../../../io/pubsub/PubsubConstants";
 import ForConditionPart from "../nodes/conditionAndBody/loop/ForConditionPart";
 import ForConditionPartInternal from "../nodes/conditionAndBody/loop/ForConditionPartInternal";
-import Nodes from "../../graph/Nodes";
+import Nodes from "../../nodes/Nodes";
 import FxSerializer from "../FxSerializer";
 import Callable from "../nodes/conditionAndBody/call/callable/Callable";
 import CallableConditionPart from "../nodes/conditionAndBody/call/callable/ConditionPart";
@@ -81,10 +81,8 @@ export default class AstController {
         this.contextUnit = context;
         this.marker = new Marker(markerMonitor);
 
-        const fxSerialized: fxSerialized = this.contextUnit.getDataField('fx');
+        const fxSerialized = this.contextUnit.getDataField('fx');
         if (!fxSerialized) console.log(`fxSerialized not found in unit ${this.contextUnit.getId()}`);
-
-        console.log(fxSerialized);
 
         this.fxSerializer.deserialize(this.mainChunk, fxSerialized.chunks);
     }

@@ -1,8 +1,7 @@
-import T from "../T";
-import State from "./module/graph/state/State";
+import T from "../type/T";
 import FxRuntime from "./module/astEditor/FxRuntime";
 import Pubsub from "../io/pubsub/Pubsub";
-import Nodes from "./module/graph/Nodes";
+import Nodes from "./module/nodes/Nodes";
 import Input from "./Input";
 import {
     AST_CONTROL_MODE, OPEN_TAB,
@@ -11,9 +10,9 @@ import {
 } from "../io/pubsub/PubsubConstants";
 import TabManager from "./module/astEditor/tab/TabManager";
 import AstNode from "./module/astEditor/nodes/AstNode";
-import LocalState from "./module/graph/state/Localstate";
+import LocalState from "./Localstate";
 import HttpClient from "../io/http/HttpClient";
-import Node from "./module/graph/Node";
+import Node from "./module/nodes/Node";
 
 class AppBrowser {
 
@@ -74,24 +73,24 @@ class AppBrowser {
 
     async showFx(app: T) {
 
+        // @ts-ignore
+        window.tPool = new Map<string, T>();
+        // @ts-ignore
+        window.nodesPool = new Map<string, Node>();
+        // @ts-ignore
+        window.astNodesPool = new Map<string, AstNode>();
+
         const pageFx = new T({class: ['pageFx']});
         app.in(pageFx);
 
-        // @ts-ignore
-        window.nodesPool = new Map<string, Node>();
-        // @ts-ignore //todo rename to astNodes
-        window.astNodesPool = new Map<string, AstNode>();
-
-        const state = new State();
         const pubsub = new Pubsub();
-        const nodes = new Nodes(state, pubsub);
+        const nodes = new Nodes(pubsub);
         await nodes.init(pageFx);
         const localState = new LocalState();
 
         const fxTabManager = new TabManager(pubsub, nodes, localState);
         const fxRuntime = new FxRuntime(nodes, pubsub, fxTabManager);
-        await fxRuntime.init(pageFx);
-
+        fxRuntime.init(pageFx);
 
         const input = new Input(window);
 
@@ -115,7 +114,7 @@ class AppBrowser {
         const openedFx = localState.getOpenedTabs();
 
         for (let fxId in openedFx) {
-            const unit = await nodes.getById(fxId);
+            const unit = await nodes.getTById(fxId);
             if (!unit) {
                 localState.closeTab(fxId);
                 continue;
@@ -126,7 +125,7 @@ class AppBrowser {
 
         const activeTabId = localState.getActiveTabId();
         if (activeTabId) {
-            const unit = await nodes.getById(activeTabId);
+            const unit = await nodes.getTById(activeTabId);
             await fxRuntime.focusTab(unit);
         }
     }

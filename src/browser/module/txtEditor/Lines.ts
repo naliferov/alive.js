@@ -1,7 +1,6 @@
-import T from "../../../T";
+import T from "../../../type/T";
 import Cursor from "./Cursor";
 import List from "../../List";
-import State from "../graph/state/State";
 import Selector from "./Selector";
 
 export default class Lines {
@@ -17,7 +16,6 @@ export default class Lines {
     linesView: T;
 
     contextUnit;
-    state: State;
 
     constructor(contextUnit: T) {
 

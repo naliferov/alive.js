@@ -1,4 +1,4 @@
-import {fxSerialized} from "./browser/module/astEditor/control/AstController";
+import {fxSerialized} from "../browser/module/astEditor/control/AstController";
 
 export type UnitData = {
     id?: string
@@ -16,43 +16,15 @@ export type UnitData = {
 
     open?: boolean
     units?: []
-    linkId?: string
-}
-
-export type TDataSerialized = {
-    id: string,
-    txt?: string,
-    fx: fxSerialized,
-
-    open?: boolean,
-    units?: any[],
-    linkId?: string,
 }
 
 export default class T {
 
     data: UnitData;
     dom: HTMLElement|HTMLInputElement = null;
-    observer: MutationObserver;
 
-    constructor(unitData?: UnitData, dom: any = null) {
-
-        let self = this;
+    constructor(unitData?: UnitData) {
         this.data = unitData || {};
-        if (dom) this.dom = dom;
-
-        self['.'] = (...className) => {
-            for (let i = 0; i < className.length; i++) this.dom.classList.add(className[i]);
-        }
-        self['<'] = (tagName) => {
-            //if (!self.data.view) self.data.view = {}
-            //self.data.view.tagName = tagName
-            return self
-        }
-        self['>'] = (txt) => {
-            //self.setText(txt)
-            return self
-        }
     }
 
     getId(): string {
@@ -73,10 +45,6 @@ export default class T {
 
     getDataField(k: string) {
         return this.data[k];
-    }
-
-    getById() {
-
     }
 
     on(eventName: string, callback) {
@@ -319,35 +287,6 @@ export default class T {
     setClose() {
         delete this.data.open;
     }
-
-    observeStart() {
-        this.observer = new MutationObserver((mutationsList, observer) => {
-            for (const mutation of mutationsList) {
-                if (mutation.attributeName !== 'style') {
-                    continue;
-                }
-                const width = this.getDOM().style.width
-                const height = this.getDOM().style.height
-                if (width) this.data.style.width = width;
-                if (height) this.data.style.height = height;
-            }
-        });
-        this.observer.observe(this.getDOM(), { attributes: true });
-    }
-
-    observeStop() {
-        if (this.observer) {
-            this.observer.disconnect();
-        }
-    }
-
-    makeMoveble() {
-        this.getDOM().style.position = 'absolute';
-    }
-
-    /*disableEdit() {
-        this.dom.contentEditable = undefined;
-    }*/
 
     getUnits() {
         return this.data.units;

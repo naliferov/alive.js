@@ -1,8 +1,8 @@
-import T from "../../../../T";
+import T from "../../../../type/T";
 import TabName from "./TabName";
 import Pubsub from "../../../../io/pubsub/Pubsub";
 import FxSerializer from "../FxSerializer";
-import Nodes from "../../graph/Nodes";
+import Nodes from "../../nodes/Nodes";
 import AstController from "../control/AstController";
 import AstNodeEditor from "../control/AstNodeEditor";
 

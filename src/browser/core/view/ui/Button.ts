@@ -1,4 +1,4 @@
-import T from "../../../../T";
+import T from "../../../../type/T";
 import Pubsub from "../../../../io/pubsub/Pubsub";
 
 export default class Button {

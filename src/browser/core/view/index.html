@@ -2,15 +2,31 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
     <title>fx.js</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👨‍💻</text></svg>">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700" rel="stylesheet">
     <style>
         @font-face {
             font-family: "JetBrains Mono";
             src: url('/font/JetBrainsMono-Medium.woff2');
         }
+        @font-face {
+            font-family: 'Roboto';
+            font-style: normal;
+            font-weight: 400;
+            src: local(''),
+            url('/font/roboto-v30-latin_cyrillic-ext_cyrillic-regular.woff2') format('woff2'), /* Super Modern Browsers */
+            url('/font/roboto-v30-latin_cyrillic-ext_cyrillic-regular.woff') format('woff'), /* Modern Browsers */
+            url('/font/roboto-v30-latin_cyrillic-ext_cyrillic-regular.ttf') format('truetype') /* Safari, Android, iOS */
+        }
+        @font-face {
+            font-family: 'Roboto';
+            font-style: normal;
+            font-weight: 700;
+            src: local(''),
+            url('/font/roboto-v30-latin_cyrillic-ext_cyrillic-700.woff2') format('woff2'), /* Super Modern Browsers */
+            url('/font/roboto-v30-latin_cyrillic-ext_cyrillic-700.woff') format('woff'), /* Modern Browsers */
+            url('/font/roboto-v30-latin_cyrillic-ext_cyrillic-700.ttf') format('truetype') /* Safari, Android, iOS */
+        }
+
         :root {
             --bg-color: white;
             --keyword-color: #0033B3;
@@ -73,14 +89,14 @@
             width: 15em;
         }
 
-        .mindFields {
+        .nodes {
             min-height: 100vh;
             min-width: 13em;
             background: white;
             padding-bottom: 1em;
             border-right: 1px solid lightgray;
         }
-        .mindFields > .mindField > .mindFieldStructure > .openClose {
+        .nodes > .node > .nodeStructure > .openClose {
             display: none;
         }
         .subFields {
@@ -313,6 +329,6 @@
 </head>
 <body>
 <div id="app"></div>
-<script src="/js"></script>
+<script src="/min.js"></script>
 </body>
 </html>

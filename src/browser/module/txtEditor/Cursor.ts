@@ -1,4 +1,4 @@
-import T from "../../../T";
+import T from "../../../type/T";
 
 export default class Cursor {
 

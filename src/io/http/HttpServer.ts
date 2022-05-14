@@ -10,6 +10,7 @@ export default class HttpServer {
 
     constructor(createServer: any, express: Express, httpMsgHandler: HttpMsgHandler) {
         let app = express();
+        app.use(express.static('public'));
         app.use(cookieParser());
         app.use(bodyParser.json({limit: '50mb'}));
         app.use(async (req: Request, res: Response, next: NextFunction) => await httpMsgHandler.handle(req, res, next));

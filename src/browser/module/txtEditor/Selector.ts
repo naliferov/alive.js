@@ -1,4 +1,4 @@
-import T from "../../../T";
+import T from "../../../type/T";
 import Cursor from "./Cursor";
 
 export default class Selector {

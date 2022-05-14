@@ -1,45 +1,28 @@
-import T from './T'
+import {fxSerialized} from "../browser/module/astEditor/control/AstController";
 
-export interface TData {
+export type elementData = {
     id?: string
+    tagName?: string
     class?: string[]
+    name?: string
 
-    tag?: string
     style?: { [key: string]: string }
 
     txt?: string
     value?: string|number
-    fx?: {}
 
-    open?: boolean
-
-    t?: []
-    tId?: string
+    elements?: TV[]
 }
 
-export default class TFactory {
+export default class TV {
 
-    data: TData;
-    dom: HTMLElement|HTMLInputElement = null;
-    observer: MutationObserver;
+    data: elementData;
+    domRaw: HTMLElement|HTMLInputElement = null;
 
-    constructor(tData?: TData, dom: any = null) {
+    constructor(unitData?: elementData) {
+        this.data = unitData || {};
+        if (!unitData.id) {
 
-        let self = this;
-        this.data = tData || {};
-        if (dom) this.dom = dom;
-
-        self['.'] = (...className) => {
-            for (let i = 0; i < className.length; i++) this.dom.classList.add(className[i]);
-        }
-        self['<'] = (tagName) => {
-            //if (!self.data.view) self.data.view = {}
-            //self.data.view.tagName = tagName
-            return self
-        }
-        self['>'] = (txt) => {
-            //self.setText(txt)
-            return self
         }
     }
 
@@ -51,7 +34,7 @@ export default class TFactory {
         this.getDOM().setAttribute('id', id);
     }
 
-    getData(): TData {
+    getData() {
         return this.data;
     }
 
@@ -61,10 +44,6 @@ export default class TFactory {
 
     getDataField(k: string) {
         return this.data[k];
-    }
-
-    getById() {
-
     }
 
     on(eventName: string, callback) {
@@ -83,15 +62,15 @@ export default class TFactory {
     setDOM(dom: HTMLElement) { this.dom = dom; }
 
     getDOM(): HTMLElement {
-        if (this.dom) return this.dom;
+        if (this.domRaw) return this.domRaw;
 
-        this.dom = document.createElement(this.data.tag || 'div') as HTMLElement|HTMLInputElement;
+        this.domRaw = document.createElement(this.data.tagName || 'div') as HTMLElement|HTMLInputElement;
         if (this.data.style) {
             for (let key in this.data.style) {
-                this.dom.style[key] = this.data.style[key];
+                this.domRaw.style[key] = this.data.style[key];
             }
         }
-        if (this.data.id) this.dom.id = this.data.id;
+        if (this.data.id) this.domRaw.id = this.data.id;
         if (this.data.class) this.dom.className = this.data.class.join(' ');
         if (this.data.txt) this.dom.innerText = this.data.txt;
         // @ts-ignore
@@ -133,11 +112,19 @@ export default class TFactory {
         return this.getDOM().innerHTML;
     }
 
+    getName(): string|undefined {
+        return this.data.name;
+    }
+
+    setName(name: string) {
+        this.data.name = name;
+    }
+
     setValueInData(v: string) {
         this.data.value = v;
     }
 
-    insert(unit: T, index = null) {
+    insert(unit: TV, index = null) {
         if (index !== null) {
             this.getDOM().insertBefore(unit.getDOM(), this.getDOM().children[index]);
             return;
@@ -251,6 +238,10 @@ export default class TFactory {
         this.getDOM().classList.add('hidden');
     }
 
+    visibilityHide() {
+        this.getDOM().classList.add('visibilityHidden');
+    }
+
     removeFromDom() {
         this.dom.parentNode.removeChild(this.dom);
     }
@@ -269,8 +260,8 @@ export default class TFactory {
         }
     }
 
-    iEditMod() { this.dom.contentEditable = 'true' }
-    oEditMode() { this.dom.contentEditable = 'false' }
+    iEditMod() { this.getDOM().contentEditable = 'true' }
+    oEditMode() { this.getDOM().contentEditable = 'false' }
 
     toggleView() {
         this.dom.classList.toggle('hidden');
@@ -296,36 +287,7 @@ export default class TFactory {
         delete this.data.open;
     }
 
-    observeStart() {
-        this.observer = new MutationObserver((mutationsList, observer) => {
-            for (const mutation of mutationsList) {
-                if (mutation.attributeName !== 'style') {
-                    continue;
-                }
-                const width = this.getDOM().style.width
-                const height = this.getDOM().style.height
-                if (width) this.data.style.width = width;
-                if (height) this.data.style.height = height;
-            }
-        });
-        this.observer.observe(this.getDOM(), { attributes: true });
-    }
-
-    observeStop() {
-        if (this.observer) {
-            this.observer.disconnect();
-        }
-    }
-
-    makeMoveble() {
-        this.getDOM().style.position = 'absolute';
-    }
-
-    /*disableEdit() {
-        this.dom.contentEditable = undefined;
-    }*/
-
-    getT() {
-        return this.data.t;
+    getUnits() {
+        return this.data.units;
     }
 }
