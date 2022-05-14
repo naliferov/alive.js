@@ -25,29 +25,19 @@ export default class Nodes {
         this.rootNode = rootNode;
         this.rootNode.getDataUnit().oEditMode();
 
-        let allUnits = {};
+        const render = (node) => {
 
-        const accumulateUnits = (units) => {
-            for (let i = 0; i < units.length; i++) {
-                allUnits[units[i].id] = units[i];
-                if (units[i].units) accumulateUnits(units[i].units)
-            }
-        }
-        accumulateUnits(unitsData);
+            const subNodes = node.getDataUnit().getUnits();
+            if (!Array.isArray(subNodes)) return;
 
-        const render = (parentField) => {
+            for (let i = 0; i < subNodes.length; i++) {
 
-            const subUnits = parentField.getDataUnit().getUnits();
-            if (!Array.isArray(subUnits)) return;
+                const unit = new T(subNodes[i]);
+                const newNode = new Node(unit);
 
-            for (let i = 0; i < subUnits.length; i++) {
-
-                const unit = new T(subUnits[i]);
-                const field = new Node(unit);
-
-                parentField.insert(field);
+                node.insert(newNode);
                 this.setTById(unit.getId(), unit);
-                render(field);
+                render(newNode);
             }
         }
         render(rootNode);
