@@ -19,15 +19,16 @@ export default class Nodes {
         this.t = new T({class: ['nodes']});
         app.insert(this.t);
 
-        const unitsData = (await (new HttpClient).get('/nodes')).data;
+        const nodes = (await (new HttpClient).get('/nodes')).data;
 
         this.addNodeBtn = new T({class: ['addBtn'], name: 'Add node'});
         this.t.insert(this.addNodeBtn);
         this.addNodeBtn.on('click', (e) => {
-            this.createNode(rootNode);
+            this.addNodeBtn.hide();
+            this.create(rootNode);
         });
 
-        const rootNode = new Node(new T({class: ['root'], nodes: unitsData, open: true}));
+        const rootNode = new Node(new T({class: ['root'], nodes}));
         this.t.insert(rootNode.getUnit());
         this.rootNode = rootNode;
         this.rootNode.getDataUnit().oEditMode();
@@ -69,7 +70,7 @@ export default class Nodes {
         if (k === 'Enter') {
             e.preventDefault();
             this.copy(node);
-            //await this.save();
+            await this.save();
             return;
         }
         if (k === 'Tab') {
@@ -126,15 +127,18 @@ export default class Nodes {
                 }
                 return count;
             }
+
             const totalUnits = unit.getData().nodes ? calcSubUnits(unit.getData().nodes) : 0;
             if (unit.getData().nodes && totalUnits > 5) {
                 if (confirm(`Really want to delete element with [${totalUnits}] units?`)) {
-                    unit.removeFromDom();
+                    //node.;
                 }
-            } else unit.removeFromDom();
+            } else {
+                this.delete(node);
+            }
         }
 
-        await this.save();
+        //await this.save();
     }
 
     async handleClick(e) {
@@ -167,7 +171,7 @@ export default class Nodes {
         this.setTById(newUnit.getId(), newUnit);
     }
 
-    createNode(node) {
+    create(node) {
         const newUnit = new T({
             id: uuid(),
             name: 'New node',
@@ -175,6 +179,12 @@ export default class Nodes {
         const newNode = new Node(newUnit);
         node.insert(newNode);
         this.setTById(newUnit.getId(), newUnit);
+    }
+
+    delete(node) {
+        window.tPool.delete(node.getDataUnit().getId());
+        window.nodesPool.delete(node.getDomId());
+        node.getT().removeFromDom();
     }
 
     async save() {
@@ -200,8 +210,6 @@ export default class Nodes {
             return data;
         }
 
-        console.log(getNodesData(this.rootNode));
-
-        //await new HttpClient().post('/nodes', {data: getNodesData(this.rootNode)})
+        await new HttpClient().post('/nodes', {data: getNodesData(this.rootNode)})
     }
 }

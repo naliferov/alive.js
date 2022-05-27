@@ -49,6 +49,8 @@ export default class Node {
         }
     }
 
+    getDomId() { return this.domId; }
+
     isEmpty() { return !this.nodes.getDOM().children.length; }
 
     insertBefore(node) {
