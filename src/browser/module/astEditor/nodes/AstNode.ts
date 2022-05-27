@@ -20,7 +20,7 @@ export default class AstNode {
             id: this.id,
             tagName: (options.tagName ? options.tagName: 'div'),
             class: classArr,
-            txt,
+            name: txt,
         });
         if (options.hidden) this.unit.hide();
 
@@ -71,10 +71,6 @@ export default class AstNode {
     getParentChunk() {
         // @ts-ignore
         return window.astNodesPool.get(this.unit.getDOM().parentNode.id);
-    }
-
-    getParentUnit() {
-        return new T({}, this.unit.getDOM().parentNode);
     }
 
     getFirstChunk() {

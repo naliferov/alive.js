@@ -9,17 +9,15 @@ import {
     EDITING_AST_NODE
 } from "../io/pubsub/PubsubConstants";
 import TabManager from "./module/astEditor/tab/TabManager";
-import AstNode from "./module/astEditor/nodes/AstNode";
 import LocalState from "./Localstate";
 import HttpClient from "../io/http/HttpClient";
-import Node from "./module/nodes/Node";
 
 class AppBrowser {
 
-    app: T
-    input: Input
+    app;
+    input;
 
-    async showSignPage(app: T, type: string) {
+    async showSignPage(app, type) {
 
         const isSignIn = type === 'sign_in';
         const formName = isSignIn ? 'Sign in': 'Sign up';
@@ -35,17 +33,17 @@ class AppBrowser {
 
         sign.in(new T({txt: formName})).inBr();
 
-        sign.in(new T({txt: 'Email'}));
+        sign.in(new T({name: 'Email'}));
         const email = new T({tagName: 'input', class: ['emailInput']});
         sign.in(email).inBr();
 
-        sign.in(new T({txt: 'Password'}));
+        sign.in(new T({name: 'Password'}));
         const password = new T({tagName: 'input', class: ['emailInput']});
         password.setAttr('type', 'password');
         sign.in(password);
 
         sign.inBr().inBr();
-        const btn = new T({tagName: 'button', txt: formName})
+        const btn = new T({tagName: 'button', name: formName})
         sign.in(btn);
 
         const submit = async () => {
@@ -66,19 +64,16 @@ class AppBrowser {
 
         if (isSignIn) {
             sign.inBr().inBr();
-            sign.in(new T({tagName: 'span', txt: "Don't have an account? "}));
-            sign.in(new T({tagName: 'a', txt: "Sign up"}).setAttr('href', '/sign/up'));
+            sign.in(new T({tagName: 'span', name: "Don't have an account? "}));
+            sign.in(new T({tagName: 'a', name: "Sign up"}).setAttr('href', '/sign/up'));
         }
     }
 
-    async showFx(app: T) {
+    async showFx(app) {
 
-        // @ts-ignore
-        window.tPool = new Map<string, T>();
-        // @ts-ignore
-        window.nodesPool = new Map<string, Node>();
-        // @ts-ignore
-        window.astNodesPool = new Map<string, AstNode>();
+        window.tPool = new Map;
+        window.nodesPool = new Map;
+        window.astNodesPool = new Map;
 
         const pageFx = new T({class: ['pageFx']});
         app.in(pageFx);
@@ -105,7 +100,6 @@ class AppBrowser {
         });
         pubsub.sub(EDITING_AST_NODE, () => input.disableHandlers());
 
-
         fxRuntime.onClick(() => pubsub.pub(AST_CONTROL_MODE));
         nodes.getUnit().on('click', () => pubsub.pub(NODES_CONTROL));
 
@@ -120,17 +114,16 @@ class AppBrowser {
                 continue;
             }
             await fxRuntime.openTab(unit);
-            //todo restore marker position
         }
 
         const activeTabId = localState.getActiveTabId();
-        if (activeTabId) {
+        if (activeTabId && window.tPool.get(activeTabId)) {
             const unit = await nodes.getTById(activeTabId);
             await fxRuntime.focusTab(unit);
         }
     }
 
-    async run(window: Window) {
+    async run() {
         this.app = new T();
         this.app.setDOM(document.getElementById('app'));
 
@@ -144,4 +137,4 @@ class AppBrowser {
     }
 }
 
-new AppBrowser().run(window);
+new AppBrowser().run();

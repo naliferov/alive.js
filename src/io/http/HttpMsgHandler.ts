@@ -1,12 +1,10 @@
 import {NextFunction, Request, Response} from "express";
 import FS from "../fs/FS";
 import Logger from "../../log/Logger";
-import {STATE_FILE_PATH} from "../../AppConstants";
 import * as crypto from 'crypto';
 import MongoManager from "../db/MongoManager";
 import UsersModel from "../db/model/UsersModel";
 import NodesModel from "../db/model/NodesModel";
-import OsExec from "../../exec/process/OsExec";
 
 const COOKIE_KEY = 'fx';
 
@@ -87,6 +85,7 @@ export default class HttpMsgHandler {
 
                 const authKey = crypto.randomBytes(32).toString('hex');
                 const userId = await this.usersModel.insert(email, password, authKey);
+
                 await this.nodesModel.insert(userId, []);
                 this.authorize(res, authKey);
             },
@@ -131,7 +130,8 @@ export default class HttpMsgHandler {
             'GET:/nodes': async () => {
                 const user = await this.getAuthorizedUser(req);
                 if (!user) { res.send({err: 'User not found.'}); return; }
-                const userNodes = await this.nodesModel.getByUserId(user._id.toString('hex'));
+                const userNodes = await this.nodesModel.getByUserId(user._id);
+
                 res.send(userNodes.nodes);
             },
             'POST:/nodes': async () => {
@@ -141,21 +141,17 @@ export default class HttpMsgHandler {
                 if (!user) { res.send({err: 'User not found.'}); return; }
                 if (!req.body.data) { res.send({err: 'Data is empty.'}); return; }
 
-                const userId = user._id.toString('hex');
-                const userNodes = await this.nodesModel.getByUserId(userId);
+                const userNodes = await this.nodesModel.getByUserId(user._id);
                 if (!userNodes) {
-                    res.send({err: `User nodes not found for userId [${userId}]`});
+                    res.send({err: `User nodes not found for userId [${user._id}]`});
                 }
-                await this.nodesModel.update(userId, req.body.data);
+                await this.nodesModel.update(user._id, req.body.data);
                 res.send({code: 0});
             },
         };
 
-        const reqName = `${req.method}:${req.path}`;
-        if (m[reqName]) {
-            await m[reqName]();
-            return;
-        }
+        const name = `${req.method}:${req.path}`;
+        if (m[name]) await m[name]();
 
         next();
         return;

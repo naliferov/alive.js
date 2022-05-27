@@ -6,8 +6,9 @@ export default class Node {
     domId;
     dataUnit;
 
-    unit;
     nodes;
+
+    unit;
     openClose;
 
     constructor(unit) {
@@ -20,40 +21,35 @@ export default class Node {
         this.dataUnit.setAttr('nid', this.domId);
         this.dataUnit.addClass('dataUnit');
 
-        const flex = new T({class: ['nodeStructure', 'flex']});
-        this.unit.insert(flex);
+        const container = new T({class: ['nodeContainer', 'flex']});
+        this.unit.insert(container);
 
         this.openClose = new T({txt: '>', class: ['openClose']});
         this.openClose.on('click', async () => {
-            if (this.openClose.hasClass('disabled')) {
-                return
-            }
-            if (this.nodes.isHidden()) {
-                this.nodes.show();
-                this.dataUnit.setOpen();
-            } else {
-                this.nodes.hide();
-                this.dataUnit.setClose();
-            }
+            if (this.openClose.hasClass('disabled')) return;
+            if (this.nodes.isHidden()) this.nodes.show();
+            else this.nodes.hide();
         });
 
-        flex.insert(this.openClose);
-        flex.insert(this.dataUnit);
+        container.insert(this.openClose);
+        container.insert(this.dataUnit);
         this.dataUnit.toggleEdit();
 
         this.nodes = new T({class: ['subFields']});
-        if (!this.dataUnit.isOpen()) {
+        /*if (!this.dataUnit.isOpen()) {
             this.nodes.hide();
-        }
+        }*/
         this.unit.insert(this.nodes);
 
-        const subUnits = this.getDataUnit().getUnits();
+        const subNodes = this.getDataUnit().getNodes();
 
         this.openClose.addClass('disabled')
-        if (subUnits && subUnits.length) {
+        if (subNodes && subNodes.length) {
             this.openClose.removeClass('disabled');
         }
     }
+
+    isEmpty() { return !this.nodes.getDOM().children.length; }
 
     insertBefore(node) {
         const t = node.getT();
@@ -77,11 +73,9 @@ export default class Node {
     }
 
     insert(node) { this.nodes.insert(node.getUnit()) }
-    setIdToDom(id) { this.unit.setIdToDom(id); }
     getDataUnit() { return this.dataUnit }
     getContextT() { return this.dataUnit }
     getUnit() { return this.unit }
     getT() { return this.unit }
     getNodes() { return this.nodes }
-
 }

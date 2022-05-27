@@ -1,8 +1,8 @@
 export default class Input {
 
-    win: Window;
+    win;
 
-    constructor(win: Window) {
+    constructor(win) {
         this.win = win;
     }
 

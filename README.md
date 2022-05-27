@@ -1,6 +1,6 @@
 # fx.js
 
-Structural code editor for javascript and env for its execution. Using nodejs.
+Structured editor for javascript subset and env for its execution. Using nodejs.
 
 ## How to run this project?
 

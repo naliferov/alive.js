@@ -29,7 +29,7 @@ const backendConf = {
 };
 
 const frontendConf = {
-    entry: './src/browser/AppBrowser.ts',
+    entry: './src/browser/AppBrowser.js',
     module: {
         rules: [tsRule]
     },

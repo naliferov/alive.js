@@ -9,13 +9,13 @@ export default class TabName {
 
     contextUnitId: string;
 
-    constructor(txt: string, contextUnit: T) {
+    constructor(name: string, contextUnit: T) {
         this.u = new T({class: ['tab']});
 
-        this.tabName = new T({class: ['tabName'], txt});
+        this.tabName = new T({class: ['tabName'], name});
         this.u.in(this.tabName);
 
-        this.closeBtn = new T({class: ['tabCloseBtn'], txt: 'x'});
+        this.closeBtn = new T({class: ['tabCloseBtn'], name: 'x'});
         this.u.in(this.closeBtn);
 
         this.contextUnitId = contextUnit.getId();

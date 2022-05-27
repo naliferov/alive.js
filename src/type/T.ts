@@ -1,43 +1,31 @@
-import {fxSerialized} from "../browser/module/astEditor/control/AstController";
-
 export type UnitData = {
     id?: string
     tName?: string
 
     class?: string[]
-    name?: string
 
     tagName?: string
     style?: { [key: string]: string }
 
-    txt?: string
+    name?: string
     value?: string|number
-    fx?: []
 
-    open?: boolean
-    units?: []
+    astNodes?: []
+    nodes?: []
 }
 
 export default class T {
 
-    data: UnitData;
-    dom: HTMLElement|HTMLInputElement = null;
+    data;
+    dom;
 
-    constructor(unitData?: UnitData) {
-        this.data = unitData || {};
-    }
-
-    getId(): string {
-        return this.data.id;
-    }
+    constructor(unitData = {}) { this.data = unitData; }
+    getId() { return this.data.id; }
 
     setIdToDom(id: string) {
         this.getDOM().setAttribute('id', id);
     }
-
-    getData(): UnitData {
-        return this.data;
-    }
+    getData(): UnitData { return this.data; }
 
     setDataField(k: string, v: any) {
         this.data[k] = v;
@@ -73,7 +61,7 @@ export default class T {
         }
         if (this.data.id) this.dom.id = this.data.id;
         if (this.data.class) this.dom.className = this.data.class.join(' ');
-        if (this.data.txt) this.dom.innerText = this.data.txt;
+        if (this.data.name) this.dom.innerText = this.data.name;
         // @ts-ignore
         if (this.data.value) this.dom.value = this.data.value;
 
@@ -96,8 +84,8 @@ export default class T {
         this.getDOM().innerText = txt;
     }
 
-    setTxtToData(txt: string) {
-        this.data.txt = txt;
+    setNameToData(txt: string) {
+        this.data.name = txt;
     }
 
     setAttr(k: string, v: string) {
@@ -113,7 +101,7 @@ export default class T {
         return this.getDOM().innerHTML;
     }
 
-    getName(): string|undefined {
+    getName() {
         return this.data.name;
     }
 
@@ -276,19 +264,7 @@ export default class T {
         this.getDOM().innerHTML = '';
     }
 
-    isOpen() {
-        return this.data.open
-    }
-
-    setOpen() {
-        this.data.open = true;
-    }
-
-    setClose() {
-        delete this.data.open;
-    }
-
-    getUnits() {
-        return this.data.units;
+    getNodes() {
+        return this.data.nodes;
     }
 }

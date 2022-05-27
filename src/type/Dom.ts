@@ -1,25 +1,9 @@
-import {fxSerialized} from "../browser/module/astEditor/control/AstController";
+export default class Dom {
 
-export type elementData = {
-    id?: string
-    tagName?: string
-    class?: string[]
-    name?: string
+    data;
+    dom;
 
-    style?: { [key: string]: string }
-
-    txt?: string
-    value?: string|number
-
-    elements?: TV[]
-}
-
-export default class TV {
-
-    data: elementData;
-    domRaw: HTMLElement|HTMLInputElement = null;
-
-    constructor(unitData?: elementData) {
+    constructor(unitData) {
         this.data = unitData || {};
         if (!unitData.id) {
 
@@ -133,7 +117,7 @@ export default class TV {
         this.getDOM().append(unit.getDOM());
     }
 
-    in(unit: T, index = null) {
+    in(unit, index = null) {
         this.insert(unit, index);
         return this;
     }

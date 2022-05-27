@@ -8,6 +8,7 @@ export default class Nodes {
 
     t;
     rootNode;
+    addNodeBtn;
     pubsub;
 
     constructor(pubsub) { this.pubsub = pubsub; }
@@ -19,15 +20,21 @@ export default class Nodes {
         app.insert(this.t);
 
         const unitsData = (await (new HttpClient).get('/nodes')).data;
-        const rootNode = new Node( new T({class: ['root'], units: unitsData, open: true}) );
-        this.t.insert(rootNode.getUnit());
 
+        this.addNodeBtn = new T({class: ['addBtn'], name: 'Add node'});
+        this.t.insert(this.addNodeBtn);
+        this.addNodeBtn.on('click', (e) => {
+            this.createNode(rootNode);
+        });
+
+        const rootNode = new Node(new T({class: ['root'], nodes: unitsData, open: true}));
+        this.t.insert(rootNode.getUnit());
         this.rootNode = rootNode;
         this.rootNode.getDataUnit().oEditMode();
 
         const render = (node) => {
 
-            const subNodes = node.getDataUnit().getUnits();
+            const subNodes = node.getDataUnit().getNodes();
             if (!Array.isArray(subNodes)) return;
 
             for (let i = 0; i < subNodes.length; i++) {
@@ -40,8 +47,11 @@ export default class Nodes {
                 render(newNode);
             }
         }
+
         render(rootNode);
     }
+
+    isEmpty() { return this.rootNode.isEmpty()}
 
     getTById(id) { return window.tPool.get(id); }
     setTById(id, t) { window.tPool.set(id, t); }
@@ -103,8 +113,8 @@ export default class Nodes {
         if (new Set(ignoreKeys).has(e.key)) return;
 
         const node = this.getNodeById(e.target.getAttribute('nid'));
-        const unit = node.getT();
-        unit.setTxtToData(e.target.innerText);
+        const unit = node.getDataUnit();
+        unit.setNameToData(e.target.innerText);
 
         if (e.target.innerText.length === 0) {
 
@@ -112,12 +122,12 @@ export default class Nodes {
                 let count = units.length;
                 for (let i = 0; i < units.length; i++) {
                     const unit = units[i];
-                    count += unit.units ? calcSubUnits(unit.units) : 0;
+                    count += unit.nodes ? calcSubUnits(unit.nodes) : 0;
                 }
                 return count;
             }
-            const totalUnits = unit.getData().units ? calcSubUnits(unit.getData().units) : 0;
-            if (unit.getData().units && totalUnits > 5) {
+            const totalUnits = unit.getData().nodes ? calcSubUnits(unit.getData().nodes) : 0;
+            if (unit.getData().nodes && totalUnits > 5) {
                 if (confirm(`Really want to delete element with [${totalUnits}] units?`)) {
                     unit.removeFromDom();
                 }
@@ -148,13 +158,22 @@ export default class Nodes {
 
         const newUnit = new T(unitData);
         const newNode = new Node(newUnit);
-        newNode.setIdToDom(newUnit.getId());
 
         if (node.next()) {
             newNode.insertBefore(node.next());
         } else {
             node.getParent().insert(newNode);
         }
+        this.setTById(newUnit.getId(), newUnit);
+    }
+
+    createNode(node) {
+        const newUnit = new T({
+            id: uuid(),
+            name: 'New node',
+        });
+        const newNode = new Node(newUnit);
+        node.insert(newNode);
         this.setTById(newUnit.getId(), newUnit);
     }
 
@@ -170,22 +189,19 @@ export default class Nodes {
                 const unitData = node.getDataUnit().getData();
                 let tData = {
                     id: unitData.id,
-                    fx: {
-                        chunks: [], markedChunksIds: []
-                    }
+                    name: unitData.name
                 };
-
-                const subUnits = getNodesData(node);
-                if (subUnits.length > 0) tData.units = subUnits;
-                if (unitData.txt) tData.txt = unitData.txt;
-                if (unitData.fx && unitData.fx.chunks) {
-                    tData.fx = unitData.fx;
-                }
+                const subNodes = getNodesData(node);
+                if (subNodes.length > 0) tData.nodes = subNodes;
+                if (unitData.astNodes) tData.astNodes = unitData.astNodes;
 
                 data.push(tData);
             }
             return data;
         }
-        await new HttpClient().post('/nodes', {data: getNodesData(this.rootNode)})
+
+        console.log(getNodesData(this.rootNode));
+
+        //await new HttpClient().post('/nodes', {data: getNodesData(this.rootNode)})
     }
 }

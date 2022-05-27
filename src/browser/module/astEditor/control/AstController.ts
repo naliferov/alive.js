@@ -34,11 +34,6 @@ import ObjectKey from "../nodes/literal/object/ObjectKey";
 import ObjectValue from "../nodes/literal/object/ObjectValue";
 import ObjectBody from "../nodes/literal/object/ObjectBody";
 
-export type fxSerialized = {
-    chunks: any[]
-    markedChunksIds: string[]
-};
-
 export default class AstController {
 
     unit: T;
@@ -64,7 +59,7 @@ export default class AstController {
 
         this.unit = new T({class: ['fxRuntimeController']});
 
-        const markerMonitor = new T({class: ['markerMonitor'], txt: 'markerMonitor'});
+        const markerMonitor = new T({class: ['markerMonitor'], name: 'markerMonitor'});
         this.unit.in(markerMonitor);
 
         const chunkContainer = new T({class: ['chunksContainer']});
@@ -81,10 +76,13 @@ export default class AstController {
         this.contextUnit = context;
         this.marker = new Marker(markerMonitor);
 
-        const fxSerialized = this.contextUnit.getDataField('fx');
-        if (!fxSerialized) console.log(`fxSerialized not found in unit ${this.contextUnit.getId()}`);
+        const astNodes = this.contextUnit.getDataField('astNodes');
+        if (!astNodes) {
+            console.log(`fxSerialized not found in unit ${this.contextUnit.getId()}`);
+            return;
+        }
 
-        this.fxSerializer.deserialize(this.mainChunk, fxSerialized.chunks);
+        this.fxSerializer.deserialize(this.mainChunk, astNodes.chunks);
     }
 
     show() { this.unit.show(); }
@@ -121,7 +119,7 @@ export default class AstController {
                 this.backspaceBtn();
             },
             'Delete': (e) => this.deleteBtn(),
-            'Tab': (e) => { e.preventDefault(); this.tabBtn(e.shiftKey); },
+            //'Tab': (e) => { e.preventDefault(); this.tabBtn(e.shiftKey); },
             'Enter': (e) => { this.enterBtn(e.shiftKey, ctrl) }
         }
         if (map[k]) {
@@ -227,41 +225,6 @@ export default class AstController {
 
     unmarkAll() { return this.marker.unmarkAll(); }
     mark(chunk: AstNode) { this.marker.mark(chunk); }
-
-    //setCodeLinesMinHeight() { this.unit.getDOM().style.minHeight = '15em' }
-    /*buildLinesNumbers(js: string[], linesNumbers: V) {
-        linesNumbers.clear();
-        for (let i = 0; i < js.length; i++) {
-            linesNumbers.insert(new V({class: ['lineNumber'], txt: String(i + 1)}));
-        }
-    }*/
-
-    syncLinesNumbers(count) {
-        this.linesNumbers.clear();
-        for (let i = 0; i < count; i++) {
-            this.linesNumbers.insert(new T({class: ['lineNumber'], txt: String(i + 1)}));
-        }
-    }
-
-    tabBtn(isShift: boolean = false) {
-
-        /*const {x, y} = this.cursor.getPos();
-        const line = this.linesList.get(y);
-        let lineTxt = '';
-
-        if (isShift) {
-            if (x < 4) lineTxt = line.getText().substring(x);
-            else lineTxt = line.getText().substring(0, x - 4) + line.getText().substring(x);
-            for (let i = 0; i < 4; i++) this.cursor.left();
-        } else {
-            lineTxt = line.getText().substring(0, x) + '    ' + line.getText().substring(x);
-            for (let i = 0; i < 4; i++) this.cursor.right();
-        }
-
-        line.setText(lineTxt);*/
-
-        //this.save();
-    }
 
     deleteBtn() {
         if (this.marker.isEmpty()) return;
@@ -452,7 +415,7 @@ export default class AstController {
             this.mainChunk.insert(inserter);
             this.marker.mark(inserter);
             this.pubsub.pub(EDITING_AST_NODE);
-            return;
+            inserter.focus();
         }
         if (this.marker.isEmpty()) {
             return;
@@ -558,6 +521,7 @@ export default class AstController {
                 this.mainChunk.insert(inserter);
                 this.marker.mark(inserter);
                 this.pubsub.pub(EDITING_AST_NODE);
+                inserter.focus();
                 return;
             }
 

@@ -51,7 +51,8 @@ export default class TabManager {
             openedTab.activate();
             this.activeTab = openedTab;
         } else {
-            let newTab = new Tab(unit.getTxt(), unit, this.pubsub, this.fxSerializer, this.mindFields);
+
+            let newTab = new Tab(unit.getName(), unit, this.pubsub, this.fxSerializer, this.mindFields);
             newTab.onClick((e) => this.focusTab(newTab));
             newTab.onClickClose((e) => {
                 e.stopPropagation();
