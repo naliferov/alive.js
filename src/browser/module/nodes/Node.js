@@ -17,6 +17,7 @@ export default class Node {
         window.nodesPool.set(this.domId, this);
 
         this.unit = new T({id: this.domId, class: ['node']});
+
         this.dataUnit = unit;
         this.dataUnit.setAttr('nid', this.domId);
         this.dataUnit.addClass('dataUnit');
@@ -36,9 +37,6 @@ export default class Node {
         this.dataUnit.toggleEdit();
 
         this.nodes = new T({class: ['subFields']});
-        /*if (!this.dataUnit.isOpen()) {
-            this.nodes.hide();
-        }*/
         this.unit.insert(this.nodes);
 
         const subNodes = this.getDataUnit().getNodes();

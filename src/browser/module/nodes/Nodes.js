@@ -27,6 +27,7 @@ export default class Nodes {
             this.addNodeBtn.hide();
             this.create(rootNode);
         });
+        if (nodes.length) this.addNodeBtn.hide();
 
         const rootNode = new Node(new T({class: ['root'], nodes}));
         this.t.insert(rootNode.getUnit());
@@ -77,21 +78,15 @@ export default class Nodes {
             e.preventDefault();
 
             if (e.shiftKey) {
-                const parentFieldDom = fieldDOM.parentNode.parentNode;
-                const parentOfParent = parentFieldDom.parentNode;
+                const parent = node.getParent();
+                const parentOfParent = parent.getParent();
 
-                if (parentFieldDom.nextSibling) parentOfParent.insertBefore(fieldDOM, parentFieldDom.nextSibling);
-                else parentOfParent.appendChild(fieldDOM);
+                if (parent.next()) node.insertBefore(parent.next());
+                else parentOfParent.insert(node);
 
-                await this.save();
-                return;
-            }
-            /*if (fieldDOM.previousSibling) {
-                const subfields = MindfieldsDomHelper.getSubfieldsByFied(fieldDOM.previousSibling);
-                subfields.append(fieldDOM);
-                await this.save();
-            }*/
+            } else if (node.prev()) node.prev().insert(node);
 
+            await this.save();
             return;
         }
         if (ctrl && k === 'ArrowUp' && node.prev()) {
@@ -131,14 +126,14 @@ export default class Nodes {
             const totalUnits = unit.getData().nodes ? calcSubUnits(unit.getData().nodes) : 0;
             if (unit.getData().nodes && totalUnits > 5) {
                 if (confirm(`Really want to delete element with [${totalUnits}] units?`)) {
-                    //node.;
+
                 }
             } else {
                 this.delete(node);
             }
         }
 
-        //await this.save();
+        await this.save();
     }
 
     async handleClick(e) {
