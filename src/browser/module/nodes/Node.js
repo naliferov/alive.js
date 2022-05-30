@@ -25,7 +25,7 @@ export default class Node {
         const container = new T({class: ['nodeContainer', 'flex']});
         this.unit.insert(container);
 
-        this.openClose = new T({txt: '>', class: ['openClose']});
+        this.openClose = new T({name: '>', class: ['openClose']});
         this.openClose.on('click', async () => {
             if (this.openClose.hasClass('disabled')) return;
             if (this.nodes.isHidden()) this.nodes.show();
@@ -35,7 +35,6 @@ export default class Node {
         container.insert(this.openClose);
         container.insert(this.dataUnit);
         this.dataUnit.toggleEdit();
-
         this.nodes = new T({class: ['subFields']});
         this.unit.insert(this.nodes);
 

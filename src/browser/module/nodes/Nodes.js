@@ -71,10 +71,7 @@ export default class Nodes {
         if (k === 'Enter') {
             e.preventDefault();
             this.copy(node);
-            await this.save();
-            return;
-        }
-        if (k === 'Tab') {
+        } else if (k === 'Tab') {
             e.preventDefault();
 
             if (e.shiftKey) {
@@ -86,19 +83,17 @@ export default class Nodes {
 
             } else if (node.prev()) node.prev().insert(node);
 
-            await this.save();
-            return;
-        }
-        if (ctrl && k === 'ArrowUp' && node.prev()) {
+        } else if (ctrl && k === 'ArrowUp' && node.prev()) {
             node.insertBefore(node.prev());
             e.target.focus();
-            await this.save();
-        }
-        if (ctrl && k === 'ArrowDown' && node.next()) {
+        } else if (ctrl && k === 'ArrowDown' && node.next()) {
             node.next().insertBefore(node);
             e.target.focus();
-            await this.save();
+        } else {
+            return;
         }
+
+        await this.save();
     }
 
     async handleKeyUp(e) {

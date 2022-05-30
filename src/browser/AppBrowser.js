@@ -96,7 +96,7 @@ class AppBrowser {
         pubsub.sub(NODES_CONTROL, () => {
             input.onKeyDown(async (e) => await nodes.handleKeyDown(e));
             input.onKeyUp(async (e) => await nodes.handleKeyUp(e));
-            input.onClick(async (e) => await nodes.handleClick(e));
+            input.onDblClick(async (e) => await nodes.handleClick(e));
         });
         pubsub.sub(EDITING_AST_NODE, () => input.disableHandlers());
 
