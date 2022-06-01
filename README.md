@@ -1,6 +1,7 @@
-# fx.js
+# Javascript development machine
 
-Structured editor for javascript subset and env for its execution. Using nodejs.
+Structured editor for javascript subset and env for its execution.
+Using nodejs for execution.
 
 ## How to run this project?
 
