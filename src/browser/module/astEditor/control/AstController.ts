@@ -91,12 +91,7 @@ export default class AstController {
     getUnit() { return this.unit; }
 
     async save() {
-        console.log({
-            chunks: this.fxSerializer.serialize(this.mainChunk),
-            markedChunksIds: this.marker.getMarkedChunksIds(),
-        });
-
-        this.contextUnit.setDataField('fx', {
+        this.contextUnit.setDataField('astNodes', {
             chunks: this.fxSerializer.serialize(this.mainChunk),
             markedChunksIds: this.marker.getMarkedChunksIds(),
         });
