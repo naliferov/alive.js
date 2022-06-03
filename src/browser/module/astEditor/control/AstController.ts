@@ -283,10 +283,11 @@ export default class AstController {
     enterBtn(shift = false, ctrl = false) {
 
         if (this.marker.isEmpty()) {
-            const inserter = this.fxMutatorFactory.createEditNode(this);
-            this.mainChunk.insert(inserter);
-            this.marker.mark(inserter);
+            const editor = this.fxMutatorFactory.createEditNode(this);
+            this.mainChunk.insert(editor);
+            this.marker.mark(editor);
             this.pubsub.pub(EDITING_AST_NODE);
+            editor.focus();
             return;
         }
         if (this.marker.getLength() === 1) {
