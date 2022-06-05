@@ -89,16 +89,20 @@ class AppBrowser {
 
         const input = new Input(window);
 
-        pubsub.sub(AST_CONTROL_MODE, () => {
-            input.onKeyDown(async (e) => await fxRuntime.onKeyDown(e))
-        });
         pubsub.sub(OPEN_TAB, ({unit}) => fxRuntime.openTab(unit));
         pubsub.sub(NODES_CONTROL, () => {
             input.onKeyDown(async (e) => await nodes.handleKeyDown(e));
             input.onKeyUp(async (e) => await nodes.handleKeyUp(e));
             input.onDblClick(async (e) => await nodes.handleClick(e));
         });
-        pubsub.sub(EDITING_AST_NODE, () => input.disableHandlers());
+        pubsub.sub(AST_CONTROL_MODE, () => {
+            console.log('ast control mode');
+            input.onKeyDown(async (e) => await fxRuntime.onKeyDown(e));
+        });
+        pubsub.sub(EDITING_AST_NODE, () => {
+            console.log('EDITING_AST_NODE');
+            input.disableHandlers()
+        });
 
         fxRuntime.onClick(() => pubsub.pub(AST_CONTROL_MODE));
         nodes.getUnit().on('click', () => pubsub.pub(NODES_CONTROL));

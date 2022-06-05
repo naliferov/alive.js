@@ -59,8 +59,11 @@ export default class AstController {
 
         this.unit = new T({class: ['fxRuntimeController']});
 
-        const markerMonitor = new T({class: ['markerMonitor'], name: 'markerMonitor'});
+        const markerMonitor = new T({class: ['markedNode'], name: 'markedNode: '});
         this.unit.in(markerMonitor);
+
+        //const imports = new T({class: ['imports'], name: 'imports'});
+        //this.unit.in(imports);
 
         const chunkContainer = new T({class: ['chunksContainer']});
         this.unit.in(chunkContainer);
@@ -271,18 +274,21 @@ export default class AstController {
     switchToInsertingMode(chunk: AstNode) {
         const inserter = this.fxMutatorFactory.createEditNode(this);
         chunk.insert(inserter);
-        this.marker.mark(inserter);
+        this.marker.unmarkAll().mark(inserter);
         this.pubsub.pub(EDITING_AST_NODE);
+        inserter.focus();
+    }
+
+    markSendEventAndFocus(editNode) {
+        this.marker.unmarkAll().mark(editNode);
+        this.pubsub.pub(EDITING_AST_NODE);
+        editNode.focus();
     }
 
     enterBtn(shift = false, ctrl = false) {
 
         if (this.marker.isEmpty()) {
-            const editor = this.fxMutatorFactory.createEditNode(this);
-            this.mainChunk.insert(editor);
-            this.marker.mark(editor);
-            this.pubsub.pub(EDITING_AST_NODE);
-            editor.focus();
+            this.switchToInsertingMode(this.mainChunk);
             return;
         }
         if (this.marker.getLength() === 1) {
@@ -292,7 +298,10 @@ export default class AstController {
 
             //INSERT NEW LINE
             if (ctrl && shift && marked) {
-                marked.getParentChunk().insertBefore(new NewLine(), marked);
+                const newLine = new NewLine;
+                if (marked instanceof NewLine) newLine.addVerticalShift();
+                if (marked.getPrevChunk() instanceof NewLine) newLine.addVerticalShift();
+                marked.getParentChunk().insertBefore(newLine, marked);
                 this.save();
                 return;
             }
@@ -328,12 +337,9 @@ export default class AstController {
                 objectItem.getKey().insert(inserter);
 
                 if (marked.getNextChunk()) {
-
                 } else {
                     marked.getParentChunk().insert(objectItem);
-
-                    this.marker.unmarkAll().mark(inserter);
-                    this.pubsub.pub(EDITING_AST_NODE);
+                    this.markSendEventAndFocus(inserter);
                 }
                 return;
             }
@@ -347,19 +353,14 @@ export default class AstController {
                 } else {
                     parent.insert(newArrayItem);
                 }
-                this.marker.unmarkAll().mark(inserter);
-                this.pubsub.pub(EDITING_AST_NODE);
+                this.markSendEventAndFocus(inserter);
                 return;
             }
             if (marked instanceof ForConditionPart) {
 
                 const forConditionPart = new ForConditionPart();
                 marked.getParentChunk().insert(forConditionPart);
-
-                forConditionPart.insert(inserter);
-
-                this.marker.unmarkAll().mark(inserter);
-                this.pubsub.pub(EDITING_AST_NODE);
+                this.switchToInsertingMode(forConditionPart);
                 return;
             }
             if (marked instanceof ForCondition) {
@@ -367,39 +368,21 @@ export default class AstController {
                 const forConditionPart = new ForConditionPart();
                 marked.insert(forConditionPart);
 
-                //дублирование кода ещё в 4х местах ниже
-                forConditionPart.insert(inserter);
-                this.marker.unmarkAll().mark(inserter);
-                this.pubsub.pub(EDITING_AST_NODE);
+                this.switchToInsertingMode(forConditionPart);
                 return;
             }
             if (marked instanceof ConditionNode || marked instanceof BodyNode) {
-                marked.insert(inserter);
-                this.marker.unmarkAll().mark(inserter);
-                this.pubsub.pub(EDITING_AST_NODE);
+                this.switchToInsertingMode(marked);
                 return;
             }
 
             //INSERT INTO MARKED
             if (ctrl && marked) {
-
-                if (marked instanceof If) {
-                    marked.insertInCondition(inserter);
-                    this.marker.unmarkAll().mark(inserter);
-                    this.pubsub.pub(EDITING_AST_NODE);
-                    return;
-                } else {
-                    marked.insert(inserter);
-                    this.marker.unmarkAll().mark(inserter);
-                    this.pubsub.pub(EDITING_AST_NODE);
-                    return;
-                }
+                this.switchToInsertingMode(marked instanceof If ? marked.getCondition() : marked);
+                return;
             }
-
             if (this.addChunkAfterMarked(inserter)) {
-                this.marker.unmarkAll().mark(inserter);
-                this.pubsub.pub(EDITING_AST_NODE);
-                inserter.focus();
+                this.markSendEventAndFocus(inserter);
             }
         }
     }
@@ -407,15 +390,10 @@ export default class AstController {
     moveLeft(isShift: boolean, isCtrl: boolean) {
 
         if (this.mainChunk.isEmpty()) {
-            const inserter = this.fxMutatorFactory.createEditNode(this);
-            this.mainChunk.insert(inserter);
-            this.marker.mark(inserter);
-            this.pubsub.pub(EDITING_AST_NODE);
-            inserter.focus();
+            this.switchToInsertingMode(this.mainChunk);
         }
-        if (this.marker.isEmpty()) {
-            return;
-        }
+        if (this.marker.isEmpty()) return;
+
         if (this.marker.getLength() === 1) {
 
             const marked = this.marker.getFirst();
@@ -489,10 +467,7 @@ export default class AstController {
 
                 const objectKey = objectKeyOrValue.getPrevChunk().getPrevChunk();
                 if (objectKey.isEmpty()) {
-                    const inserter = this.fxMutatorFactory.createEditNode(this);
-                    objectKey.insert(inserter);
-                    this.marker.unmarkAll().mark(inserter);
-                    this.pubsub.pub(EDITING_AST_NODE);
+                    this.switchToInsertingMode(objectKey);
                 } else {
                     this.marker.unmarkAll().mark(objectKey.getLastChunk());
                 }
@@ -513,11 +488,7 @@ export default class AstController {
         if (this.marker.isEmpty()) {
             const chunk = this.mainChunk.getFirstChunk();
             if (!chunk) {
-                const inserter = this.fxMutatorFactory.createEditNode(this);
-                this.mainChunk.insert(inserter);
-                this.marker.mark(inserter);
-                this.pubsub.pub(EDITING_AST_NODE);
-                inserter.focus();
+                this.switchToInsertingMode(this.mainChunk)
                 return;
             }
 
@@ -540,10 +511,7 @@ export default class AstController {
                     const ifChunk = parent.getParentChunk();
 
                     if (ifChunk.isBodyEmpty()) {
-                        const inserter = this.fxMutatorFactory.createEditNode(this);
-                        ifChunk.getBody().insert(inserter);
-                        this.marker.mark(inserter);
-                        this.pubsub.pub(EDITING_AST_NODE);
+                        this.switchToInsertingMode(ifChunk.getBody())
                     } else {
                         const first = ifChunk.getBody().getFirstChunk();
                         if (!first) return;
@@ -554,14 +522,9 @@ export default class AstController {
                 }
                 if (parent instanceof ForCondition) {
 
-                    this.marker.unmarkAll();
                     const forChunk = parent.getParentChunk();
-
                     if (forChunk.isBodyEmpty()) {
-                        this.pubsub.pub(EDITING_AST_NODE);
-                        const inserter = this.fxMutatorFactory.createEditNode(this);
-                        forChunk.getBody().insert(inserter);
-                        this.marker.mark(inserter);
+                        this.switchToInsertingMode(forChunk.getBody())
                     }
                     return;
                 }
@@ -610,10 +573,7 @@ export default class AstController {
                     forCondition.getParentChunk().insertInCondition(newForConditionPart);
 
                     const inserter = this.fxMutatorFactory.createEditNode(this);
-                    newForConditionPart.insert(inserter);
-                    this.marker.unmarkAll().mark(inserter);
-                    this.pubsub.pub(EDITING_AST_NODE);
-
+                    this.switchToInsertingMode(inserter);
                     return;
                 }
             }
@@ -669,8 +629,7 @@ export default class AstController {
                 if (objectValue.isEmpty()) {
                     const inserter = this.fxMutatorFactory.createEditNode(this);
                     objectValue.insert(inserter);
-                    this.marker.unmarkAll().mark(inserter);
-                    this.pubsub.pub(EDITING_AST_NODE);
+                    this.markSendEventAndFocus(inserter);
                 } else {
                     this.marker.unmarkAll().mark(objectValue.getFirstChunk());
                 }
@@ -739,8 +698,7 @@ export default class AstController {
     moveDown(isShift: boolean, isCtrl: boolean) {
 
         if (this.marker.isEmpty()) {
-            const chunk = this.mainChunk.getFirstChunk();
-            this.marker.mark(chunk);
+            this.marker.mark(this.mainChunk.getFirstChunk());
             return;
         }
 
@@ -751,7 +709,6 @@ export default class AstController {
 
             if (marked instanceof Name) return;
             else if (marked instanceof Surround) {
-
                 this.marker.unmarkAll().mark(marked.getFirstChunk());
             } else if (marked instanceof BodyNode) {
 
@@ -764,9 +721,7 @@ export default class AstController {
             } else if (marked instanceof ConditionAndBodyNode) {
 
                 if (marked.isConditionEmpty() && marked.isBodyEmpty()) {
-                    marked.insertInCondition(inserter);
-                    this.marker.unmarkAll().mark(inserter);
-                    this.pubsub.pub(EDITING_AST_NODE);
+                    this.switchToInsertingMode(marked.getCondition());
                 } else {
                     this.marker.unmarkAll().mark(marked.getCondition());
                 }
@@ -774,13 +729,9 @@ export default class AstController {
             } else if (marked instanceof For) {
 
                 if (marked.isConditionEmpty() && marked.isBodyEmpty()) {
-
                     const forConditionPart = new ForConditionPart();
                     marked.insertInCondition(forConditionPart);
-
-                    forConditionPart.insert(inserter);
-                    this.marker.unmarkAll().mark(inserter);
-                    this.pubsub.pub(EDITING_AST_NODE);
+                    this.switchToInsertingMode(forConditionPart);
                 } else {
                     this.marker.unmarkAll().mark(marked.getCondition());
                 }
@@ -791,9 +742,7 @@ export default class AstController {
                     const callableConditionPart = new CallableConditionPart();
                     marked.insertInCondition(callableConditionPart);
 
-                    callableConditionPart.insert(inserter);
-                    this.marker.unmarkAll().mark(inserter);
-                    this.pubsub.pub(EDITING_AST_NODE);
+                    this.switchToInsertingMode(callableConditionPart);
                 }
 
             }  else if (marked instanceof ForConditionPart) {
@@ -805,12 +754,9 @@ export default class AstController {
 
                 if (marked.isEmpty()) {
                     const arrayItem = new ArrayItem();
-
                     arrayItem.insert(inserter);
                     marked.insert(arrayItem);
-
-                    this.marker.unmarkAll().mark(inserter);
-                    this.pubsub.pub(EDITING_AST_NODE);
+                    this.markSendEventAndFocus(inserter);
                 } else {
                     const body = marked.getBody();
                     this.marker.unmarkAll().mark(body.getFirstChunk());
@@ -826,9 +772,7 @@ export default class AstController {
 
                     objectItem.getKey().insert(inserter);
                     marked.insert(objectItem);
-
-                    this.marker.unmarkAll().mark(inserter);
-                    this.pubsub.pub(EDITING_AST_NODE);
+                    this.markSendEventAndFocus(inserter);
                 } else {
                     const body = marked.getBody();
                     this.marker.unmarkAll().mark(body.getFirstChunk());
@@ -841,14 +785,10 @@ export default class AstController {
                 this.marker.unmarkAll().mark(marked.getFirstChunk().getFirstChunk());
 
             } else if (marked instanceof ObjectValue) {
-                marked.insert(inserter);
-                this.marker.unmarkAll().mark(inserter);
-                this.pubsub.pub(EDITING_AST_NODE);
+                this.switchToInsertingMode(marked);
             } else {
                 const firstChunk = marked.getFirstChunk();
-                if (firstChunk) {
-                    this.marker.unmarkAll().mark(firstChunk);
-                }
+                if (firstChunk) this.marker.unmarkAll().mark(firstChunk);
             }
 
             return;

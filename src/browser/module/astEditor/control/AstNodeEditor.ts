@@ -54,9 +54,7 @@ export default class AstNodeEditor {
             this.mode = MODE_EDIT;
             this.node = node;
             this.node.iEditTxt();
-        } else {
-            return;
-        }
+        } else return;
 
         this.pubsub.pub(EDITING_AST_NODE);
         this.processNodeInput(node, fxController);
@@ -78,7 +76,9 @@ export default class AstNodeEditor {
             } else {
                 newChunk.getParentChunk().insert(newInserter);
             }
+
             fxController.unmarkAll().mark(newInserter);
+            newInserter.focus();
         }
     }
 
@@ -89,6 +89,11 @@ export default class AstNodeEditor {
         const keyDown = (e) => {
 
             const key = e.key;
+
+            const offset = document.getSelection().focusOffset;
+            const text = this.node.getTxt();
+            isCaretOnLastChar = offset && text.trim().length > 0 && text.length === offset;
+
             if (key === 'Escape') {
 
                 const prevChunk = node.getPrevChunk();
@@ -184,35 +189,11 @@ export default class AstNodeEditor {
 
         };
         const keyUp = (e) => {
-
             const isArrowRight = e.key === 'ArrowRight';
             const isSpace = e.key === ' ';
-            const text = this.node.getTxt();
-
-            if (isSpace && isCaretOnLastChar) {
-                const chunk = this.getNewChunkByTxt(text.trim());
+            if (isCaretOnLastChar && (isArrowRight || isSpace)) {
+                const chunk = this.getNewChunkByTxt(this.node.getTxt());
                 if (chunk) this.insertNewChunk(chunk, true, fxController);
-                return;
-            }
-            if (isArrowRight) {
-
-                const offset = document.getSelection().focusOffset;
-                if (offset < text.length) {
-                    isCaretOnLastChar = false;
-
-                } else if (offset && text.trim().length > 0 && text.length === offset) {
-
-                    if (isCaretOnLastChar) {
-                        const chunk = this.getNewChunkByTxt(text.trim());
-                        if (chunk) this.insertNewChunk(chunk, true, fxController);
-                        return;
-                    }
-
-                    isCaretOnLastChar = true;
-                    return;
-                }
-
-                console.log('caretOffset', offset, text.length);
             }
         }
 

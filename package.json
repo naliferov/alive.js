@@ -2,7 +2,7 @@
   "engines": {
     "node": "16.7.0"
   },
-  "name": "fx",
+  "name": "jdm",
   "version": "0.0.9",
   "description": "",
   "author": "Nick Aliferov",
@@ -17,12 +17,12 @@
     "axios": "^0.21.1",
     "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.5",
-    "esbuild": "^0.11.9",
     "express": "*",
-    "mongodb": "^4.5.0",
-    "webpack": "^5.35.0"
+    "mongodb": "^4.5.0"
   },
   "devDependencies": {
+    "webpack": "^5.35.0",
+    "esbuild": "^0.11.9",
     "@types/react-css-modules": "^4.6.3",
     "css-loader": "^5.2.4",
     "esbuild-loader": "^2.12.0",

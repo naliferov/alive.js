@@ -11,3 +11,7 @@ Using nodejs for execution.
 * Run webpack with command `webpack`.
 * Run command `node x.js webServer` to start project app.
 * Navigate to http://localhost:8080 for testing.
+
+### Design Specification
+
+Outliner and AstEditor. Execution

@@ -12,7 +12,7 @@
     <!-- End Google Tag Manager -->
 
     <meta charset="UTF-8">
-    <title>fx.js</title>
+    <title>JDM</title>
     <style>
         @font-face {
             font-family: "JetBrains Mono";
@@ -190,8 +190,9 @@
             margin-bottom: 1em;
         }
 
-        .markerMonitor {
+        .markedNode {
             margin: 0.5em 0;
+            font-weight: 400;
         }
         .inserter {
             background: #A6D2FF;
@@ -220,12 +221,20 @@
             padding: 0 4px;
         }*/
 
-        div.fx {
+        .fx {
             display: inline;
             font-family: 'JetBrains Mono', sans-serif;
             font-size: 13px;
             line-height: 1.55em;
         }
+        .fx.newLine {
+            display: block;
+            width: 7px;
+        }
+        .fx.newLine.verticalShift {
+            height: 17.5px;
+        }
+
 
         div.bracket { color: var(--bracket-color) }
 
