@@ -10,7 +10,7 @@ import For from "../nodes/conditionAndBody/loop/For";
 import Main from "../nodes/Main";
 import ForCondition from "../nodes/conditionAndBody/loop/ForCondition";
 import Pubsub from "../../../../io/pubsub/Pubsub";
-import {EDITING_AST_NODE} from "../../../../io/pubsub/PubsubConstants";
+import {AST_NODE_EDIT_MODE} from "../../../../io/pubsub/PubsubConstants";
 import ForConditionPart from "../nodes/conditionAndBody/loop/ForConditionPart";
 import ForConditionPartInternal from "../nodes/conditionAndBody/loop/ForConditionPartInternal";
 import Nodes from "../../nodes/Nodes";
@@ -275,13 +275,13 @@ export default class AstController {
         const inserter = this.fxMutatorFactory.createEditNode(this);
         chunk.insert(inserter);
         this.marker.unmarkAll().mark(inserter);
-        this.pubsub.pub(EDITING_AST_NODE);
+        this.pubsub.pub(AST_NODE_EDIT_MODE);
         inserter.focus();
     }
 
     markSendEventAndFocus(editNode) {
         this.marker.unmarkAll().mark(editNode);
-        this.pubsub.pub(EDITING_AST_NODE);
+        this.pubsub.pub(AST_NODE_EDIT_MODE);
         editNode.focus();
     }
 
@@ -328,7 +328,7 @@ export default class AstController {
                     arrayBody.insert(newArrayItem);
                 }
                 this.marker.unmarkAll().mark(inserter);
-                this.pubsub.pub(EDITING_AST_NODE);
+                this.pubsub.pub(AST_NODE_EDIT_MODE);
                 return;
             }*/
 
@@ -533,7 +533,7 @@ export default class AstController {
                     this.marker.unmarkAll();
                     const forChunk = parent.getParentChunk().getParentChunk().getParentChunk();
                     if (forChunk.isBodyEmpty()) {
-                        this.pubsub.pub(EDITING_AST_NODE);
+                        this.pubsub.pub(AST_NODE_EDIT_MODE);
                         const inserter = this.fxMutatorFactory.createEditNode(this);
                         forChunk.getBody().insert(inserter);
                         this.marker.mark(inserter);

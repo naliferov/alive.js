@@ -6,7 +6,7 @@ import Input from "./Input";
 import {
     AST_CONTROL_MODE, OPEN_TAB,
     NODES_CONTROL,
-    EDITING_AST_NODE
+    AST_NODE_EDIT_MODE
 } from "../io/pubsub/PubsubConstants";
 import TabManager from "./module/astEditor/tab/TabManager";
 import LocalState from "./Localstate";
@@ -99,8 +99,8 @@ class AppBrowser {
             console.log('ast control mode');
             input.onKeyDown(async (e) => await fxRuntime.onKeyDown(e));
         });
-        pubsub.sub(EDITING_AST_NODE, () => {
-            console.log('EDITING_AST_NODE');
+        pubsub.sub(AST_NODE_EDIT_MODE, () => {
+            console.log('AST_NODE_EDIT_MODE');
             input.disableHandlers()
         });
 

@@ -1,6 +1,6 @@
 import AstNode from "../nodes/AstNode";
 import Inserter from "../nodes/Inserter";
-import {EDITING_AST_NODE, AST_CONTROL_MODE} from "../../../../io/pubsub/PubsubConstants";
+import {AST_NODE_EDIT_MODE, AST_CONTROL_MODE} from "../../../../io/pubsub/PubsubConstants";
 import ForConditionPartInternal from "../nodes/conditionAndBody/loop/ForConditionPartInternal";
 import Main from "../nodes/Main";
 import AstController from "./AstController";
@@ -49,14 +49,12 @@ export default class AstNodeEditor {
             node instanceof Op ||
             node instanceof Literal
         ) {
-            console.log(node);
-
             this.mode = MODE_EDIT;
             this.node = node;
             this.node.iEditTxt();
         } else return;
 
-        this.pubsub.pub(EDITING_AST_NODE);
+        this.pubsub.pub(AST_NODE_EDIT_MODE);
         this.processNodeInput(node, fxController);
     }
 
@@ -67,6 +65,8 @@ export default class AstNodeEditor {
         node.getParentChunk().insertBefore(newChunk, node);
         fxController.removeChunk(node);
         fxController.unmarkAll().mark(newChunk);
+
+        //удалить inserter если контроль получает AST_CONTROL_MODE
 
         if (insertAgain) {
             const newInserter = this.createEditNode(fxController);
