@@ -65,8 +65,9 @@ export default class AstNodeEditor {
         node.getParentChunk().insertBefore(newChunk, node);
         fxController.removeChunk(node);
         fxController.unmarkAll().mark(newChunk);
+        fxController.save();
 
-        //удалить inserter если контроль получает AST_CONTROL_MODE
+        //todo удалить inserter если контроль получает AST_CONTROL_MODE
 
         if (insertAgain) {
             const newInserter = this.createEditNode(fxController);
@@ -205,12 +206,16 @@ export default class AstNodeEditor {
 
         if (!t.length) return;
 
+        t = t.trim();
+
         if (t === '=') return new Op('=');
         if (t === '==') return new Op('==');
         if (t === '===') return new Op('===');
         if (t === '!') return new Op('!');
         if (t === '+') return new Op('+');
+        if (t === '++') return new Op('++');
         if (t === '-') return new Op('-');
+        if (t === '--') return new Op('--');
         if (t === '*') return new Op('*');
         if (t === '/') return new Op('/');
         if (t === '>') return new Op('>');

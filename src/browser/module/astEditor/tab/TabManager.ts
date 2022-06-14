@@ -1,7 +1,7 @@
 import T from "../../../../type/T";
 import Pubsub from "../../../../io/pubsub/Pubsub";
 import Nodes from "../../nodes/Nodes";
-import FxSerializer from "../FxSerializer";
+import AstSerializer from "../AstSerializer";
 import LocalState from "../../../Localstate";
 import Tab from "./Tab";
 
@@ -17,7 +17,7 @@ export default class TabManager {
     localState: LocalState;
     pubsub: Pubsub;
     mindFields: Nodes;
-    fxSerializer: FxSerializer;
+    fxSerializer: AstSerializer;
 
     constructor(pubsub: Pubsub, mindFields: Nodes, localState: LocalState) {
 
@@ -32,10 +32,14 @@ export default class TabManager {
         this.mindFields = mindFields;
 
         this.tabs = new Map<string, Tab>();
-        this.fxSerializer = new FxSerializer();
+        this.fxSerializer = new AstSerializer();
 
         //todo возможно это должно быть в nodes, а nodes должен уметь сохранять некоторые
         this.localState = localState;
+    }
+
+    getTabByContextUnit(unit: T): Tab|null {
+        return this.tabs.get(unit.getId());
     }
 
     openTab(unit: T) {
@@ -44,7 +48,6 @@ export default class TabManager {
         if (openedTab && this.activeTab.getContextUnitId() === openedTab.getContextUnitId()) {
             return;
         }
-
         if (this.activeTab) this.activeTab.deactivate();
 
         if (openedTab) {
@@ -68,24 +71,19 @@ export default class TabManager {
         }
 
         this.localState.openTab(this.activeTab.getContextUnitId());
-    }
-
-    getTabByContextUnit(unit: T): Tab|null {
-        return this.tabs.get(unit.getId());
+        this.localState.setActiveTabId(this.activeTab.getContextUnitId());
     }
 
     focusTab(tab: Tab) {
-
         if (this.activeTab) {
             if (this.activeTab.getContextUnitId() === tab.getContextUnitId()) {
                 return;
             }
             this.activeTab.deactivate();
         }
-
         this.activeTab = tab;
-        this.activeTab.activate();
-        this.localState.setActiveTabId(this.activeTab.getContextUnitId());
+        tab.activate();
+        this.localState.setActiveTabId(tab.getContextUnitId());
     }
 
     closeTab(tab: Tab) {

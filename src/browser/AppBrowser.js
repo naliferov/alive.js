@@ -1,5 +1,5 @@
 import T from "../type/T";
-import FxRuntime from "./module/astEditor/FxRuntime";
+import AstRuntime from "./module/astEditor/AstRuntime";
 import Pubsub from "../io/pubsub/Pubsub";
 import Nodes from "./module/nodes/Nodes";
 import Input from "./Input";
@@ -84,7 +84,7 @@ class AppBrowser {
         const localState = new LocalState();
 
         const fxTabManager = new TabManager(pubsub, nodes, localState);
-        const fxRuntime = new FxRuntime(nodes, pubsub, fxTabManager);
+        const fxRuntime = new AstRuntime(pubsub, fxTabManager);
         fxRuntime.init(pageFx);
 
         const input = new Input(window);
@@ -100,7 +100,7 @@ class AppBrowser {
             input.onKeyDown(async (e) => await fxRuntime.onKeyDown(e));
         });
         pubsub.sub(AST_NODE_EDIT_MODE, () => {
-            console.log('AST_NODE_EDIT_MODE');
+            console.log('ast node edit mode');
             input.disableHandlers()
         });
 

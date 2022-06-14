@@ -1,7 +1,7 @@
 import T from "../../../../type/T";
 import TabName from "./TabName";
 import Pubsub from "../../../../io/pubsub/Pubsub";
-import FxSerializer from "../FxSerializer";
+import AstSerializer from "../AstSerializer";
 import Nodes from "../../nodes/Nodes";
 import AstController from "../control/AstController";
 import AstNodeEditor from "../control/AstNodeEditor";
@@ -13,7 +13,7 @@ export default class Tab {
 
     contextUnit: T;
 
-    constructor(tabName, contextUnit: T, pubsub: Pubsub, fxSerializer: FxSerializer, mindfields: Nodes) {
+    constructor(tabName, contextUnit: T, pubsub: Pubsub, fxSerializer: AstSerializer, mindfields: Nodes) {
         this.fxTabName = new TabName(tabName, contextUnit);
         this.fxController = new AstController(
             contextUnit, pubsub, fxSerializer, new AstNodeEditor(pubsub), mindfields

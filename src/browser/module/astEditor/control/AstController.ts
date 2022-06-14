@@ -14,7 +14,7 @@ import {AST_NODE_EDIT_MODE} from "../../../../io/pubsub/PubsubConstants";
 import ForConditionPart from "../nodes/conditionAndBody/loop/ForConditionPart";
 import ForConditionPartInternal from "../nodes/conditionAndBody/loop/ForConditionPartInternal";
 import Nodes from "../../nodes/Nodes";
-import FxSerializer from "../FxSerializer";
+import AstSerializer from "../AstSerializer";
 import Callable from "../nodes/conditionAndBody/call/callable/Callable";
 import CallableConditionPart from "../nodes/conditionAndBody/call/callable/ConditionPart";
 import AstNode from "../nodes/AstNode";
@@ -40,20 +40,20 @@ export default class AstController {
     pubsub: Pubsub;
 
     contextUnit;
-    mindFields: Nodes;
+    nodes: Nodes;
     linesNumbers: T;
 
     mainChunk: Main;
     marker: Marker;
-    fxSerializer: FxSerializer;
+    fxSerializer: AstSerializer;
     fxMutatorFactory: AstNodeEditor;
 
     constructor(
         context: T,
         pubsub: Pubsub,
-        fxSerializer: FxSerializer,
+        fxSerializer: AstSerializer,
         fxMutatorFactory: AstNodeEditor,
-        mindFields: Nodes
+        nodes: Nodes
     ) {
         this.pubsub = pubsub;
 
@@ -74,7 +74,7 @@ export default class AstController {
         this.fxSerializer = fxSerializer;
         this.fxMutatorFactory = fxMutatorFactory;
 
-        this.mindFields = mindFields;
+        this.nodes = nodes;
 
         this.contextUnit = context;
         this.marker = new Marker(markerMonitor);
@@ -98,7 +98,7 @@ export default class AstController {
             chunks: this.fxSerializer.serialize(this.mainChunk),
             markedChunksIds: this.marker.getMarkedChunksIds(),
         });
-        await this.mindFields.save();
+        await this.nodes.save();
     }
 
     onKeyDown(e) {
@@ -389,9 +389,7 @@ export default class AstController {
 
     moveLeft(isShift: boolean, isCtrl: boolean) {
 
-        if (this.mainChunk.isEmpty()) {
-            this.switchToInsertingMode(this.mainChunk);
-        }
+        if (this.mainChunk.isEmpty()) this.switchToInsertingMode(this.mainChunk);
         if (this.marker.isEmpty()) return;
 
         if (this.marker.getLength() === 1) {
@@ -434,6 +432,10 @@ export default class AstController {
                 this.marker.setDirection('left');
                 this.marker.mark(prevChunk)
                 return;
+            }
+
+            if (prevChunk instanceof NewLine && !prevChunk.isShifted()) {
+                prevChunk = prevChunk.getPrevChunk();
             }
 
             this.marker.unmarkAll().mark(prevChunk)
@@ -547,7 +549,7 @@ export default class AstController {
                 this.marker.unmarkAll().mark(body);
                 return;
             }
-            if (marked instanceof IfBody) {
+            if (marked instanceof BodyNode) {
                 const conditionBodyChunk = marked.getParentChunk();
                 if (conditionBodyChunk.getNextChunk()) this.marker.unmarkAll().mark(conditionBodyChunk.getNextChunk());
                 return;
@@ -571,11 +573,10 @@ export default class AstController {
 
                     const newForConditionPart = new ForConditionPart();
                     forCondition.getParentChunk().insertInCondition(newForConditionPart);
-
-                    const inserter = this.fxMutatorFactory.createEditNode(this);
-                    this.switchToInsertingMode(inserter);
+                    this.switchToInsertingMode(newForConditionPart);
                     return;
                 }
+
             }
             if (marked instanceof ObjectKey) {
                 this.marker.unmarkAll().mark(marked.getNextChunk().getNextChunk());
@@ -597,6 +598,10 @@ export default class AstController {
             }
 
             if (!nextChunk) return;
+
+            if (nextChunk instanceof NewLine && !nextChunk.isShifted()) {
+                nextChunk = nextChunk.getNextChunk();
+            }
 
             this.marker.unmarkAll().mark(nextChunk);
             return;

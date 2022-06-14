@@ -1,15 +1,12 @@
 import T from "../../../type/T";
 
-export default class FxRuntime {
+export default class AstRuntime {
 
     unit;
-    mindFields;
     pubsub;
-    iphone = false;
     fxTabManager;
 
-    constructor(mindFields, pubsub, fxTabManager) {
-        this.mindFields = mindFields;
+    constructor(pubsub, fxTabManager) {
         this.pubsub = pubsub;
         this.unit = new T({class: ['fxRuntimeContainer']});
         this.fxTabManager = fxTabManager;

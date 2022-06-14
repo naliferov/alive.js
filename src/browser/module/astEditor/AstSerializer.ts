@@ -13,7 +13,7 @@ import ArrayItem from "./nodes/literal/array/ArrayItem";
 import ObjectItem from "./nodes/literal/object/ObjectItem";
 import ObjectChunk from "./nodes/literal/object/ObjectChunk";
 
-export default class FxSerializer {
+export default class AstSerializer {
 
     serialize(mainChunk: Main) { return mainChunk.serializeSubChunks(); }
 
@@ -112,34 +112,41 @@ export default class FxSerializer {
 
         const buildAST = (chunk, data) => {
 
+            let lastInsertedChunk = null;
+
             for (let i = 0; i < data.length; i++) {
                 const d = data[i];
-                if (d.t === 'Name') {
+                let chunkForIns;
 
+                if (d.t === 'Name') {
                     const nameChunk = new Name(d.name);
                     if (d.mode === 'let') nameChunk.enableLet();
                     if (d.mode === 'new') nameChunk.enableNew();
-                    chunk.insert(nameChunk);
+                    chunkForIns = nameChunk
 
                 } else if (d.t === 'Op') {
-                    chunk.insert(new Op(d.op));
+                    chunkForIns = new Op(d.op);
                 } else if (d.t === 'Literal') {
-                    chunk.insert(new Literal(d.txt, d.type));
+                    chunkForIns = new Literal(d.txt, d.type);
                 } else if (d.t === 'NewLine') {
-                    chunk.insert(new NewLine());
-                } else if (d.t === 'If') {
-                    chunk.insert(deserializeIfChunk(d));
-                } else if (d.t === 'For') {
-                    chunk.insert(deserializeForChunk(d));
-                } else if (d.t === 'Callable') {
-                    chunk.insert(deserializeCallable(d));
-                } else if (d.t === 'ArrayChunk') {
-                    chunk.insert(deserializeArrayChunk(d));
-                } else if (d.t === 'ObjectChunk') {
-                    chunk.insert(deserializeObjectChunk(d));
-                } else {
+                    const newLine = new NewLine();
+                    if (lastInsertedChunk instanceof NewLine) newLine.addVerticalShift();
+                    chunkForIns = newLine;
+                }
+                else if (d.t === 'If') chunkForIns = deserializeIfChunk(d);
+                else if (d.t === 'For') chunkForIns = deserializeForChunk(d);
+                else if (d.t === 'Callable') chunkForIns = deserializeCallable(d);
+                else if (d.t === 'ArrayChunk') chunkForIns = deserializeArrayChunk(d);
+                else if (d.t === 'ObjectChunk') chunkForIns = deserializeObjectChunk(d);
+                else {
                     console.error(`No handler for chunk [${d.t}].`);
+                    continue;
                     //throw new Error(`No handler for chunk [${d.t}].`)
+                }
+
+                if (chunkForIns) {
+                    chunk.insert(chunkForIns);
+                    lastInsertedChunk = chunkForIns;
                 }
             }
         }
