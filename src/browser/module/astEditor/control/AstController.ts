@@ -1,6 +1,8 @@
 import T from "../../../../type/T";
 import NewLine from "../nodes/NewLine";
-import Name from "../nodes/literal/Name";
+import Id from "../nodes/id/Id";
+import SubId from "../nodes/id/SubId";
+import SubIdContainer from "../nodes/id/SubIdContainer";
 import If from "../nodes/conditionAndBody/if/If";
 import Surround from "../nodes/surround/Surround";
 import Marker from "../Marker";
@@ -139,7 +141,7 @@ export default class AstController {
             if (this.marker.isEmpty()) return;
 
             const marked = this.marker.getFirst();
-            if (marked instanceof Name) marked.switchKeyword();
+            if (marked instanceof Id) marked.switchKeyword();
             this.save();
             return;
         }
@@ -305,6 +307,15 @@ export default class AstController {
                 this.save();
                 return;
             }
+            //INSERT SUBID
+            if (ctrl && marked) {
+                if (marked instanceof Id || marked instanceof SubId) {
+                    const subId = new SubId();
+                    marked.putSubId(subId);
+                    this.switchToInsertingMode(subId);
+                    return;
+                }
+            }
 
             const inserter = this.fxMutatorFactory.createEditNode(this);
             if (
@@ -434,7 +445,7 @@ export default class AstController {
                 return;
             }
 
-            if (prevChunk instanceof NewLine && !prevChunk.isShifted()) {
+            if (prevChunk instanceof NewLine && prevChunk.getPrevChunk() && !prevChunk.isShifted()) {
                 prevChunk = prevChunk.getPrevChunk();
             }
 
@@ -656,23 +667,23 @@ export default class AstController {
         if (isCtrl) {
 
             const marked = this.marker.getFirst();
-            let parentChunk = marked.getParentChunk();
-            if (!parentChunk || parentChunk instanceof Main) {
+            let parent = marked.getParentChunk();
+            if (!parent || parent instanceof Main) {
                 return;
             }
-
             if (
-                parentChunk instanceof ForConditionPartInternal ||
-                parentChunk instanceof SurroundInternal ||
-                parentChunk instanceof ArrayBody ||
-                parentChunk instanceof ArrayItemParts ||
-                parentChunk instanceof ObjectItemParts ||
-                parentChunk instanceof ObjectBody
+                parent instanceof ForConditionPartInternal ||
+                parent instanceof SurroundInternal ||
+                parent instanceof ArrayBody ||
+                parent instanceof ArrayItemParts ||
+                parent instanceof ObjectItemParts ||
+                parent instanceof ObjectBody ||
+                parent instanceof SubIdContainer
             ) {
-                parentChunk = parentChunk.getParentChunk();
+                parent = parent.getParentChunk();
             }
 
-            this.marker.unmarkAll().mark(parentChunk);
+            this.marker.unmarkAll().mark(parent);
             return;
         }
 
@@ -712,7 +723,7 @@ export default class AstController {
 
         if (isCtrl && !isShift) {
 
-            if (marked instanceof Name) return;
+            if (marked instanceof Id) return;
             else if (marked instanceof Surround) {
                 this.marker.unmarkAll().mark(marked.getFirstChunk());
             } else if (marked instanceof BodyNode) {

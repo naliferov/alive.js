@@ -1,13 +1,15 @@
 import AstNode from "../AstNode";
 
-export default class Name extends AstNode {
+export default class Id extends AstNode {
 
     letChunk;
     newChunk;
     nameChunk;
 
+    subId;
+
     constructor(name) {
-        super('', {className: 'name'});
+        super('', {className: 'id'});
         this.letChunk = new AstNode('let ', {className: 'keyword', hidden: true});
         this.newChunk = new AstNode('new ', {className: 'keyword', hidden: true});
         super.insert(this.letChunk);
@@ -17,12 +19,20 @@ export default class Name extends AstNode {
         super.insert(this.nameChunk);
     }
 
+    putSubId(node) {
+        if (!this.subId) this.subId = node;
+        super.insert(this.subId);
+    }
+
     serialize() {
-        return {
+        const data = {
             t: this.constructor.name,
             name: this.nameChunk.getTxt(),
             mode: this.isLet() ? 'let' : this.isNew() ? 'new' : '',
-        }
+        };
+        if (this.subId) data.subId = this.subId.serialize();
+
+        return data;
     }
 
     iEditTxt() {

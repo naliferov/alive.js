@@ -1,5 +1,5 @@
 import Main from "./nodes/Main";
-import Name from "./nodes/literal/Name";
+import Id from "./nodes/id/Id";
 import Op from "./nodes/Op";
 import Literal from "./nodes/literal/Literal";
 import NewLine from "./nodes/NewLine";
@@ -12,14 +12,15 @@ import ArrayChunk from "./nodes/literal/array/ArrayChunk";
 import ArrayItem from "./nodes/literal/array/ArrayItem";
 import ObjectItem from "./nodes/literal/object/ObjectItem";
 import ObjectChunk from "./nodes/literal/object/ObjectChunk";
+import Keyword from "./nodes/Keyword";
 
 export default class AstSerializer {
 
-    serialize(mainChunk: Main) { return mainChunk.serializeSubChunks(); }
+    serialize(mainChunk) { return mainChunk.serializeSubChunks(); }
 
-    deserialize(mainChunk: Main, chunksData: any[]) {
+    deserialize(mainChunk, chunksData) {
 
-        const deserializeIfChunk = (ifData): If => {
+        const deserializeIfChunk = (ifData) => {
             const if_ = new If();
             buildAST(if_.getCondition(), ifData.condition);
             buildAST(if_.getBody(), ifData.body);
@@ -27,7 +28,7 @@ export default class AstSerializer {
             return if_;
         }
 
-        const deserializeForChunk = (chunkData): For => {
+        const deserializeForChunk = (chunkData) => {
             const forChunk = new For();
 
             const condition = chunkData.condition;
@@ -118,8 +119,8 @@ export default class AstSerializer {
                 const d = data[i];
                 let chunkForIns;
 
-                if (d.t === 'Name') {
-                    const nameChunk = new Name(d.name);
+                if (d.t === 'Name' || d.t === 'Id') {
+                    const nameChunk = new Id(d.name);
                     if (d.mode === 'let') nameChunk.enableLet();
                     if (d.mode === 'new') nameChunk.enableNew();
                     chunkForIns = nameChunk
@@ -138,6 +139,7 @@ export default class AstSerializer {
                 else if (d.t === 'Callable') chunkForIns = deserializeCallable(d);
                 else if (d.t === 'ArrayChunk') chunkForIns = deserializeArrayChunk(d);
                 else if (d.t === 'ObjectChunk') chunkForIns = deserializeObjectChunk(d);
+                else if (d.t === 'Keyword') chunkForIns = new Keyword(d.keyword);
                 else {
                     console.error(`No handler for chunk [${d.t}].`);
                     continue;

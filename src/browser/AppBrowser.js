@@ -109,6 +109,7 @@ class AppBrowser {
 
         pubsub.pub(AST_CONTROL_MODE);
 
+        const activeTabId = localState.getActiveTabId();
         const openedFx = localState.getOpenedTabs();
 
         for (let fxId in openedFx) {
@@ -119,8 +120,6 @@ class AppBrowser {
             }
             await fxRuntime.openTab(unit);
         }
-
-        const activeTabId = localState.getActiveTabId();
         if (activeTabId && window.tPool.get(activeTabId)) {
             const unit = await nodes.getTById(activeTabId);
             await fxRuntime.focusTab(unit);

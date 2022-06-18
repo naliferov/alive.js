@@ -10,7 +10,7 @@ export default class AstNode {
     constructor(txt = '', options: any = {}) {
         this.id = uuid();
 
-        let classArr = ['ASTChunk'];
+        let classArr = ['ASTNode'];
 
         if (options.className && Array.isArray(options.className)) {
             classArr = [...options.className, ...classArr];

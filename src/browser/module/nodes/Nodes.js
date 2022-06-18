@@ -179,19 +179,19 @@ export default class Nodes {
 
     async save() {
 
-        const getNodesData = (rootNode) => {
+        const getNodesData = (node) => {
 
             const data = [];
 
-            for (let nodeDom of rootNode.getNodes().getDOM().children) {
+            for (let nodeDom of node.getNodes().getDOM().children) {
 
-                const node = window.nodesPool.get(nodeDom.getAttribute('id'));
-                const unitData = node.getDataUnit().getData();
+                const nodeObject = window.nodesPool.get(nodeDom.getAttribute('id'));
+                const unitData = nodeObject.getDataUnit().getData();
                 let tData = {
                     id: unitData.id,
                     name: unitData.name
                 };
-                const subNodes = getNodesData(node);
+                const subNodes = getNodesData(nodeObject);
                 if (subNodes.length > 0) tData.nodes = subNodes;
                 if (unitData.astNodes) tData.astNodes = unitData.astNodes;
 
@@ -200,6 +200,8 @@ export default class Nodes {
             return data;
         }
 
-        await new HttpClient().post('/nodes', {data: getNodesData(this.rootNode)})
+        console.log(getNodesData(this.rootNode));
+
+        //await new HttpClient().post('/nodes', {data: getNodesData(this.rootNode)})
     }
 }

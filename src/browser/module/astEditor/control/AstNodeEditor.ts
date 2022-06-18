@@ -5,7 +5,8 @@ import ForConditionPartInternal from "../nodes/conditionAndBody/loop/ForConditio
 import Main from "../nodes/Main";
 import AstController from "./AstController";
 import Pubsub from "../../../../io/pubsub/Pubsub";
-import Name from "../nodes/literal/Name";
+import Id from "../nodes/id/Id";
+import Keyword from "../nodes/Keyword";
 import Op from "../nodes/Op";
 import If from "../nodes/conditionAndBody/if/If";
 import For from "../nodes/conditionAndBody/loop/For";
@@ -45,7 +46,7 @@ export default class AstNodeEditor {
 
     editNode(node: AstNode, fxController: AstController) {
 
-        if (node instanceof Name ||
+        if (node instanceof Id ||
             node instanceof Op ||
             node instanceof Literal
         ) {
@@ -65,8 +66,6 @@ export default class AstNodeEditor {
         node.getParentChunk().insertBefore(newChunk, node);
         fxController.removeChunk(node);
         fxController.unmarkAll().mark(newChunk);
-        fxController.save();
-
         //todo удалить inserter если контроль получает AST_CONTROL_MODE
 
         if (insertAgain) {
@@ -208,6 +207,7 @@ export default class AstNodeEditor {
 
         t = t.trim();
 
+        if (t === 'return') return new Keyword('return');
         if (t === '=') return new Op('=');
         if (t === '==') return new Op('==');
         if (t === '===') return new Op('===');
@@ -238,7 +238,7 @@ export default class AstNodeEditor {
 
         //creating object, array, NameOfProp
 
-        return new Name(t);
+        return new Id(t);
     }
 
 }
