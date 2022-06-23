@@ -4,16 +4,21 @@ import SubIdContainer from "./SubIdContainer";
 export default class SubId extends AstNode {
 
     container;
-    subId;
+    expressionMode = false;
 
     constructor() {
         super('', {className: 'subId'});
+
         const bracket = new AstNode('[', {className: 'bracket'});
+        bracket.hide();
+
         super.insert(bracket);
         this.container = new SubIdContainer;
         super.insert(this.container);
 
         const bracket2 = new AstNode(']', {className: 'bracket'});
+        bracket2.hide();
+
         super.insert(bracket2);
     }
 
@@ -23,22 +28,14 @@ export default class SubId extends AstNode {
     }
 
     serialize() {
-        const data = {
-            t: this.constructor.name,
-            container: this.container.serializeSubChunks(),
-        }
-        if (this.subId) data.subId = this.subId.serialize();
-        return data;
+        let d = super.serialize();
+        if (this.container) d.container = this.container.serializeSubChunks();
+        return d;
+    }
+
+    switchMode() {
+
     }
 
     insert(chunk) { this.container.insert(chunk); }
-
-    /*iEditTxt() {
-        this.nameChunk.iEditTxt();
-        this.nameChunk.focus();
-    }
-
-    oEditTxt() {
-        this.nameChunk.oEditTxt();
-    }*/
 }

@@ -13,6 +13,7 @@ import ArrayItem from "./nodes/literal/array/ArrayItem";
 import ObjectItem from "./nodes/literal/object/ObjectItem";
 import ObjectChunk from "./nodes/literal/object/ObjectChunk";
 import Keyword from "./nodes/Keyword";
+import SubId from "./nodes/id/SubId";
 
 export default class AstSerializer {
 
@@ -109,6 +110,14 @@ export default class AstSerializer {
 
             return object;
         }
+        const deserializeSubId = (subIdData) => {
+
+            if (!subIdData) throw new Error('invalid subIdData ' + JSON.stringify(subIdData));
+
+            const subId = new SubId();
+            buildAST(subId, subIdData.container);
+            return subId;
+        }
 
 
         const buildAST = (chunk, data) => {
@@ -125,6 +134,13 @@ export default class AstSerializer {
                     if (d.mode === 'new') nameChunk.enableNew();
                     chunkForIns = nameChunk
 
+                    /*if (d.subId) {
+                        const subId = deserializeSubId(d.subId);
+                        nameChunk.putSubId(subId);
+                    }*/
+
+                } else if (d.t === 'SubId') {
+                    chunkForIns = deserializeSubId(d);
                 } else if (d.t === 'Op') {
                     chunkForIns = new Op(d.op);
                 } else if (d.t === 'Literal') {

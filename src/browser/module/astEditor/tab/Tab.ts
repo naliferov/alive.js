@@ -3,19 +3,19 @@ import TabName from "./TabName";
 import Pubsub from "../../../../io/pubsub/Pubsub";
 import AstSerializer from "../AstSerializer";
 import Nodes from "../../nodes/Nodes";
-import AstController from "../control/AstController";
+import AstEditor from "../control/AstEditor";
 import AstNodeEditor from "../control/AstNodeEditor";
 
 export default class Tab {
 
     fxTabName: TabName;
-    fxController: AstController;
+    fxController: AstEditor;
 
     contextUnit: T;
 
     constructor(tabName, contextUnit: T, pubsub: Pubsub, fxSerializer: AstSerializer, mindfields: Nodes) {
         this.fxTabName = new TabName(tabName, contextUnit);
-        this.fxController = new AstController(
+        this.fxController = new AstEditor(
             contextUnit, pubsub, fxSerializer, new AstNodeEditor(pubsub), mindfields
         );
 
@@ -30,7 +30,7 @@ export default class Tab {
         return this.fxTabName;
     }
 
-    getFxController(): AstController {
+    getFxController(): AstEditor {
         return this.fxController;
     }
 

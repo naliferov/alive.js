@@ -3,7 +3,7 @@ import Inserter from "../nodes/Inserter";
 import {AST_NODE_EDIT_MODE, AST_CONTROL_MODE} from "../../../../io/pubsub/PubsubConstants";
 import ForConditionPartInternal from "../nodes/conditionAndBody/loop/ForConditionPartInternal";
 import Main from "../nodes/Main";
-import AstController from "./AstController";
+import AstEditor from "./AstEditor";
 import Pubsub from "../../../../io/pubsub/Pubsub";
 import Id from "../nodes/id/Id";
 import Keyword from "../nodes/Keyword";
@@ -35,7 +35,7 @@ export default class AstNodeEditor {
         this.mode = null;
     }
 
-    createEditNode(fxController: AstController) {
+    createEditNode(fxController: AstEditor) {
         this.node = new Inserter();
         this.mode = MODE_INSERT;
         this.node.iEditTxt();
@@ -44,7 +44,7 @@ export default class AstNodeEditor {
         return this.node;
     }
 
-    editNode(node: AstNode, fxController: AstController) {
+    editNode(node: AstNode, fxController: AstEditor) {
 
         if (node instanceof Id ||
             node instanceof Op ||
@@ -59,7 +59,7 @@ export default class AstNodeEditor {
         this.processNodeInput(node, fxController);
     }
 
-    async insertNewChunk(newChunk: AstNode, insertAgain: boolean = false, fxController: AstController) {
+    async insertNewChunk(newChunk: AstNode, insertAgain: boolean = false, fxController: AstEditor) {
 
         const node = this.node;
 
@@ -82,7 +82,7 @@ export default class AstNodeEditor {
         }
     }
 
-    processNodeInput(node: AstNode, fxController: AstController) {
+    processNodeInput(node: AstNode, fxController: AstEditor) {
 
         let isCaretOnLastChar = false;
 

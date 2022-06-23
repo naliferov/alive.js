@@ -200,8 +200,6 @@ export default class Nodes {
             return data;
         }
 
-        console.log(getNodesData(this.rootNode));
-
-        //await new HttpClient().post('/nodes', {data: getNodesData(this.rootNode)})
+        await new HttpClient().post('/nodes', {data: getNodesData(this.rootNode)})
     }
 }

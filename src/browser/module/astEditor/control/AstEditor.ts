@@ -36,7 +36,7 @@ import ObjectKey from "../nodes/literal/object/ObjectKey";
 import ObjectValue from "../nodes/literal/object/ObjectValue";
 import ObjectBody from "../nodes/literal/object/ObjectBody";
 
-export default class AstController {
+export default class AstEditor {
 
     unit: T;
     pubsub: Pubsub;
@@ -311,7 +311,7 @@ export default class AstController {
             if (ctrl && marked) {
                 if (marked instanceof Id || marked instanceof SubId) {
                     const subId = new SubId();
-                    marked.putSubId(subId);
+                    this.addChunkAfterMarked(subId);
                     this.switchToInsertingMode(subId);
                     return;
                 }

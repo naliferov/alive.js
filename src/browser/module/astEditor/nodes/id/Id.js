@@ -19,10 +19,10 @@ export default class Id extends AstNode {
         super.insert(this.nameChunk);
     }
 
-    putSubId(node) {
+    /*putSubId(node) {
         if (!this.subId) this.subId = node;
         super.insert(this.subId);
-    }
+    }*/
 
     serialize() {
         const data = {
