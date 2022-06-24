@@ -16,4 +16,8 @@ export default class NewLine extends AstNode {
     removeVerticalShift() {
         this.unit.removeClass('verticalShift');
     }
+
+    hasVerticalShift() {
+        return this.unit.hasClass('verticalShift');
+    }
 }

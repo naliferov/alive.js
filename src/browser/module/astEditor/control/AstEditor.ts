@@ -239,6 +239,7 @@ export default class AstEditor {
         if (this.marker.getLength() === 1) {
 
             const marked = this.marker.getFirst();
+            const prevChunk = marked.getPrevChunk();
             const parent = marked ? marked.getParentChunk() : null;
             const chunkForMarking = marked.getPrevChunk() || marked.getNextChunk();
 
@@ -253,9 +254,19 @@ export default class AstEditor {
                     if (chunkForMarking) this.marker.unmarkAll().mark(chunkForMarking);
                 }
 
+                this.save();
                 return;
             }
 
+            if (prevChunk instanceof NewLine && !prevChunk.hasVerticalShift()) {
+                if (prevChunk.getPrevChunk()) {
+                    this.marker.unmarkAll().mark(prevChunk.getPrevChunk());
+                }
+                this.removeChunk(marked);
+                this.removeChunk(prevChunk);
+                this.save();
+                return;
+            }
 
             if (chunkForMarking) {
                 this.marker.unmarkAll().mark(chunkForMarking);
@@ -263,9 +274,8 @@ export default class AstEditor {
             if (! (marked instanceof Main)) {
                 this.removeChunk(marked);
             }
+            this.save();
         }
-
-        this.save();
     }
 
     backspaceBtn() {
