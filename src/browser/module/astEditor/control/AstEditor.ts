@@ -38,17 +38,16 @@ import ObjectBody from "../nodes/literal/object/ObjectBody";
 
 export default class AstEditor {
 
-    unit: T;
-    pubsub: Pubsub;
+    unit;
+    pubsub;
 
     contextUnit;
-    nodes: Nodes;
-    linesNumbers: T;
+    nodes;
 
-    mainChunk: Main;
-    marker: Marker;
-    fxSerializer: AstSerializer;
-    fxMutatorFactory: AstNodeEditor;
+    mainChunk;
+    marker;
+    fxSerializer;
+    fxMutatorFactory;
 
     constructor(
         context: T,
@@ -215,6 +214,15 @@ export default class AstEditor {
         return true;
     }
 
+    addChunkBeforeMarked(chunk) {
+        if (this.marker.isEmpty()) return;
+        if (this.marker.getLength() !== 1) return;
+
+        const marked = this.marker.getFirst();
+        marked.getParentChunk().insertBefore(chunk, marked);
+        return true;
+    }
+
     removeChunk(chunk: AstNode) {
         chunk.remove();
         if (chunk.getId()) {
@@ -232,7 +240,7 @@ export default class AstEditor {
 
             const marked = this.marker.getFirst();
             const parent = marked ? marked.getParentChunk() : null;
-            const chunkForMarking = marked.getNextChunk() || marked.getPrevChunk();
+            const chunkForMarking = marked.getPrevChunk() || marked.getNextChunk();
 
             if (parent instanceof ArrayItemParts) {
 
@@ -261,6 +269,9 @@ export default class AstEditor {
     }
 
     backspaceBtn() {
+
+        console.log('backspace');
+
         if (this.marker.isEmpty()) return;
         if (this.marker.getLength() === 1) {
 
@@ -270,6 +281,9 @@ export default class AstEditor {
                 this.removeChunk(prevChunk);
                 this.save();
             }
+
+            console.log('asdasd qweqwewe');
+            //if (prevChunk) this.mark(prevChunk);
         }
     }
 
@@ -392,8 +406,15 @@ export default class AstEditor {
                 this.switchToInsertingMode(marked instanceof If ? marked.getCondition() : marked);
                 return;
             }
+            if (marked instanceof NewLine && this.addChunkBeforeMarked(inserter)) {
+                marked.removeVerticalShift();
+                this.markSendEventAndFocus(inserter);
+                return;
+            }
+
             if (this.addChunkAfterMarked(inserter)) {
                 this.markSendEventAndFocus(inserter);
+                return;
             }
         }
     }
@@ -492,6 +513,12 @@ export default class AstEditor {
                 this.marker.unmarkAll().mark(ifCondition.getLastChunk());
             } else {
                 this.switchToInsertingMode(ifCondition);
+            }
+        } else if (parent instanceof SubIdContainer) {
+
+            const subId = parent.getParentChunk();
+            if (subId.getPrevChunk()) {
+                this.marker.unmarkAll().mark(subId.getPrevChunk());
             }
         }
     }
@@ -802,6 +829,8 @@ export default class AstEditor {
 
             } else if (marked instanceof ObjectValue) {
                 this.switchToInsertingMode(marked);
+            } else if (marked instanceof SubId) {
+                this.marker.unmarkAll().mark(marked.getFirstContainerNode());
             } else {
                 const firstChunk = marked.getFirstChunk();
                 if (firstChunk) this.marker.unmarkAll().mark(firstChunk);

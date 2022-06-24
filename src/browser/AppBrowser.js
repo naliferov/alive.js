@@ -96,11 +96,9 @@ class AppBrowser {
             input.onDblClick(async (e) => await nodes.handleClick(e));
         });
         pubsub.sub(AST_CONTROL_MODE, () => {
-            console.log('ast control mode');
             input.onKeyDown(async (e) => await fxRuntime.onKeyDown(e));
         });
         pubsub.sub(AST_NODE_EDIT_MODE, () => {
-            console.log('ast node edit mode');
             input.disableHandlers()
         });
 
