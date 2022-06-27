@@ -3,7 +3,7 @@ import SurroundInternal from "./SurroundInternal";
 
 export default class Surround extends AstNode {
 
-    internal: SurroundInternal;
+    internal;
 
     constructor() {
         super('', {className: 'surround'});
@@ -12,7 +12,7 @@ export default class Surround extends AstNode {
         let closeBracket = new AstNode(')');  super.insert(closeBracket);
     }
 
-    insert(chunk: AstNode) {
+    insert(chunk) {
         this.internal.insert(chunk);
     }
 
@@ -20,7 +20,7 @@ export default class Surround extends AstNode {
         return this.internal.getFirstChunk();
     }
 
-    serialize(): object {
+    serialize() {
         return {
             t: this.constructor.name,
             internal: this.internal.serializeSubChunks(),
