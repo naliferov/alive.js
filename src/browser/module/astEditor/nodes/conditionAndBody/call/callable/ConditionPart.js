@@ -3,7 +3,7 @@ import CallableConditionPartInternal from "./ConditionPartInternal";
 
 export default class CallableConditionPart extends AstNode {
 
-    internal: CallableConditionPartInternal;
+    internal;
 
     constructor() {
         super('', {className: 'conditionPart'});
@@ -15,7 +15,7 @@ export default class CallableConditionPart extends AstNode {
     }
 
     getInternal() { return this.internal; }
-    serialize(): object {
+    serialize() {
         return {
             t: this.constructor.name,
             internal: this.internal.serializeSubChunks(),
@@ -23,5 +23,5 @@ export default class CallableConditionPart extends AstNode {
     }
 
     getLastChunk() { return this.internal.getLastChunk(); }
-    insert(chunk: AstNode) { this.internal.insert(chunk); }
+    insert(chunk) { this.internal.insert(chunk); }
 }

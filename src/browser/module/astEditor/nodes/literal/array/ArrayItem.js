@@ -4,8 +4,8 @@ import NewLine from "../../NewLine";
 
 export default class ArrayItem extends AstNode {
 
-    itemParts: AstNode;
-    newLineChunk: AstNode|null
+    itemParts;
+    newLineChunk;
 
     constructor() {
         super('', {className: 'arrayItem'});
@@ -13,7 +13,7 @@ export default class ArrayItem extends AstNode {
         super.insert(new AstNode(', ', {className: 'comma'}));
     }
 
-    getItemParts(): AstNode {
+    getItemParts() {
         return this.itemParts;
     }
 
@@ -26,14 +26,14 @@ export default class ArrayItem extends AstNode {
         this.getChildren()
     }
 
-    serialize(): object {
+    serialize() {
         return {
             t: this.constructor.name,
             itemParts: this.itemParts.serializeSubChunks(),
         }
     }
 
-    insert(chunk: AstNode) {
+    insert(chunk) {
         this.itemParts.insert(chunk);
     }
 }
