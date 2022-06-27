@@ -1,10 +1,7 @@
-import AstNode from "../nodes/AstNode";
 import Inserter from "../nodes/Inserter";
 import {AST_NODE_EDIT_MODE, AST_CONTROL_MODE} from "../../../../io/pubsub/PubsubConstants";
 import ForConditionPartInternal from "../nodes/conditionAndBody/loop/ForConditionPartInternal";
 import Main from "../nodes/Main";
-import AstEditor from "./AstEditor";
-import Pubsub from "../../../../io/pubsub/Pubsub";
 import Id from "../nodes/id/Id";
 import Keyword from "../nodes/Keyword";
 import Op from "../nodes/Op";
@@ -22,20 +19,18 @@ const MODE_EDIT = 'edit';
 
 export default class AstNodeEditor {
 
-    pubsub: Pubsub;
-    node: AstNode;
+    pubsub;
+    node;
     mode;
 
-    constructor(pubsub: Pubsub) {
-        this.pubsub = pubsub;
-    }
+    constructor(pubsub) { this.pubsub = pubsub; }
 
     resetState() {
         this.node = null;
         this.mode = null;
     }
 
-    createEditNode(fxController: AstEditor) {
+    createEditNode(fxController) {
         this.node = new Inserter();
         this.mode = MODE_INSERT;
         this.node.iEditTxt();
@@ -44,7 +39,7 @@ export default class AstNodeEditor {
         return this.node;
     }
 
-    editNode(node: AstNode, fxController: AstEditor) {
+    editNode(node, fxController) {
 
         if (node instanceof Id ||
             node instanceof Op ||
@@ -59,7 +54,7 @@ export default class AstNodeEditor {
         this.processNodeInput(node, fxController);
     }
 
-    async insertNewChunk(newChunk: AstNode, insertAgain: boolean = false, fxController: AstEditor) {
+    async insertNewChunk(newChunk, insertAgain = false, fxController) {
 
         const node = this.node;
 
@@ -82,7 +77,7 @@ export default class AstNodeEditor {
         }
     }
 
-    processNodeInput(node: AstNode, fxController: AstEditor) {
+    processNodeInput(node, fxController) {
 
         let isCaretOnLastChar = false;
 
@@ -184,9 +179,7 @@ export default class AstNodeEditor {
 
                 setTimeout(() => this.pubsub.pub(AST_CONTROL_MODE), 300);
                 fxController.save();
-                return;
             }
-
         };
         const keyUp = (e) => {
             const isArrowRight = e.key === 'ArrowRight';
@@ -201,7 +194,7 @@ export default class AstNodeEditor {
         node.iKeyup(keyUp);
     }
 
-    getNewChunkByTxt(t: string): AstNode {
+    getNewChunkByTxt(t) {
 
         if (!t.length) return;
 
@@ -225,18 +218,14 @@ export default class AstNodeEditor {
 
         if (t === 'if') return new If();
         if (t === 'for') return new For();
-        if (t === '()') return new Call();
+        if (t === '(') return new Call();
         if (t === '=>') return new Callable();
-
-        //todo if prev element isName this is dynamic object usage else array creation
         if (t === '[') return new ArrayChunk();
         if (t === '{') return new ObjectChunk();
 
         const num = Number(t);
         if (!isNaN(num)) return new Literal(t, 'number');
         if (t[0] === "'") return new Literal(t, 'string');
-
-        //creating object, array, NameOfProp
 
         return new Id(t);
     }

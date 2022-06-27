@@ -181,25 +181,33 @@ export default class Nodes {
 
         const getNodesData = (node) => {
 
-            const data = [];
+            const r = [];
 
             for (let nodeDom of node.getNodes().getDOM().children) {
 
                 const nodeObject = window.nodesPool.get(nodeDom.getAttribute('id'));
                 const unitData = nodeObject.getDataUnit().getData();
-                let tData = {
-                    id: unitData.id,
-                    name: unitData.name
-                };
+
+                let tData = {id: unitData.id, name: unitData.name};
                 const subNodes = getNodesData(nodeObject);
                 if (subNodes.length > 0) tData.nodes = subNodes;
                 if (unitData.astNodes) tData.astNodes = unitData.astNodes;
+                if (unitData.moduleType) tData.moduleType = unitData.moduleType;
 
-                data.push(tData);
+                r.push(tData);
             }
-            return data;
+            return r;
         }
+        const nodes = getNodesData(this.rootNode);
 
-        await new HttpClient().post('/nodes', {data: getNodesData(this.rootNode)})
+        console.log(nodes);
+
+        /*for (let i = 0; i < nodes.length; i++) {
+            if (nodes[i].name === 'main') {
+                console.log(nodes[i]);
+                break;
+            }
+        }*/
+       // await new HttpClient().post('/nodes', {nodes})
     }
 }

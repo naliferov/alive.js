@@ -14,6 +14,7 @@ import ObjectItem from "./nodes/literal/object/ObjectItem";
 import ObjectChunk from "./nodes/literal/object/ObjectChunk";
 import Keyword from "./nodes/Keyword";
 import SubId from "./nodes/id/SubId";
+import Call from "./nodes/conditionAndBody/call/call/Call";
 
 export default class AstSerializer {
 
@@ -49,12 +50,11 @@ export default class AstSerializer {
 
             return forChunk;
         }
-        const deserializeCallable = (chunkData) => {
+        const deserializeCallable = (data) => {
 
             const callable = new Callable();
-
-            const condition = chunkData.condition;
-            const body = chunkData.body;
+            const condition = data.condition;
+            const body = data.body;
 
             if (condition && condition.length > 0) {
                 for (let i = 0; i < condition.length; i++) {
@@ -74,6 +74,28 @@ export default class AstSerializer {
         }
         const deserializeCall = (data) => {
 
+            const call = new Call();
+
+            /*const condition = data.condition;
+            const body = data.body;
+
+            if (condition && condition.length > 0) {
+                for (let i = 0; i < condition.length; i++) {
+
+                    if (!condition[i].internal) {
+                        throw new Error('invalid data ' + JSON.stringify(condition[i]))
+                    }
+
+                    const conditionPart = new CallableConditionPart();
+                    callable.insertInCondition(conditionPart);
+                    buildAST(conditionPart, condition[i].internal);
+                }
+            }
+            if (body && body.length > 0) buildAST(callable.getBody(), body);*/
+
+            console.log(data);
+
+            return call;
         }
         const deserializeArrayChunk = (data) => {
 
@@ -152,6 +174,7 @@ export default class AstSerializer {
                 }
                 else if (d.t === 'If') chunkForIns = deserializeIfChunk(d);
                 else if (d.t === 'For') chunkForIns = deserializeForChunk(d);
+                else if (d.t === 'Call') chunkForIns = deserializeCall(d);
                 else if (d.t === 'Callable') chunkForIns = deserializeCallable(d);
                 else if (d.t === 'ArrayChunk') chunkForIns = deserializeArrayChunk(d);
                 else if (d.t === 'ObjectChunk') chunkForIns = deserializeObjectChunk(d);

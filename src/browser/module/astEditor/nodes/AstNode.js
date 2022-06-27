@@ -1,13 +1,12 @@
 import T from "../../../../type/T";
 import {uuid} from "../../../../F";
-import Inserter from "./Inserter";
 
 export default class AstNode {
 
-    id: string
-    unit: T;
+    id;
+    unit;
 
-    constructor(txt = '', options: any = {}) {
+    constructor(txt = '', options = {}) {
         this.id = uuid();
 
         let classArr = ['ASTNode'];
@@ -24,7 +23,6 @@ export default class AstNode {
         });
         if (options.hidden) this.unit.hide();
 
-        // @ts-ignore
         window.astNodesPool.set(this.id, this);
     }
 
@@ -36,7 +34,7 @@ export default class AstNode {
         return this.constructor.name;
     }
 
-    serialize(): object {
+    serialize() {
         return {
             t: this.constructor.name,
         }
@@ -63,15 +61,18 @@ export default class AstNode {
         return this.unit.getDOM().children.length === 0;
     }
 
-    insert(chunk: AstNode) { this.unit.insert(chunk.getUnit()) }
-    insertBefore(chunk: AstNode, beforeChunk: AstNode) {
+    in(chunk) { this.insert(chunk) }
+    insert(chunk) { this.unit.insert(chunk.getUnit()) }
+
+    insertBefore(chunk, beforeChunk) {
         this.unit.insertBefore(chunk.getUnit(), beforeChunk.getUnit());
     }
 
     getParentChunk() {
-        // @ts-ignore
         return window.astNodesPool.get(this.unit.getDOM().parentNode.id);
     }
+
+    getParentNode() { return this.getParentChunk(); }
 
     getFirstChunk() {
         const first = this.unit.getDOM().firstChild;
@@ -183,11 +184,4 @@ export default class AstNode {
         this.unit.visibilityHide();
         return this;
     }
-
-    /*oKeyUp(fn) {
-        this.unit.off('keyup', fn);
-    }*/
-    /*keyup(fn) {
-
-    }*/
 }

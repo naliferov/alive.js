@@ -11,20 +11,16 @@ import IfBody from "../nodes/conditionAndBody/if/IfBody";
 import For from "../nodes/conditionAndBody/loop/For";
 import Main from "../nodes/Main";
 import ForCondition from "../nodes/conditionAndBody/loop/ForCondition";
-import Pubsub from "../../../../io/pubsub/Pubsub";
 import {AST_NODE_EDIT_MODE} from "../../../../io/pubsub/PubsubConstants";
 import ForConditionPart from "../nodes/conditionAndBody/loop/ForConditionPart";
 import ForConditionPartInternal from "../nodes/conditionAndBody/loop/ForConditionPartInternal";
-import Nodes from "../../nodes/Nodes";
-import AstSerializer from "../AstSerializer";
 import Callable from "../nodes/conditionAndBody/call/callable/Callable";
+import CallableModule from "../nodes/module/CallableModule";
 import CallableConditionPart from "../nodes/conditionAndBody/call/callable/ConditionPart";
-import AstNode from "../nodes/AstNode";
 import SurroundInternal from "../nodes/surround/SurroundInternal";
 import ConditionAndBodyNode from "../nodes/conditionAndBody/ConditionAndBodyNode";
 import ConditionNode from "../nodes/conditionAndBody/ConditionNode";
 import BodyNode from "../nodes/conditionAndBody/BodyNode";
-import AstNodeEditor from "./AstNodeEditor";
 import ArrayChunk from "../nodes/literal/array/ArrayChunk";
 import ArrayItem from "../nodes/literal/array/ArrayItem";
 import ArrayItemParts from "../nodes/literal/array/ArrayItemParts";
@@ -35,68 +31,73 @@ import ObjectItemParts from "../nodes/literal/object/ObjectItemParts";
 import ObjectKey from "../nodes/literal/object/ObjectKey";
 import ObjectValue from "../nodes/literal/object/ObjectValue";
 import ObjectBody from "../nodes/literal/object/ObjectBody";
+import Call from "../nodes/conditionAndBody/call/call/Call";
+import CallConditionPart from "../nodes/conditionAndBody/call/call/CallConditionPart";
 
 export default class AstEditor {
 
     unit;
     pubsub;
 
-    contextUnit;
+    context;
     nodes;
 
     mainChunk;
     marker;
-    fxSerializer;
-    fxMutatorFactory;
+    serializer;
+    astEditor;
+
+    moduleType = 'simple';
 
     constructor(
-        context: T,
-        pubsub: Pubsub,
-        fxSerializer: AstSerializer,
-        fxMutatorFactory: AstNodeEditor,
-        nodes: Nodes
+        context,
+        pubsub,
+        serializer,
+        astEditor,
+        nodes
     ) {
+        this.context = context;
         this.pubsub = pubsub;
+        this.serializer = serializer;
+        this.astEditor = astEditor;
+        this.nodes = nodes;
 
-        this.unit = new T({class: ['fxRuntimeController']});
+
+        this.unit = new T({class: ['astEditor']});
 
         const markerMonitor = new T({class: ['markedNode'], name: 'markedNode: '});
         this.unit.in(markerMonitor);
-
-        //const imports = new T({class: ['imports'], name: 'imports'});
-        //this.unit.in(imports);
-
-        const chunkContainer = new T({class: ['chunksContainer']});
-        this.unit.in(chunkContainer);
-
-        this.mainChunk = new Main();
-        chunkContainer.in(this.mainChunk.getUnit());
-
-        this.fxSerializer = fxSerializer;
-        this.fxMutatorFactory = fxMutatorFactory;
-
-        this.nodes = nodes;
-
-        this.contextUnit = context;
         this.marker = new Marker(markerMonitor);
 
-        const astNodes = this.contextUnit.getDataField('astNodes');
+        this.mainChunk = new Main();
+        this.unit.in(this.mainChunk.getUnit());
+
+        let module = this.mainChunk;
+
+        this.moduleType = this.context.getDataField('moduleType') ?? 'simple';
+        if (this.moduleType === 'callableModule') {
+            this.callableModule = new CallableModule;
+            this.mainChunk.insert(this.callableModule);
+            module = this.callableModule
+        }
+
+        const astNodes = this.context.getDataField('astNodes');
         if (!astNodes) {
-            console.log(`fxSerialized not found in unit ${this.contextUnit.getId()}`);
+            console.log(`astNodes not found in unit ${this.context.getId()}`);
             return;
         }
 
-        this.fxSerializer.deserialize(this.mainChunk, astNodes.chunks);
+        this.serializer.deserialize(module, astNodes.chunks);
     }
 
     show() { this.unit.show(); }
     hide() { this.unit.hide(); }
-    getContextUnitId(): string { return this.contextUnit.getId(); }
+    getContextUnitId() { return this.context.getId(); }
     getUnit() { return this.unit; }
 
     async save() {
-        this.contextUnit.setDataField('astNodes', {
-            chunks: this.fxSerializer.serialize(this.mainChunk),
+        this.context.setDataField('astNodes', {
+            chunks: this.serializer.serialize(this.mainChunk),
             markedChunksIds: this.marker.getMarkedChunksIds(),
         });
         await this.nodes.save();
@@ -130,7 +131,7 @@ export default class AstEditor {
             e.preventDefault();
             if (this.marker.isEmpty()) return;
             if (this.marker.getLength() > 1) return;
-            this.fxMutatorFactory.editNode(this.marker.getFirst(), this);
+            this.astEditor.editNode(this.marker.getFirst(), this);
             //setTimeout(() => this.pubsub.pub(AST_CONTROL_MODE), 300);
 
             return;
@@ -223,16 +224,13 @@ export default class AstEditor {
         return true;
     }
 
-    removeChunk(chunk: AstNode) {
+    removeChunk(chunk) {
         chunk.remove();
-        if (chunk.getId()) {
-            // @ts-ignore
-            window.astNodesPool.delete(chunk.getId());
-        }
+        if (chunk.getId()) window.astNodesPool.delete(chunk.getId());
     }
 
     unmarkAll() { return this.marker.unmarkAll(); }
-    mark(chunk: AstNode) { this.marker.mark(chunk); }
+    mark(chunk) { this.marker.mark(chunk); }
 
     deleteBtn() {
         if (this.marker.isEmpty()) return;
@@ -245,13 +243,16 @@ export default class AstEditor {
 
             if (parent instanceof ArrayItemParts) {
 
-                this.removeChunk(marked);
                 const arrayItem = parent.getParentChunk();
+                const array = arrayItem.getParentChunk().getParentChunk();
+
+                this.removeChunk(marked);
 
                 if (parent.isEmpty()) {
                     const chunkForMarking = arrayItem.getNextChunk() || arrayItem.getPrevChunk();
                     this.removeChunk(arrayItem);
                     if (chunkForMarking) this.marker.unmarkAll().mark(chunkForMarking);
+                    else this.marker.unmarkAll().mark(array);
                 }
 
                 this.save();
@@ -291,14 +292,11 @@ export default class AstEditor {
                 this.removeChunk(prevChunk);
                 this.save();
             }
-
-            console.log('asdasd qweqwewe');
-            //if (prevChunk) this.mark(prevChunk);
         }
     }
 
-    switchToInsertingMode(chunk: AstNode) {
-        const inserter = this.fxMutatorFactory.createEditNode(this);
+    switchToInsertingMode(chunk) {
+        const inserter = this.astEditor.createEditNode(this);
         chunk.insert(inserter);
         this.marker.unmarkAll().mark(inserter);
         this.pubsub.pub(AST_NODE_EDIT_MODE);
@@ -341,7 +339,7 @@ export default class AstEditor {
                 }
             }
 
-            const inserter = this.fxMutatorFactory.createEditNode(this);
+            const inserter = this.astEditor.createEditNode(this);
             if (
                 marked instanceof ObjectKey ||
                 marked instanceof ObjectValue
@@ -429,7 +427,7 @@ export default class AstEditor {
         }
     }
 
-    moveLeft(isShift: boolean, isCtrl: boolean) {
+    moveLeft(isShift, isCtrl) {
 
         if (this.mainChunk.isEmpty()) this.switchToInsertingMode(this.mainChunk);
         if (this.marker.isEmpty()) return;
@@ -502,7 +500,7 @@ export default class AstEditor {
         }
     }
 
-    moveLeftButNoNextChunk(marked: AstNode, parent: AstNode) {
+    moveLeftButNoNextChunk(marked, parent) {
 
         if (parent instanceof ObjectItemParts) {
 
@@ -533,7 +531,7 @@ export default class AstEditor {
         }
     }
 
-    moveRight(isShift: boolean, isCtrl: boolean) {
+    moveRight(isShift, isCtrl) {
 
         if (this.marker.isEmpty()) {
             const chunk = this.mainChunk.getFirstChunk();
@@ -584,7 +582,7 @@ export default class AstEditor {
                     const forChunk = parent.getParentChunk().getParentChunk().getParentChunk();
                     if (forChunk.isBodyEmpty()) {
                         this.pubsub.pub(AST_NODE_EDIT_MODE);
-                        const inserter = this.fxMutatorFactory.createEditNode(this);
+                        const inserter = this.astEditor.createEditNode(this);
                         forChunk.getBody().insert(inserter);
                         this.marker.mark(inserter);
                     }
@@ -671,7 +669,7 @@ export default class AstEditor {
         }
     }
 
-    moveRightButNoNextChunk(marked: AstNode, parent: AstNode) {
+    moveRightButNoNextChunk(marked, parent) {
 
         if (parent instanceof ObjectItemParts) {
 
@@ -680,7 +678,7 @@ export default class AstEditor {
 
                 const objectValue = objectKeyOrValue.getNextChunk().getNextChunk();
                 if (objectValue.isEmpty()) {
-                    const inserter = this.fxMutatorFactory.createEditNode(this);
+                    const inserter = this.astEditor.createEditNode(this);
                     objectValue.insert(inserter);
                     this.markSendEventAndFocus(inserter);
                 } else {
@@ -698,7 +696,7 @@ export default class AstEditor {
         }
     }
 
-    moveUp(isShift: boolean, isCtrl: boolean) {
+    moveUp(isShift, isCtrl) {
         if (this.marker.isEmpty()) return;
 
         if (isCtrl) {
@@ -748,7 +746,7 @@ export default class AstEditor {
         }
     }
 
-    moveDown(isShift: boolean, isCtrl: boolean) {
+    moveDown(isShift, isCtrl) {
 
         if (this.marker.isEmpty()) {
             this.marker.mark(this.mainChunk.getFirstChunk());
@@ -756,7 +754,7 @@ export default class AstEditor {
         }
 
         const marked = this.marker.getFirst();
-        const inserter = this.fxMutatorFactory.createEditNode(this);
+        const inserter = this.astEditor.createEditNode(this);
 
         if (isCtrl && !isShift) {
 
@@ -787,6 +785,14 @@ export default class AstEditor {
                     this.switchToInsertingMode(forConditionPart);
                 } else {
                     this.marker.unmarkAll().mark(marked.getCondition());
+                }
+
+            } else if (marked instanceof Call) {
+
+                if (marked.isConditionEmpty()) {
+                    const callConditionPart = new CallConditionPart();
+                    marked.insertInCondition(callConditionPart);
+                    this.switchToInsertingMode(callConditionPart);
                 }
 
             } else if (marked instanceof Callable) {

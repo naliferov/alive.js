@@ -6,8 +6,8 @@ import ForBody from "./ForBody";
 
 export default class For extends AstNode {
 
-    condition: ForCondition;
-    body: ForBody;
+    condition;
+    body;
 
     constructor() {
         super('', {className: ['for']});
@@ -31,7 +31,7 @@ export default class For extends AstNode {
 
     getFirstChunk() { return this.condition; }
 
-    insertInCondition(chunk: AstNode) { this.condition.insert(chunk); }
+    insertInCondition(chunk) { this.condition.insert(chunk); }
     isConditionEmpty() {
         return this.condition.getChildrenCount() < 1;
     }
@@ -42,7 +42,7 @@ export default class For extends AstNode {
     getCondition() { return this.condition; }
     getBody() { return this.body; }
 
-    serialize(): object {
+    serialize() {
         return {
             t: this.constructor.name,
             condition: this.condition.serializeSubChunks(),

@@ -5,6 +5,6 @@ export default class CallCondition extends AstNode {
     type: string;
 
     constructor() {
-        super('', {className: 'callArgs'});
+        super('', {className: 'callCondition'});
     }
 }

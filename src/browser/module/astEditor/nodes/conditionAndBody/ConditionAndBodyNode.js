@@ -6,8 +6,8 @@ export default class ConditionAndBodyNode extends AstNode {
     body;
 
     getFirstChunk() { return this.condition; }
-    insertInCondition(chunk: AstNode) { this.condition.insert(chunk); }
-    insertInBody(chunk: AstNode) { this.body.insert(chunk); }
+    insertInCondition(chunk) { this.condition.insert(chunk); }
+    insertInBody(chunk) { this.body.insert(chunk); }
 
     isConditionEmpty() { return this.condition.getChildrenCount() < 1; }
     isBodyEmpty() { return this.body.getChildrenCount() < 1; }
@@ -15,7 +15,7 @@ export default class ConditionAndBodyNode extends AstNode {
     getCondition() { return this.condition; }
     getBody() { return this.body; }
 
-    serialize(): object {
+    serialize() {
         return {
             t: this.constructor.name,
             condition: this.condition.serializeSubChunks(),

@@ -4,11 +4,11 @@ import T from "../../../type/T";
 
 export default class Marker {
 
-    monitor: T;
-    markedChunks: List;
-    direction: string = null;
+    monitor;
+    markedChunks;
+    direction = null;
 
-    constructor(monitor: T) {
+    constructor(monitor) {
         this.markedChunks = new List();
         this.monitor = monitor;
     }
@@ -19,13 +19,13 @@ export default class Marker {
         return ids;
     }
 
-    mark(chunk: AstNode) {
+    mark(chunk) {
         chunk.mark();
         this.markedChunks.add(chunk);
         this.monitor.setTxt('markedNode: ' + chunk.getName());
     }
 
-    unmark(chunk: AstNode) {
+    unmark(chunk) {
         chunk.unmark();
         //todo тут удаление происходит в зависимости от дирекшена
         //todo также для точного удаления можно взять индекс по порядку dom.
@@ -39,7 +39,7 @@ export default class Marker {
         return this;
     }
     iterate(callback) { this.markedChunks.iterate(callback); }
-    setDirection(direction: string) { this.direction = direction; }
+    setDirection(direction) { this.direction = direction; }
     getDirection() { return this.direction; }
     delLast() { this.markedChunks.delLast(); }
     getFirst() { return this.markedChunks.getFirst(); }
