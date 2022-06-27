@@ -1,10 +1,9 @@
 import AstNode from "../../AstNode";
 import ObjectBody from "./ObjectBody";
-import ObjectItem from "./ObjectItem";
 
 export default class ObjectChunk extends AstNode {
 
-    objectBody: ObjectBody;
+    objectBody;
 
     constructor() {
         super('', {className: 'object'});
@@ -18,18 +17,18 @@ export default class ObjectChunk extends AstNode {
         return this.objectBody;
     }
 
-    isEmpty(): boolean {
+    isEmpty() {
         return this.objectBody.isEmpty();
     }
 
-    serialize(): object {
+    serialize() {
         return {
             t: this.constructor.name,
             body: this.objectBody.serializeSubChunks(),
         }
     }
 
-    insert(chunk: ObjectItem) {
+    insert(chunk) {
         this.objectBody.insert(chunk);
     }
 }

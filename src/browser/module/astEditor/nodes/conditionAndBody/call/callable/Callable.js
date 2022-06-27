@@ -7,9 +7,6 @@ import ConditionAndBodyNode from "../../ConditionAndBodyNode";
 
 export default class Callable extends ConditionAndBodyNode {
 
-    condition: CallableCondition;
-    body: CallableBody;
-
     constructor() {
         super('', {className: 'callable'});
 

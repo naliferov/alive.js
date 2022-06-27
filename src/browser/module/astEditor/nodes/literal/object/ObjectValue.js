@@ -1,31 +1,31 @@
 import AstNode from "../../AstNode";
 import ObjectItemParts from "./ObjectItemParts";
 
-export default class ObjectKey extends AstNode {
+export default class ObjectValue extends AstNode {
 
-    itemParts: AstNode;
+    itemParts;
 
     constructor() {
-        super('', {className: 'objectKey'});
+        super('', {className: 'objectValue'});
         this.itemParts = new ObjectItemParts; super.insert(this.itemParts);
     }
 
-    getLastChunk(): AstNode {
-        return this.itemParts.getLastChunk();
-    }
-
-    isEmpty(): boolean {
+    isEmpty() {
         return this.itemParts.isEmpty();
     }
 
-    serialize(): object {
+    getFirstChunk() {
+        return this.itemParts.getFirstChunk();
+    }
+
+    serialize() {
         return {
             t: this.constructor.name,
             itemParts: this.itemParts.serializeSubChunks(),
         }
     }
 
-    insert(chunk: AstNode) {
+    insert(chunk) {
         this.itemParts.insert(chunk);
     }
 }

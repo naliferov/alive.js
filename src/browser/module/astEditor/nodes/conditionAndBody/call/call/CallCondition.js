@@ -2,7 +2,7 @@ import AstNode from "../../../AstNode";
 
 export default class CallCondition extends AstNode {
 
-    type: string;
+    type;
 
     constructor() {
         super('', {className: 'callCondition'});

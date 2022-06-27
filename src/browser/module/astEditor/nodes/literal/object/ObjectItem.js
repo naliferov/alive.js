@@ -4,8 +4,8 @@ import ObjectValue from "./ObjectValue";
 
 export default class ObjectItem extends AstNode {
 
-    k: ObjectKey
-    v: ObjectValue
+    k
+    v
 
     constructor() {
         super('', {className: 'objectItem'});
@@ -23,7 +23,7 @@ export default class ObjectItem extends AstNode {
         return this.v;
     }
 
-    serialize(): object {
+    serialize() {
         return {
             t: this.constructor.name,
             k: this.k.serialize(),

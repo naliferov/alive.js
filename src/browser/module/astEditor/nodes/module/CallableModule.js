@@ -7,9 +7,6 @@ import ConditionAndBodyNode from "../conditionAndBody/ConditionAndBodyNode";
 
 export default class CallableModule extends ConditionAndBodyNode {
 
-    condition;
-    body;
-
     constructor() {
         super('', {className: ['callableModule']});
         let openBracket = new AstNode('['); super.insert(openBracket);

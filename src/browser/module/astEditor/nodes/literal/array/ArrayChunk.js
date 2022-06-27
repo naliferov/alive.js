@@ -4,8 +4,8 @@ import ArrayItem from "./ArrayItem";
 
 export default class ArrayChunk extends AstNode {
 
-    arrayBody: AstNode;
-    isVertical: boolean = false;
+    arrayBody;
+    isVertical = false;
 
     constructor() {
         super('', {className: 'array'});
@@ -19,11 +19,11 @@ export default class ArrayChunk extends AstNode {
         return this.arrayBody;
     }
 
-    isEmpty(): boolean {
+    isEmpty() {
         return this.arrayBody.isEmpty();
     }
 
-    serialize(): object {
+    serialize() {
         return {
             t: this.constructor.name,
             body: this.arrayBody.serializeSubChunks(),
@@ -35,7 +35,7 @@ export default class ArrayChunk extends AstNode {
         this.isVertical = !this.isVertical;
     }
 
-    insert(arrayItem: ArrayItem) {
+    insert(arrayItem) {
         this.arrayBody.insert(arrayItem);
     }
 }

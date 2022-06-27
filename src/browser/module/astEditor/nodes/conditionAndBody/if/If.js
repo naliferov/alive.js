@@ -7,9 +7,6 @@ import ConditionAndBodyNode from "../ConditionAndBodyNode";
 
 export default class If extends ConditionAndBodyNode {
 
-    condition: IfCondition;
-    body: IfBody;
-
     constructor() {
         super('', {className: 'if'});
 
