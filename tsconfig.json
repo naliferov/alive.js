@@ -1,6 +1,6 @@
 {
   "files": [
-    "x.ts"
+    "x.js"
   ],
   "compilerOptions": {
     "outDir": "./",

@@ -1,26 +1,20 @@
-import OsExec from "./OsExec";
-import FS from "../../io/fs/FS";
-import {PROCESS_DIR} from "../../AppConstants";
-import Logger from "../../log/Logger";
+import OsExec from "./OsExec.js";
+import FS from "../../io/fs/FS.js";
+import {PROCESS_DIR} from "../../AppConstants.js";
 
 export default class ProcessController {
 
-    path: string;
-    execFileName: string;
-    processName: string;
-    exec: OsExec;
-    fs: FS;
+    execFileName;
+    processName;
+    fs;
 
     constructor() {
         this.fs = new FS;
     }
 
-    getName(): string { return this.processName; }
-    getExecFileName(): string { return this.execFileName; }
+    getName() { return this.processName; }
 
-    async canRun() {}
-
-    getProcessDir(processName: string): string {
+    getProcessDir(processName) {
         return `${__dirname}/${PROCESS_DIR}/${processName}`;
     }
 
@@ -31,7 +25,7 @@ export default class ProcessController {
         }
     };
 
-    async run(processName, callable, args: {}, deps) {
+    async run(processName, callable, args, deps) {
 
         const {logger} = deps;
         logger.info(`Run process [${processName}]. PID: [${process.pid.toString()}]. CliArgs:`, args);
@@ -75,7 +69,7 @@ export default class ProcessController {
         });
     }
 
-    async stop(processName: string, logger: Logger, fs: FS) {
+    async stop(processName, logger, fs) {
 
         const {logFile, pidFile} = this.getProcessDirFileNames(processName);
         //todo argument for stop and remove logs

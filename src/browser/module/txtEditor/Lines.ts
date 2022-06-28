@@ -1,4 +1,4 @@
-import Node from "../../../type/Node";
+import Node from "../../../type/Node.js";
 import Cursor from "./Cursor";
 import List from "../../List";
 import Selector from "./Selector";

@@ -1,4 +1,4 @@
-export default class Dom {
+export default class V {
 
     data;
     dom;

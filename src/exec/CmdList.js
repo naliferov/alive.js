@@ -1,13 +1,11 @@
-import Logger from "../log/Logger";
-import FS from "../io/fs/FS";
-import OsExec from "./process/OsExec";
-import HttpMsgHandler from "../io/http/HttpMsgHandler";
-import HttpServer from "../io/http/HttpServer";
-import {createServer} from "http";
-import * as express from "express";
+import OsExec from "./process/OsExec.js";
+import HttpMsgHandler from "../io/http/HttpMsgHandler.js";
+import HttpServer from "../io/http/HttpServer.js";
+import {createServer} from "node:http";
+import express from 'express';
 
 export const cmdList = {
-    'install': async (cliArgs, {fs, appDir, logger}: {fs: FS, appDir: string, logger: Logger}) => {
+    'install': async (cliArgs, {fs, appDir, logger}) => {
         const runStr = `node ${appDir}/x.js $@`;
         const shFile = `${appDir}/install/fx.sh`;
         await fs.writeFile(shFile, runStr);

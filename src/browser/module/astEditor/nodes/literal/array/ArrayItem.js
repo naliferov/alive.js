@@ -1,6 +1,6 @@
-import AstNode from "../../AstNode";
-import ArrayItemParts from "./ArrayItemParts";
-import NewLine from "../../NewLine";
+import AstNode from "../../AstNode.js";
+import ArrayItemParts from "./ArrayItemParts.js";
+import NewLine from "../../NewLine.js";
 
 export default class ArrayItem extends AstNode {
 

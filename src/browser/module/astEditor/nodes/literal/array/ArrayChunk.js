@@ -1,6 +1,5 @@
-import AstNode from "../../AstNode";
-import ArrayBody from "./ArrayBody";
-import ArrayItem from "./ArrayItem";
+import AstNode from "../../AstNode.js";
+import ArrayBody from "./ArrayBody.js";
 
 export default class ArrayChunk extends AstNode {
 

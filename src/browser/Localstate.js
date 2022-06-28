@@ -2,34 +2,34 @@ export default class LocalState {
 
     //todo доделать тут всё как положено для сохранения fxIdsl
 
-    openedFx: {};
+    openedFx;
 
     constructor() {
         const openedFxJSON = localStorage.getItem('openedTabs');
         this.openedFx = openedFxJSON ? JSON.parse(openedFxJSON) : {};
     }
 
-    setScriptPanelStatus(status: boolean) {
+    setScriptPanelStatus(status) {
         localStorage.setItem('scriptsPanel', status ? '1': '');
     }
 
-    isScriptsPanelEnabled(): boolean {
+    isScriptsPanelEnabled() {
         return !!localStorage.getItem('scriptsPanel');
     }
 
-    setKeyboardStatus(status: boolean) {
+    setKeyboardStatus(status) {
         localStorage.setItem('keyboard', status ? '1': '');
     }
 
-    isKeyboardEnabled(): boolean {
+    isKeyboardEnabled() {
         return !!localStorage.getItem('keyboard');
     }
 
-    isTabOpened(unitId: string) {
+    isTabOpened(unitId) {
         return this.openedFx[unitId];
     }
 
-    openTab(unitId: string) {
+    openTab(unitId) {
         this.openedFx[unitId] = {};
         localStorage.setItem('openedTabs', JSON.stringify(this.openedFx));
     }
@@ -39,12 +39,12 @@ export default class LocalState {
         return openedScriptsJSON ? JSON.parse(openedScriptsJSON) : {};
     }
 
-    closeTab(unitId: string) {
+    closeTab(unitId) {
         delete this.openedFx[unitId];
         localStorage.setItem('openedTabs', JSON.stringify(this.openedFx));
     }
 
-    setActiveTabId(tabId: string) {
+    setActiveTabId(tabId) {
         localStorage.setItem('activeTabId', tabId);
     }
 

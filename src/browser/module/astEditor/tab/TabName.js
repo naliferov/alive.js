@@ -1,4 +1,4 @@
-import Node from "../../../../type/Node";
+import Node from "../../../../type/Node.js";
 
 export default class TabName {
 

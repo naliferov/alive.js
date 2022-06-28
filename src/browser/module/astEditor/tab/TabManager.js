@@ -1,6 +1,6 @@
-import Nodes from "../../outliner/Nodes";
-import AstSerializer from "../AstSerializer";
-import Tab from "./Tab";
+import Nodes from "../../outliner/Nodes.js";
+import AstSerializer from "../AstSerializer.js";
+import Tab from "./Tab.js";
 
 export default class TabManager {
 

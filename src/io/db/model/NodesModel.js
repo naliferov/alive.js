@@ -1,8 +1,8 @@
-import BaseModel from "./BaseModel";
+import BaseModel from "./BaseModel.js";
 
 export default class NodesModel extends BaseModel {
 
-    name: string = 'nodes'
+    name = 'nodes'
 
     async getByUserId(userId) {
         //todo move to base model

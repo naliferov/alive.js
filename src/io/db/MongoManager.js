@@ -1,14 +1,13 @@
-import {Db, MongoClient} from "mongodb";
-import Logger from "../../log/Logger";
+import {MongoClient} from "mongodb";
 
 export default class MongoManager {
 
-    conf: {};
-    client: MongoClient;
-    db: Db;
-    logger: Logger;
+    conf;
+    client;
+    db;
+    logger;
 
-    createMongoClient(conf: object, logger: Logger) {
+    createMongoClient(conf, logger) {
         this.conf = conf;
         // @ts-ignore
         const uri = `mongodb+srv://${conf.username}:${conf.password}@cluster0.17igt.mongodb.net/${conf.database}?retryWrites=true&w=majority`;
@@ -20,7 +19,6 @@ export default class MongoManager {
     async connect() {
         try {
             await this.client.connect();
-            // @ts-ignore
             this.db = await this.client.db(this.conf.database);
             await this.db.command({ ping: 1 });
         } catch (e) {
@@ -29,7 +27,5 @@ export default class MongoManager {
         }
     }
 
-    getDb(): Db {
-        return this.db;
-    }
+    getDb() { return this.db; }
 }

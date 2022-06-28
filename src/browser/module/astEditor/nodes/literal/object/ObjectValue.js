@@ -1,5 +1,5 @@
-import AstNode from "../../AstNode";
-import ObjectItemParts from "./ObjectItemParts";
+import AstNode from "../../AstNode.js";
+import ObjectItemParts from "./ObjectItemParts.js";
 
 export default class ObjectValue extends AstNode {
 

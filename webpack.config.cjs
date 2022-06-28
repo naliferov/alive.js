@@ -9,24 +9,24 @@ const tsRule = {
     }
 };
 
-const backendConf = {
-    entry: './x.ts',
-    module: {
-        rules: [tsRule]
-    },
-    resolve: {
-        extensions: ['.tsx', '.ts', '.js'],
-    },
-    output: {
-        path: path.resolve('./'),
-        filename: 'x.js',
-    },
-    externals: [nodeExternals()],
-
-    target: 'node',
-    mode: 'development',
-    watch: true
-};
+// const backendConf = {
+//     entry: './x.js',
+//     module: {
+//         rules: [tsRule]
+//     },
+//     resolve: {
+//         extensions: ['.tsx', '.ts', '.js'],
+//     },
+//     output: {
+//         path: path.resolve('./'),
+//         filename: 'x.js',
+//     },
+//     externals: [nodeExternals()],
+//
+//     target: 'node',
+//     mode: 'development',
+//     watch: true
+// };
 
 const frontendConf = {
     entry: './src/browser/AppBrowser.js',
@@ -45,5 +45,8 @@ const frontendConf = {
     watch: true,
 };
 
-module.exports = [backendConf, frontendConf];
+module.exports = [
+    //backendConf,
+    frontendConf
+];
 module.exports.parallelism = 1;

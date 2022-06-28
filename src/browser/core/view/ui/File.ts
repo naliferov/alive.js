@@ -1,4 +1,4 @@
-import Node from "../../../../type/Node";
+import Node from "../../../../type/Node.js";
 import E from "../../../../io/E";
 
 export default class File {

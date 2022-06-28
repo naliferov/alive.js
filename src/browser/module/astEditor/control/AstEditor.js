@@ -1,4 +1,4 @@
-import Node from "../../../../type/Node";
+import Node from "../../../../type/Node.js";
 import NewLine from "../nodes/NewLine";
 import Id from "../nodes/id/Id";
 import SubId from "../nodes/id/SubId";

@@ -1,30 +1,32 @@
-import {uuid} from "../../../F";
-import Dom from "../../../type/Dom";
+import {uuid} from "../../../F.js";
+import V from "../../../type/V.js";
 
 export default class OutlinerNode {
 
-    node;
+    contextNode;
 
-    dom;
+    v;
+    vData;
+
     openClose;
 
     constructor(node) {
 
-        this.node = node;
+        this.contextNode = node;
 
         this.domId = uuid();
         window.outlinerNodesPool.set(this.domId, this);
-        this.dom = new Dom({id: this.domId, class: ['node']});
+        this.v = new V({id: this.domId, class: ['node']});
 
-        const container = new Dom({class: ['nodeContainer', 'flex']});
-        e('>', container, this.dom);
+        const container = new V({class: ['nodeContainer', 'flex']});
+        e('>', container, this.v);
 
-        this.dataNode = new Dom({class: ['dataUnit']});
-        this.dataNode.setAttr('nid', this.domId);
-        this.dataNode.toggleEdit();
-        e('>', this.dataNode, this.dom);
+        this.dataV = new V({class: ['dataUnit']});
+        this.dataV.setAttr('outliner_node_id', this.domId);
+        this.dataV.toggleEdit();
+        e('>', this.dataV, this.v);
 
-        this.openClose = new Dom({name: '>', class: ['openClose']});
+        this.openClose = new V({name: '>', class: ['openClose']});
         this.openClose.on('click', async () => {
             if (this.openClose.hasClass('disabled')) return;
             if (this.nodes.isHidden()) this.nodes.show();
@@ -32,10 +34,10 @@ export default class OutlinerNode {
         });
         e('>', this.openClose, container);
 
-        this.nodes = new Dom({class: ['subNodes']});
-        e('>', this.nodes, this.dom);
+        this.nodes = new V({class: ['subNodes']});
+        e('>', this.nodes, this.v);
 
-        const subNodes = this.node.get('nodes');
+        const subNodes = this.contextNode.get('nodes');
         this.openClose.addClass('disabled');
         if (subNodes && subNodes.length) {
              this.openClose.removeClass('disabled');
@@ -68,12 +70,8 @@ export default class OutlinerNode {
     }
 
     insert(node) {
-
-        this.nodes.insert(node.getUnit())
+        //this.nodes.insert(node.getUnit())
     }
-    getDataUnit() { return this.dataNode }
-    getContextT() { return this.dataNode }
-    getDom() { return this.dom }
-    getT() { return this.dom }
-    getNodes() { return this.nodes }
+    getContextNode() { return this.contextNode }
+    getDom() { return this.v }
 }

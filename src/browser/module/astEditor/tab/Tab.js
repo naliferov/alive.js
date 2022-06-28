@@ -1,6 +1,6 @@
-import TabName from "./TabName";
-import AstEditor from "../control/AstEditor";
-import AstNodeEditor from "../control/AstNodeEditor";
+import TabName from "./TabName.js";
+import AstEditor from "../control/AstEditor.js";
+import AstNodeEditor from "../control/AstNodeEditor.js";
 
 export default class Tab {
 

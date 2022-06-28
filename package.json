@@ -1,9 +1,10 @@
 {
+  "type": "module",
   "engines": {
     "node": "16.7.0"
   },
-  "name": "jdm",
-  "version": "0.0.9",
+  "name": "alive",
+  "version": "0.0.99",
   "description": "",
   "author": "Nick Aliferov",
   "license": "MIT",

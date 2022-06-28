@@ -1,20 +1,19 @@
-import Main from "./nodes/Main";
-import Id from "./nodes/id/Id";
-import Op from "./nodes/Op";
-import Literal from "./nodes/literal/Literal";
-import NewLine from "./nodes/NewLine";
-import For from "./nodes/conditionAndBody/loop/For";
-import If from "./nodes/conditionAndBody/if/If";
-import ForConditionPart from "./nodes/conditionAndBody/loop/ForConditionPart";
-import Callable from "./nodes/conditionAndBody/call/callable/Callable";
-import CallableConditionPart from "./nodes/conditionAndBody/call/callable/ConditionPart";
-import ArrayChunk from "./nodes/literal/array/ArrayChunk";
-import ArrayItem from "./nodes/literal/array/ArrayItem";
-import ObjectItem from "./nodes/literal/object/ObjectItem";
-import ObjectChunk from "./nodes/literal/object/ObjectChunk";
-import Keyword from "./nodes/Keyword";
-import SubId from "./nodes/id/SubId";
-import Call from "./nodes/conditionAndBody/call/call/Call";
+import Id from "./nodes/id/Id.js";
+import Op from "./nodes/Op.js";
+import Literal from "./nodes/literal/Literal.js";
+import NewLine from "./nodes/NewLine.js";
+import For from "./nodes/conditionAndBody/loop/For.js";
+import If from "./nodes/conditionAndBody/if/IfBody.js";
+import ForConditionPart from "./nodes/conditionAndBody/loop/ForConditionPart.js";
+import Callable from "./nodes/conditionAndBody/call/callable/Callable.js";
+import CallableConditionPart from "./nodes/conditionAndBody/call/callable/ConditionPart.js";
+import ArrayChunk from "./nodes/literal/array/ArrayChunk.js";
+import ArrayItem from "./nodes/literal/array/ArrayItem.js";
+import ObjectItem from "./nodes/literal/object/ObjectItem.js";
+import ObjectChunk from "./nodes/literal/object/ObjectChunk.js";
+import Keyword from "./nodes/Keyword.js";
+import SubId from "./nodes/id/SubId.js";
+import Call from "./nodes/conditionAndBody/call/call/Call.js";
 
 export default class AstSerializer {
 

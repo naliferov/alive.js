@@ -1,17 +1,15 @@
-import AstRuntime from "./module/astEditor/AstRuntime";
-import E from "../io/E";
-import Nodes from "./module/outliner/Nodes";
-import Input from "./Input";
+import AstRuntime from "./module/astEditor/AstRuntime.js";
+import Nodes from "./module/outliner/Nodes.js";
+import Input from "./Input.js";
 import {
     AST_CONTROL_MODE, OPEN_TAB,
     NODES_CONTROL,
     AST_NODE_EDIT_MODE
-} from "../io/EConstants";
-import TabManager from "./module/astEditor/tab/TabManager";
-import LocalState from "./Localstate";
-import HttpClient from "../io/http/HttpClient";
-import Dom from "../type/Dom";
-import {uuid} from "../F";
+} from "../io/EConstants.js";
+import TabManager from "./module/astEditor/tab/TabManager.js";
+import LocalState from "./Localstate.js";
+import HttpClient from "../io/http/HttpClient.js";
+import V from "../type/V.js";
 
 class AppBrowser {
 
@@ -95,7 +93,7 @@ class AppBrowser {
             two.getDOM().append(one.getDOM());
             return this;
         }
-        const pageIDE = new Dom({class: ['pageIDE']});
+        const pageIDE = new V({class: ['pageIDE']});
         e('>', pageIDE, app);
 
         /**
@@ -112,9 +110,9 @@ class AppBrowser {
         const nodes = new Nodes;
         await nodes.init();
         e('>', nodes.getDom(), app);
-        return;
 
         const localState = new LocalState();
+        return;
 
         const fxTabManager = new TabManager(pubsub, nodes, localState);
         const fxRuntime = new AstRuntime(pubsub, fxTabManager);
@@ -158,7 +156,7 @@ class AppBrowser {
     }
 
     async run() {
-        this.app = new Dom();
+        this.app = new V();
         this.app.setDOM(document.getElementById('app'));
 
         const path = document.location.pathname

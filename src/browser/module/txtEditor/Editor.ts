@@ -1,4 +1,4 @@
-import Node from "../../../type/Node";
+import Node from "../../../type/Node.js";
 import Tab from "./tabs/tab/Tab";
 
 export default class Editor {

@@ -1,9 +1,9 @@
-import {cloneObject, uuid} from "../../../F";
-import OutlinerNode from "./OutlinerNode";
-import {OPEN_TAB} from "../../../io/EConstants";
-import HttpClient from "../../../io/http/HttpClient";
-import Node from "../../../type/Node"
-import Dom from "../../../type/Dom";
+import {cloneObject, uuid} from "../../../F.js";
+import OutlinerNode from "./OutlinerNode.js";
+import {OPEN_TAB} from "../../../io/EConstants.js";
+import HttpClient from "../../../io/http/HttpClient.js";
+import Node from "../../../type/Node.js"
+import V from "../../../type/V.js";
 
 export default class Nodes {
 
@@ -12,13 +12,13 @@ export default class Nodes {
     addNodeBtn;
 
     constructor() {
-        this.dom = new Dom({class: ['nodes']});
+        this.dom = new V({class: ['nodes']});
     }
     getDom() { return this.dom; }
 
     async init() {
 
-        this.addNodeBtn = new Dom({class: ['addBtn'], txt: 'Add node'});
+        this.addNodeBtn = new V({class: ['addBtn'], txt: 'Add node'});
         e('>', this.addNodeBtn, this.dom);
 
         this.addNodeBtn.on('click', (e) => {
@@ -29,31 +29,34 @@ export default class Nodes {
         const nodes = (await (new HttpClient).get('/nodes')).data;
         if (nodes.length) this.addNodeBtn.hide();
 
-        const outlinerRootNode = new OutlinerNode(new Node());
+        const rootNode = new Node();
+        rootNode.set('nodes', nodes);
+
+        const outlinerRootNode = new OutlinerNode(rootNode);
         e('>', outlinerRootNode.getDom(), this.dom);
 
-        //this.rootNode = outlinerRootNode;
-        //this.rootNode.getDataUnit().oEditMode();
+        //this.rootNode.get().oEditMode();
 
-        return;
+        const render = (outlinerNode) => {
 
-        const render = (node) => {
+            const node = outlinerNode.getContextNode();
+            const subNodes = node.get('nodes');
 
-            const subNodes = node.getDataUnit().getNodes();
             if (!Array.isArray(subNodes)) return;
 
             for (let i = 0; i < subNodes.length; i++) {
 
-                const unit = new OutlinerNode(subNodes[i]);
-                const newNode = new OutlinerNode(unit);
+                const newNode = new Node(subNodes[i]);
+                const newOutlinerNode = new OutlinerNode(newNode);
 
-                node.insert(newNode);
-                this.setTById(unit.getId(), unit);
-                render(newNode);
+                console.log(newNode);
+                //outlinerNode.insert(newOutlinerNode);
+                //this.setTById(unit.getId(), unit);
+                //render(newOutlinerNode);
             }
         }
 
-        render(rootNode);
+        render(outlinerRootNode);
     }
 
     isEmpty() { return this.rootNode.isEmpty()}

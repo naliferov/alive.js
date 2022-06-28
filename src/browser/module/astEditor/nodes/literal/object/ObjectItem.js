@@ -1,6 +1,6 @@
-import AstNode from "../../AstNode";
-import ObjectKey from "./ObjectKey";
-import ObjectValue from "./ObjectValue";
+import AstNode from "../../AstNode.js";
+import ObjectKey from "./ObjectKey.js";
+import ObjectValue from "./ObjectValue.js";
 
 export default class ObjectItem extends AstNode {
 

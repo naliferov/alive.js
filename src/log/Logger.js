@@ -1,26 +1,53 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-var Logger = /** @class */ (function () {
-    function Logger(prefix) {
-        if (prefix === void 0) { prefix = ''; }
+import {EOL} from "os";
+
+export default class Logger {
+
+    handler;
+    prefix = '';
+    fs;
+    logFile;
+
+    constructor(fs) {
+        this.fs = fs;
+    }
+
+    setPrefix(prefix) {
         this.prefix = prefix;
     }
-    Logger.prototype.setHandler = function (handler) { this.handler = handler; };
-    Logger.prototype.log = function (msg, object) {
-        object ? console.log(this.prefix + msg, object) : console.log(this.prefix + msg);
-    };
-    Logger.prototype.info = function (msg, object) {
-        if (object === void 0) { object = null; }
-        this.log(msg, object);
-    };
-    Logger.prototype.warning = function (msg, object) {
-        if (object === void 0) { object = null; }
-        this.log(msg, object);
-    };
-    Logger.prototype.error = function (msg, object) {
-        if (object === void 0) { object = null; }
-        this.log(msg, object);
-    };
-    return Logger;
-}());
-exports.default = Logger;
+
+    setHandler(handler) { this.handler = handler; }
+
+    async enableLoggingToFile(logFile) {
+        this.logFile = await this.fs.openFile(logFile, 'a');
+        await this.fs.writeFile(this.logFile, EOL)
+    }
+
+    async disableLoggingToFile() {
+        await this.fs.closeFile(this.logFile)
+    }
+
+    async log(msg, object) {
+
+        //todo добавить время логирования, в F есть функция формирования времени
+        const logMsg = this.prefix + msg;
+        if (object) {
+            console.log(logMsg, object);
+            if (this.logFile) await this.fs.writeFile(this.logFile, logMsg + JSON.stringify(object) + EOL);
+        } else {
+            console.log(logMsg);
+            if (this.logFile) await this.fs.writeFile(this.logFile, logMsg + EOL);
+        }
+    }
+
+    async info(msg, object = null) {
+        await this.log(msg, object);
+    }
+
+    async warning(msg, object = null) {
+        await this.log(msg, object);
+    }
+
+    async error(msg, object = null) {
+        await this.log(msg, object);
+    }
+}
