@@ -1,4 +1,4 @@
-import T from "../../../type/T";
+import Node from "../../../type/Node";
 import Tab from "./tabs/tab/Tab";
 
 export default class Editor {
@@ -6,9 +6,9 @@ export default class Editor {
     activeTab: Tab;
     tabs: Map<string, Tab>;
 
-    unit: T;
-    tabsNames: T;
-    tabsContent: T;
+    unit: Node;
+    tabsNames: Node;
+    tabsContent: Node;
 
     closeTabHandler;
     makeTabActiveHandler;
@@ -18,10 +18,10 @@ export default class Editor {
 
         this.tabs = new Map<string, Tab>();
 
-        this.unit = new T({class: ['tabs']});
+        this.unit = new Node({class: ['tabs']});
 
-        this.tabsNames = new T({id: 'tabsNames'});
-        this.tabsContent = new T({class: ['tabsContent']});
+        this.tabsNames = new Node({id: 'tabsNames'});
+        this.tabsContent = new Node({class: ['tabsContent']});
 
         this.unit.insert(this.tabsNames);
         this.unit.insert(this.tabsContent);
@@ -61,7 +61,7 @@ export default class Editor {
         this.changeCursorPosHandler = changeCursorPosHandler;
     }
 
-    addTab(contextUnit: T, cursorPos = null) {
+    addTab(contextUnit: Node, cursorPos = null) {
 
         if (this.tabs.get(contextUnit.getId())) {
             return;

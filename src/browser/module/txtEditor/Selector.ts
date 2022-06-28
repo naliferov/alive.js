@@ -1,20 +1,20 @@
-import T from "../../../type/T";
+import Node from "../../../type/Node";
 import Cursor from "./Cursor";
 
 export default class Selector {
 
-    unit: T;
+    unit: Node;
 
     cursor: Cursor;
-    lines: T;
+    lines: Node;
 
     active: boolean = false;
     referencePos: {x: number, y: number}|null;
 
     order: string = '';
 
-    constructor(lines: T, cursor: Cursor) {
-        this.unit = new T({class: ['selectorContainer']});
+    constructor(lines: Node, cursor: Cursor) {
+        this.unit = new Node({class: ['selectorContainer']});
         this.lines = lines;
         this.cursor = cursor;
     }
@@ -29,7 +29,7 @@ export default class Selector {
 
             if (min === max) {
 
-                const selector = new T({class: ['selector'], style: {height: this.cursor.yStep + 'px'}});
+                const selector = new Node({class: ['selector'], style: {height: this.cursor.yStep + 'px'}});
                 selector.getDOM().style['top'] = this.cursor.yStep * y + 'px';
 
                 if (refPos.x < newCursorPos.x) {
@@ -47,7 +47,7 @@ export default class Selector {
                 return;
             }
 
-            const selector = new T({class: ['selector'], style: {height: this.cursor.yStep + 'px'}});
+            const selector = new Node({class: ['selector'], style: {height: this.cursor.yStep + 'px'}});
             const linesSizes = this.lines.getSizesAbsolute();
 
             if (y === min) {

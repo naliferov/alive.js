@@ -1,48 +1,45 @@
-import T from "../../../../type/T";
-import Pubsub from "../../../../io/pubsub/Pubsub";
-import Nodes from "../../nodes/Nodes";
+import Nodes from "../../outliner/Nodes";
 import AstSerializer from "../AstSerializer";
-import LocalState from "../../../Localstate";
 import Tab from "./Tab";
 
 export default class TabManager {
 
-    u: T;
-    tabsNamesBlock: T;
-    tabsContentBlock: T;
+    u;
+    tabsNamesBlock;
+    tabsContentBlock;
 
-    activeTab: Tab;
-    tabs: Map<string, Tab>;
+    activeTab;
+    tabs;
 
-    localState: LocalState;
-    pubsub: Pubsub;
-    mindFields: Nodes;
-    fxSerializer: AstSerializer;
+    localState;
+    pubsub;
+    mindFields;
+    fxSerializer;
 
-    constructor(pubsub: Pubsub, mindFields: Nodes, localState: LocalState) {
+    constructor(pubsub, mindFields, localState) {
 
-        this.u = new T({class: ['tabManager']});
+        this.u = new Nodes({class: ['tabManager']});
 
-        this.tabsNamesBlock = new T({class: ['tabs']});
+        this.tabsNamesBlock = new Nodes({class: ['tabs']});
         this.u.in(this.tabsNamesBlock);
-        this.tabsContentBlock = new T({class: ['tabsContent']});
+        this.tabsContentBlock = new Nodes({class: ['tabsContent']});
         this.u.in(this.tabsContentBlock);
 
         this.pubsub = pubsub;
         this.mindFields = mindFields;
 
-        this.tabs = new Map<string, Tab>();
+        this.tabs = new Map;
         this.fxSerializer = new AstSerializer();
 
-        //todo возможно это должно быть в nodes, а nodes должен уметь сохранять некоторые
+        //todo возможно это должно быть в outliner, а outliner должен уметь сохранять некоторые
         this.localState = localState;
     }
 
-    getTabByContextUnit(unit: T): Tab|null {
+    getTabByContextUnit(unit) {
         return this.tabs.get(unit.getId());
     }
 
-    openTab(unit: T) {
+    openTab(unit) {
 
         let openedTab = this.tabs.get(unit.getId());
         if (openedTab && this.activeTab.getContextUnitId() === openedTab.getContextUnitId()) {
@@ -74,7 +71,7 @@ export default class TabManager {
         this.localState.setActiveTabId(this.activeTab.getContextUnitId());
     }
 
-    focusTab(tab: Tab) {
+    focusTab(tab) {
         if (this.activeTab) {
             if (this.activeTab.getContextUnitId() === tab.getContextUnitId()) {
                 return;
@@ -86,7 +83,7 @@ export default class TabManager {
         this.localState.setActiveTabId(tab.getContextUnitId());
     }
 
-    closeTab(tab: Tab) {
+    closeTab(tab) {
 
         const contextUnitId = tab.getContextUnitId();
         const isActiveTab = this.activeTab && this.activeTab.getContextUnitId() === contextUnitId;
@@ -109,8 +106,5 @@ export default class TabManager {
     async onKeyDown(e) {
         if (this.activeTab) this.activeTab.getFxController().onKeyDown(e);
     }
-
-    getUnit() {
-        return this.u;
-    }
+    getUnit() { return this.u }
 }

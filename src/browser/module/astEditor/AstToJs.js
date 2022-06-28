@@ -2,7 +2,7 @@ import Main from "./nodes/Main";
 
 export default class AstToJs {
 
-    buildJsModule(mainChunk: Main) {
+    buildJsModule(mainChunk) {
         //return mainChunk.serializeSubChunks();
     }
 }

@@ -139,7 +139,7 @@ export default class HttpMsgHandler {
                 const user = await this.getAuthorizedUser(req);
 
                 if (!user) { res.send({err: 'User not found.'}); return; }
-                if (!req.body.nodes) { res.send({err: 'Nodes is empty.'}); return; }
+                if (!req.body.nodes) { res.send({err: 'OutlinerNode is empty.'}); return; }
 
                 const userNodes = await this.nodesModel.getByUserId(user._id);
                 if (!userNodes) {

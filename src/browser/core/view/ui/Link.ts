@@ -1,11 +1,11 @@
-import T from "../../../../type/T";
+import Node from "../../../../type/Node";
 
 export default class Link {
 
-    unit: T;
+    unit: Node;
 
     constructor(name: string, href: string) {
-        this.unit = new T({tagName: 'a', txt: name, class: ['link']});
+        this.unit = new Node({tagName: 'a', txt: name, class: ['link']});
         this.unit.getDOM().setAttribute('href', href);
         //this.txt.inactive = inactiveTxt;
     }

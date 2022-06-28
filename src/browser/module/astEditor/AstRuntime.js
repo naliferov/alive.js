@@ -1,4 +1,4 @@
-import T from "../../../type/T";
+import Node from "../../../type/Node";
 
 export default class AstRuntime {
 
@@ -8,7 +8,7 @@ export default class AstRuntime {
 
     constructor(pubsub, fxTabManager) {
         this.pubsub = pubsub;
-        this.unit = new T({class: ['fxRuntimeContainer']});
+        this.unit = new Node({class: ['fxRuntimeContainer']});
         this.fxTabManager = fxTabManager;
     }
     init(app) {

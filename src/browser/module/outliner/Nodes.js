@@ -1,38 +1,41 @@
-import T from "../../../type/T";
 import {cloneObject, uuid} from "../../../F";
-import Node from "./Node";
-import {OPEN_TAB} from "../../../io/pubsub/PubsubConstants";
+import OutlinerNode from "./OutlinerNode";
+import {OPEN_TAB} from "../../../io/EConstants";
 import HttpClient from "../../../io/http/HttpClient";
+import Node from "../../../type/Node"
+import Dom from "../../../type/Dom";
 
 export default class Nodes {
 
-    t;
+    dom;
     rootNode;
     addNodeBtn;
-    pubsub;
 
-    constructor(pubsub) { this.pubsub = pubsub; }
-    getUnit() { return this.t; }
+    constructor() {
+        this.dom = new Dom({class: ['nodes']});
+    }
+    getDom() { return this.dom; }
 
-    async init(app) {
+    async init() {
 
-        this.t = new T({class: ['nodes']});
-        app.insert(this.t);
+        this.addNodeBtn = new Dom({class: ['addBtn'], txt: 'Add node'});
+        e('>', this.addNodeBtn, this.dom);
 
-        const nodes = (await (new HttpClient).get('/nodes')).data;
-
-        this.addNodeBtn = new T({class: ['addBtn'], name: 'Add node'});
-        this.t.insert(this.addNodeBtn);
         this.addNodeBtn.on('click', (e) => {
             this.addNodeBtn.hide();
-            this.create(rootNode);
+            this.create(this.rootNode);
         });
+
+        const nodes = (await (new HttpClient).get('/nodes')).data;
         if (nodes.length) this.addNodeBtn.hide();
 
-        const rootNode = new Node(new T({class: ['root'], nodes}));
-        this.t.insert(rootNode.getUnit());
-        this.rootNode = rootNode;
-        this.rootNode.getDataUnit().oEditMode();
+        const outlinerRootNode = new OutlinerNode(new Node());
+        e('>', outlinerRootNode.getDom(), this.dom);
+
+        //this.rootNode = outlinerRootNode;
+        //this.rootNode.getDataUnit().oEditMode();
+
+        return;
 
         const render = (node) => {
 
@@ -41,8 +44,8 @@ export default class Nodes {
 
             for (let i = 0; i < subNodes.length; i++) {
 
-                const unit = new T(subNodes[i]);
-                const newNode = new Node(unit);
+                const unit = new OutlinerNode(subNodes[i]);
+                const newNode = new OutlinerNode(unit);
 
                 node.insert(newNode);
                 this.setTById(unit.getId(), unit);
@@ -55,15 +58,15 @@ export default class Nodes {
 
     isEmpty() { return this.rootNode.isEmpty()}
 
-    getTById(id) { return window.tPool.get(id); }
-    setTById(id, t) { window.tPool.set(id, t); }
-    getNodeById(id) { return window.nodesPool.get(id); }
+    getTById(id) { return window.nodesPool.get(id); }
+    setTById(id, t) { window.nodesPool.set(id, t); }
+    getOutlinerNodeById(id) { return window.outlinerNodesPool.get(id); }
 
     async handleKeyDown(e) {
 
         if (!e.target.classList.contains('dataUnit')) return;
 
-        const node = this.getNodeById(e.target.getAttribute('nid'));
+        const node = this.getOutlinerNodeById(e.target.getAttribute('nid'));
 
         const k = e.key;
         const ctrl = e.ctrlKey || e.metaKey;
@@ -103,7 +106,7 @@ export default class Nodes {
         const ignoreKeys = ['Enter', 'Tab', 'Control', 'Meta', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'];
         if (new Set(ignoreKeys).has(e.key)) return;
 
-        const node = this.getNodeById(e.target.getAttribute('nid'));
+        const node = this.getOutlinerNodeById(e.target.getAttribute('nid'));
         const unit = node.getDataUnit();
         unit.setNameToData(e.target.innerText);
 
@@ -134,8 +137,8 @@ export default class Nodes {
     async handleClick(e) {
 
         if (e.target.classList.contains('dataUnit')) {
-            let unit = this.getNodeById(e.target.getAttribute('nid')).getContextT();
-            this.pubsub.pub(OPEN_TAB, {unit});
+            let unit = this.getOutlinerNodeById(e.target.getAttribute('nid')).getContextT();
+            window.e(OPEN_TAB, {unit});
             return;
         }
         if (!e.target.classList.contains('openClose')) return;
@@ -143,18 +146,18 @@ export default class Nodes {
         await this.save();
     }
 
-    copy(node) {
+    copy(outlinerNode) {
 
-        let unitData = cloneObject(node.getDataUnit().getData());
-        unitData.id = uuid();
-        delete unitData.nodes;
-        delete unitData.units;
+        let nodeData = cloneObject(outlinerNode.getDataUnit().getData());
+        nodeData.id = uuid();
+        delete nodeData.nodes;
+        delete nodeData.units;
 
-        const newUnit = new T(unitData);
-        const newNode = new Node(newUnit);
+        const newNode = new Node(nodeData);
+        const newOutlinerNode = new OutlinerNode(newNode);
 
-        if (node.next()) {
-            newNode.insertBefore(node.next());
+        if (outlinerNode.next()) {
+            newNode.insertBefore(outlinerNode.next());
         } else {
             node.getParent().insert(newNode);
         }
@@ -162,18 +165,19 @@ export default class Nodes {
     }
 
     create(node) {
-        const newUnit = new T({
+
+        const newUnit = new OutlinerNode({
             id: uuid(),
             name: 'New node',
         });
-        const newNode = new Node(newUnit);
+        const newNode = new OutlinerNode(newUnit);
         node.insert(newNode);
         this.setTById(newUnit.getId(), newUnit);
     }
 
     delete(node) {
-        window.tPool.delete(node.getDataUnit().getId());
-        window.nodesPool.delete(node.getDomId());
+        window.nodesPool.delete(node.getDataUnit().getId());
+        window.outlinerNodesPool.delete(node.getDomId());
         node.getT().removeFromDom();
     }
 
@@ -185,7 +189,7 @@ export default class Nodes {
 
             for (let nodeDom of node.getNodes().getDOM().children) {
 
-                const nodeObject = window.nodesPool.get(nodeDom.getAttribute('id'));
+                const nodeObject = window.outlinerNodesPool.get(nodeDom.getAttribute('id'));
                 const unitData = nodeObject.getDataUnit().getData();
 
                 let tData = {id: unitData.id, name: unitData.name};
@@ -202,12 +206,12 @@ export default class Nodes {
 
         console.log(nodes);
 
-        /*for (let i = 0; i < nodes.length; i++) {
-            if (nodes[i].name === 'main') {
-                console.log(nodes[i]);
+        /*for (let i = 0; i < outliner.length; i++) {
+            if (outliner[i].name === 'main') {
+                console.log(outliner[i]);
                 break;
             }
         }*/
-       // await new HttpClient().post('/nodes', {nodes})
+       // await new HttpClient().post('/outliner', {outliner})
     }
 }

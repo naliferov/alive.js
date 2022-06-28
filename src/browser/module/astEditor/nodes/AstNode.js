@@ -1,4 +1,4 @@
-import T from "../../../../type/T";
+import Node from "../../../../type/Node";
 import {uuid} from "../../../../F";
 
 export default class AstNode {
@@ -15,7 +15,7 @@ export default class AstNode {
             classArr = [...options.className, ...classArr];
         } else if (options.className) classArr.push(options.className);
 
-        this.unit = new T({
+        this.unit = new Node({
             id: this.id,
             tagName: (options.tagName ? options.tagName: 'div'),
             class: classArr,
@@ -128,7 +128,7 @@ export default class AstNode {
     }
 
     setTxt(txt) {
-        this.unit.setText(txt);
+        this.unit.setTxt(txt);
     }
 
     iEditTxt() {

@@ -1,38 +1,38 @@
-import T from "../../../type/T";
+import Node from "../../../type/Node";
 import Cursor from "./Cursor";
 import List from "../../List";
 import Selector from "./Selector";
 
 export default class Lines {
 
-    unit: T;
+    unit: Node;
 
     cursor: Cursor;
     selector: Selector;
 
     linesList: List;
 
-    linesNumbers: T;
-    linesView: T;
+    linesNumbers: Node;
+    linesView: Node;
 
     contextUnit;
 
-    constructor(contextUnit: T) {
+    constructor(contextUnit: Node) {
 
-        this.unit = new T({class: ['lines']});
+        this.unit = new Node({class: ['lines']});
         this.linesList = new List();
 
-        this.linesNumbers = new T({class: ['lineNumbers']});
+        this.linesNumbers = new Node({class: ['lineNumbers']});
         //this.unit.insert(this.linesNumbers);
 
-        this.linesView = new T({class: ['lines']});
+        this.linesView = new Node({class: ['lines']});
         this.unit.insert(this.linesView);
 
         const jsArray = contextUnit.getJs().split('\n');
         this.buildLinesNumbers(jsArray, this.linesNumbers);
 
         for (let i = 0; i < jsArray.length; i++) {
-            const codeLine = new T({tagName: 'pre', class: ['line', 'noselect'], txt: jsArray[i]});
+            const codeLine = new Node({tagName: 'pre', class: ['line', 'noselect'], txt: jsArray[i]});
             this.linesView.insert(codeLine);
             this.linesList.add(codeLine);
         }
@@ -67,10 +67,10 @@ export default class Lines {
 
     getUnit() { return this.unit; }
 
-    buildLinesNumbers(js: string[], linesNumbers: T) {
+    buildLinesNumbers(js: string[], linesNumbers: Node) {
         linesNumbers.clear();
         for (let i = 0; i < js.length; i++) {
-            linesNumbers.insert(new T({class: ['lineNumber'], txt: String(i + 1)}));
+            linesNumbers.insert(new Node({class: ['lineNumber'], txt: String(i + 1)}));
         }
     }
 
@@ -154,7 +154,7 @@ export default class Lines {
                 const {y} = cursor.getPos();
 
                 const oldLine = this.linesList.get(y);
-                const newLine = new T({tagName: 'pre', class: ['line'], txt: oldLine.getText()});
+                const newLine = new Node({tagName: 'pre', class: ['line'], txt: oldLine.getText()});
 
                 this.linesView.insert(newLine, y);
                 this.linesList.add(newLine, y);
@@ -179,7 +179,7 @@ export default class Lines {
     syncLinesNumbers(count) {
         this.linesNumbers.clear();
         for (let i = 0; i < count; i++) {
-            this.linesNumbers.insert(new T({class: ['lineNumber'], txt: String(i + 1)}));
+            this.linesNumbers.insert(new Node({class: ['lineNumber'], txt: String(i + 1)}));
         }
     }
 
@@ -241,7 +241,7 @@ export default class Lines {
         const rightPart = lineArr.splice(x, lineArr.length);
         line.setText(leftPart.join(''));
 
-        const codeLine = new T({tagName: 'pre', class: ['line'], txt: rightPart.join('')});
+        const codeLine = new Node({tagName: 'pre', class: ['line'], txt: rightPart.join('')});
 
         this.linesView.insert(codeLine, y + 1);
         this.linesList.add(codeLine, y + 1);

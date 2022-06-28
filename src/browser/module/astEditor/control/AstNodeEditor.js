@@ -1,5 +1,5 @@
 import Inserter from "../nodes/Inserter";
-import {AST_NODE_EDIT_MODE, AST_CONTROL_MODE} from "../../../../io/pubsub/PubsubConstants";
+import {AST_NODE_EDIT_MODE, AST_CONTROL_MODE} from "../../../../io/EConstants";
 import ForConditionPartInternal from "../nodes/conditionAndBody/loop/ForConditionPartInternal";
 import Main from "../nodes/Main";
 import Id from "../nodes/id/Id";

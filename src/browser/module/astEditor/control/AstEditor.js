@@ -1,4 +1,4 @@
-import T from "../../../../type/T";
+import Node from "../../../../type/Node";
 import NewLine from "../nodes/NewLine";
 import Id from "../nodes/id/Id";
 import SubId from "../nodes/id/SubId";
@@ -11,7 +11,7 @@ import IfBody from "../nodes/conditionAndBody/if/IfBody";
 import For from "../nodes/conditionAndBody/loop/For";
 import Main from "../nodes/Main";
 import ForCondition from "../nodes/conditionAndBody/loop/ForCondition";
-import {AST_NODE_EDIT_MODE} from "../../../../io/pubsub/PubsubConstants";
+import {AST_NODE_EDIT_MODE} from "../../../../io/EConstants";
 import ForConditionPart from "../nodes/conditionAndBody/loop/ForConditionPart";
 import ForConditionPartInternal from "../nodes/conditionAndBody/loop/ForConditionPartInternal";
 import Callable from "../nodes/conditionAndBody/call/callable/Callable";
@@ -33,71 +33,88 @@ import ObjectValue from "../nodes/literal/object/ObjectValue";
 import ObjectBody from "../nodes/literal/object/ObjectBody";
 import Call from "../nodes/conditionAndBody/call/call/Call";
 import CallConditionPart from "../nodes/conditionAndBody/call/call/CallConditionPart";
+import ModuleFlow from "../nodes/ModuleFlow";
 
 export default class AstEditor {
+
+    mainNode;
+    flow;
+    context;
+
+    callableModule;
+
+    nodes;
 
     unit;
     pubsub;
 
-    context;
-    nodes;
-
-    mainChunk;
     marker;
     serializer;
     astEditor;
 
-    moduleType = 'simple';
-
     constructor(
-        context,
+        contextNode,
         pubsub,
         serializer,
         astEditor,
         nodes
     ) {
-        this.context = context;
+        this.contextNode = contextNode;
         this.pubsub = pubsub;
-        this.serializer = serializer;
         this.astEditor = astEditor;
+        this.serializer = serializer;
         this.nodes = nodes;
 
+        this.unit = new Node({class: ['astEditor']});
 
-        this.unit = new T({class: ['astEditor']});
-
-        const markerMonitor = new T({class: ['markedNode'], name: 'markedNode: '});
+        const markerMonitor = new Node({class: ['markedNode'], name: 'markedNode: '});
         this.unit.in(markerMonitor);
         this.marker = new Marker(markerMonitor);
 
-        this.mainChunk = new Main();
-        this.unit.in(this.mainChunk.getUnit());
+        this.mainNode = new Main();
+        this.unit.in(this.mainNode.getUnit());
 
-        let module = this.mainChunk;
+        this.flow = new ModuleFlow();
 
-        this.moduleType = this.context.getDataField('moduleType') ?? 'simple';
-        if (this.moduleType === 'callableModule') {
+        const moduleType = this.getContextModuleType();
+        if (moduleType === 'callable') {
             this.callableModule = new CallableModule;
-            this.mainChunk.insert(this.callableModule);
-            module = this.callableModule
+            //this.mainNode.insertInBody(this.callableModule);
+            //flow.insert();
+        } else {
+            this.mainNode.insert(this.flow);
         }
 
-        const astNodes = this.context.getDataField('astNodes');
+        const astNodes = this.context.get('astNodes');
         if (!astNodes) {
             console.log(`astNodes not found in unit ${this.context.getId()}`);
             return;
         }
 
-        this.serializer.deserialize(module, astNodes.chunks);
+        this.serializer.deserialize(this.flow, astNodes.chunks);
     }
 
     show() { this.unit.show(); }
     hide() { this.unit.hide(); }
     getContextUnitId() { return this.context.getId(); }
     getUnit() { return this.unit; }
+    getContextModuleType() {
+        return this.context.getDataField('moduleType') ?? 'simple';
+    }
+
+    switchModuleType() {
+
+        console.log('test');
+        //const moduleType = this.getContextModuleType();
+
+        this.callableModule = new CallableModule;
+        this.callableModule.insert(this.flow);
+        this.mainNode.insert(this.callableModule);
+    }
 
     async save() {
         this.context.setDataField('astNodes', {
-            chunks: this.serializer.serialize(this.mainChunk),
+            chunks: this.serializer.serialize(this.mainNode),
             markedChunksIds: this.marker.getMarkedChunksIds(),
         });
         await this.nodes.save();
@@ -127,6 +144,7 @@ export default class AstEditor {
             map[k](e);
             return;
         }
+
         if (ctrl && code === 'KeyE') {
             e.preventDefault();
             if (this.marker.isEmpty()) return;
@@ -137,11 +155,16 @@ export default class AstEditor {
             return;
         }
         if (ctrl && code === 'KeyL') {
+
             e.preventDefault();
-            if (this.marker.isEmpty()) return;
+            if (this.marker.isEmpty()) {
+                this.switchModuleType();
+                return;
+            }
 
             const marked = this.marker.getFirst();
             if (marked instanceof Id) marked.switchKeyword();
+            if (marked instanceof ModuleFlow) this.switchModuleType();
             this.save();
             return;
         }
@@ -149,7 +172,7 @@ export default class AstEditor {
             e.preventDefault();
             return;
         }
-        if (ctrl && code === 'KeyC') {
+        if (ctrl && k === 'KeyC') {
             e.preventDefault();
 
             /*const lastLine = (this.linesList.getLength() - 1) === y;
@@ -312,7 +335,7 @@ export default class AstEditor {
     enterBtn(shift = false, ctrl = false) {
 
         if (this.marker.isEmpty()) {
-            this.switchToInsertingMode(this.mainChunk);
+            this.switchToInsertingMode(this.mainNode);
             return;
         }
         if (this.marker.getLength() === 1) {
@@ -429,7 +452,7 @@ export default class AstEditor {
 
     moveLeft(isShift, isCtrl) {
 
-        if (this.mainChunk.isEmpty()) this.switchToInsertingMode(this.mainChunk);
+        if (this.mainNode.isEmpty()) this.switchToInsertingMode(this.mainNode);
         if (this.marker.isEmpty()) return;
 
         if (this.marker.getLength() === 1) {
@@ -534,9 +557,9 @@ export default class AstEditor {
     moveRight(isShift, isCtrl) {
 
         if (this.marker.isEmpty()) {
-            const chunk = this.mainChunk.getFirstChunk();
+            const chunk = this.mainNode.getFirstChunk();
             if (!chunk) {
-                this.switchToInsertingMode(this.mainChunk)
+                this.switchToInsertingMode(this.mainNode)
                 return;
             }
 
@@ -749,7 +772,7 @@ export default class AstEditor {
     moveDown(isShift, isCtrl) {
 
         if (this.marker.isEmpty()) {
-            this.marker.mark(this.mainChunk.getFirstChunk());
+            this.marker.mark(this.mainNode.getFirstChunk());
             return;
         }
 
@@ -877,7 +900,5 @@ export default class AstEditor {
         }
     }
 
-    close() {
-        this.unit.removeFromDom();
-    }
+    close() { this.unit.removeFromDom(); }
 }

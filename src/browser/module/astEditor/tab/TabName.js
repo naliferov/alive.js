@@ -1,27 +1,27 @@
-import T from "../../../../type/T";
+import Node from "../../../../type/Node";
 
 export default class TabName {
 
-    u: T;
+    u;
 
-    tabName: T;
-    closeBtn: T;
+    tabName;
+    closeBtn;
 
-    contextUnitId: string;
+    contextUnitId;
 
-    constructor(name: string, contextUnit: T) {
-        this.u = new T({class: ['tab']});
+    constructor(name, contextUnit) {
+        this.u = new Node({class: ['tab']});
 
-        this.tabName = new T({class: ['tabName'], name});
+        this.tabName = new Node({class: ['tabName'], name});
         this.u.in(this.tabName);
 
-        this.closeBtn = new T({class: ['tabCloseBtn'], name: 'x'});
+        this.closeBtn = new Node({class: ['tabCloseBtn'], name: 'x'});
         this.u.in(this.closeBtn);
 
         this.contextUnitId = contextUnit.getId();
     }
 
-    getContextUnitId(): string {
+    getContextUnitId() {
         return this.contextUnitId;
     }
 

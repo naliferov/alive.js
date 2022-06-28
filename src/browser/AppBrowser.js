@@ -1,16 +1,17 @@
-import T from "../type/T";
 import AstRuntime from "./module/astEditor/AstRuntime";
-import Pubsub from "../io/pubsub/Pubsub";
-import Nodes from "./module/nodes/Nodes";
+import E from "../io/E";
+import Nodes from "./module/outliner/Nodes";
 import Input from "./Input";
 import {
     AST_CONTROL_MODE, OPEN_TAB,
     NODES_CONTROL,
     AST_NODE_EDIT_MODE
-} from "../io/pubsub/PubsubConstants";
+} from "../io/EConstants";
 import TabManager from "./module/astEditor/tab/TabManager";
 import LocalState from "./Localstate";
 import HttpClient from "../io/http/HttpClient";
+import Dom from "../type/Dom";
+import {uuid} from "../F";
 
 class AppBrowser {
 
@@ -22,37 +23,35 @@ class AppBrowser {
         const isSignIn = type === 'sign_in';
         const formName = isSignIn ? 'Sign in': 'Sign up';
 
-        const pageSign = new T({class: ['pageSign']});
+        const pageSign = new Nodes({class: ['pageSign']});
         app.in(pageSign);
 
-        const signContainer = new T({class: ['signContainer']});
+        const signContainer = new Nodes({class: ['signContainer']});
         pageSign.in(signContainer);
 
-        const sign = new T({class: ['signBlock']});
+        const sign = new Nodes({class: ['signBlock']});
         signContainer.in(sign);
 
-        sign.in(new T({txt: formName})).inBr();
+        sign.in(new Nodes({txt: formName})).inBr();
 
-        sign.in(new T({name: 'Email'}));
-        const email = new T({tagName: 'input', class: ['emailInput']});
+        sign.in(new Nodes({name: 'Email'}));
+        const email = new Nodes({tagName: 'input', class: ['emailInput']});
         sign.in(email).inBr();
 
-        sign.in(new T({name: 'Password'}));
-        const password = new T({tagName: 'input', class: ['emailInput']});
+        sign.in(new Nodes({name: 'Password'}));
+        const password = new Nodes({tagName: 'input', class: ['emailInput']});
         password.setAttr('type', 'password');
         sign.in(password);
 
         sign.inBr().inBr();
-        const btn = new T({tagName: 'button', name: formName})
+        const btn = new Nodes({tagName: 'button', name: formName})
         sign.in(btn);
 
         const submit = async () => {
             const data = {email: email.getValue(), password: password.getValue()};
             const res = await new HttpClient().post(document.location.pathname, data);
-            // @ts-ignore
             if (!res.err) {
-                document.location.href = '/';
-                return;
+                document.location.href = '/'; return;
             }
             document.location.reload();
         };
@@ -64,23 +63,57 @@ class AppBrowser {
 
         if (isSignIn) {
             sign.inBr().inBr();
-            sign.in(new T({tagName: 'span', name: "Don't have an account? "}));
-            sign.in(new T({tagName: 'a', name: "Sign up"}).setAttr('href', '/sign/up'));
+            sign.in(new Nodes({tagName: 'span', name: "Don't have an account? "}));
+            sign.in(new Nodes({tagName: 'a', name: "Sign up"}).setAttr('href', '/sign/up'));
         }
     }
 
-    async showFx(app) {
+    async showIDE(app) {
 
-        window.tPool = new Map;
+        window.domPool = new Map;
         window.nodesPool = new Map;
+        window.outlinerNodesPool = new Map;
         window.astNodesPool = new Map;
 
-        const pageFx = new T({class: ['pageFx']});
-        app.in(pageFx);
+        window.eHandlers = {};
+        window.e = new Proxy(() => {}, {
+            apply(target, thisArg, args) {
+                if (window.eHandlers[args[0]]) window.eHandlers[args[0]](...args);
+            },
+            get(target, prop, receiver) { return 1; },
+            set(target, k, v) {
+                window.eHandlers[k] = v;
+                return true;
+            }
+        });
+        e['>'] = (_, one, two, index = null) => {
 
-        const pubsub = new Pubsub();
-        const nodes = new Nodes(pubsub);
-        await nodes.init(pageFx);
+            if (index !== null) {
+                 one.getDOM().insertBefore(one.getDOM(), two.getDOM().children[index]);
+                 return;
+            }
+            two.getDOM().append(one.getDOM());
+            return this;
+        }
+        const pageIDE = new Dom({class: ['pageIDE']});
+        e('>', pageIDE, app);
+
+        /**
+         * inBr() {
+         *         this.in(new Node({tagName: 'br'}));
+         *         return this;
+         *     }
+         *     insertBefore(unit, beforeUnit) {
+         *         this.getDOM().insertBefore(unit.getDOM(), beforeUnit.getDOM());
+         *     }
+         * @type {Nodes}
+         */
+
+        const nodes = new Nodes;
+        await nodes.init();
+        e('>', nodes.getDom(), app);
+        return;
+
         const localState = new LocalState();
 
         const fxTabManager = new TabManager(pubsub, nodes, localState);
@@ -118,19 +151,19 @@ class AppBrowser {
             }
             await fxRuntime.openTab(unit);
         }
-        if (activeTabId && window.tPool.get(activeTabId)) {
-            const unit = await nodes.getTById(activeTabId);
-            await fxRuntime.focusTab(unit);
+        if (activeTabId && window.nodesPool.get(activeTabId)) {
+            const node = await nodes.getTById(activeTabId);
+            await fxRuntime.focusTab(node);
         }
     }
 
     async run() {
-        this.app = new T();
+        this.app = new Dom();
         this.app.setDOM(document.getElementById('app'));
 
         const path = document.location.pathname
         const m = {
-            '/': () => this.showFx(this.app),
+            '/': () => this.showIDE(this.app),
             '/sign/in': () => this.showSignPage(this.app, 'sign_in'),
             '/sign/up': () => this.showSignPage(this.app, 'sign_up'),
         }
