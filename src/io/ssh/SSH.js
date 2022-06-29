@@ -2,10 +2,10 @@ import {Config, NodeSSH, SSHExecOptions} from "node-ssh";
 
 export default class SSH {
 
-    client: NodeSSH;
-    config: Config;
+    client;
+    config;
 
-    constructor(config: Config) {
+    constructor(config) {
         this.client = new NodeSSH();
         this.config = config;
     }
@@ -18,7 +18,7 @@ export default class SSH {
         await this.client.dispose();
     }
 
-    async exec(cmd: string, params: string[] = [], options: SSHExecOptions & { stream?: 'stdout' | 'stderr' } = {
+    async exec(cmd, params = [], options = {
         stream: 'stdout',
         execOptions: {}
     }) {
