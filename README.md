@@ -1,7 +1,6 @@
 # alive.js
 
 Structured editor for javascript subset and env for its execution.
-Using nodejs for execution.
 
 ## How to run this project?
 
