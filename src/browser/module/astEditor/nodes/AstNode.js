@@ -1,5 +1,5 @@
 import Node from "../../../../type/Node.js";
-import {uuid} from "../../../../F";
+import {uuid} from "../../../../F.js";
 
 export default class AstNode {
 

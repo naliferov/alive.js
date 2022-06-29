@@ -1,18 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script>window.dataLayer = window.dataLayer || [];</script>
-
-    <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-5Q8FXBP');</script>
-    <!-- End Google Tag Manager -->
-
     <meta charset="UTF-8">
-    <title>JDM</title>
+    <title>alive.js</title>
     <style>
         @font-face {
             font-family: "JetBrains Mono";
@@ -253,14 +243,8 @@
         /*div[contenteditable="true"] {
             padding: 0 4px;
         }*/
-        [contenteditable] {
-            outline: 0;
-        }
-
-        .shift {
-            margin-left: 1.2em;
-        }
-
+        [contenteditable] {outline: 0; }
+        .shift { margin-left: 1.2em; }
         .line {
             margin: 0; padding: 0;
             height: 18px;
@@ -277,14 +261,6 @@
             z-index: 2;
         }
         .unit a { color: black; }
-
-        .processList {
-            margin-top: 1em;
-            background: lightgray;
-        }
-        .processListName {
-            margin-bottom: 1em;
-        }
 
         input {
             font-family: 'Roboto', sans-serif;
@@ -316,24 +292,6 @@
         .btn:hover {
             background: #dcdcdc;
         }
-        /*.btn.active {
-            color: white;
-            background: black;
-        }*/
-        .circle {
-            width: 35px;
-            height: 35px;
-            margin: 2em 0 0 1em;
-            border-radius: 900px;
-            background: black;
-        }
-        .circleBlue {
-            width: 35px;
-            height: 35px;
-            margin: 2em 0 0 1em;
-            border-radius: 900px;
-            background: blue;
-        }
         .key {
             border: 1px solid black;
             padding: 0.2em 0.9em;
@@ -350,114 +308,6 @@
     </style>
 </head>
 <body>
-<!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5Q8FXBP"
-                  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
-
-<script>
-
-    const dlPurchase = {
-        event: "purchase",
-        ecommerce: {
-            transaction_id: "e5rtfxc",
-            affiliation: "",
-            value: 9.00,
-            tax: 9.00,
-            shipping: 9.00,
-            currency: "",
-            coupon: "",
-            items: [
-                {
-                    item_id: "fgd",
-                    item_name: "dfd",
-                    affiliation: "dfdd",
-                    coupon: "",
-                    currency: "",
-                    discount: 0.00,
-                    index: 0,
-                    item_brand: "",
-                    item_category: "",
-                    item_category2: "",
-                    item_category3: "",
-                    item_category4: "",
-                    item_category5: "",
-                    item_list_id: "",
-                    item_list_name: "",
-                    item_variant: "",
-                    location_id: "",
-                    price: 9.00,
-                    quantity: 1
-                },
-                {
-                    item_id: "vft",
-                    item_name: "ffd",
-                    affiliation: "gfg",
-                    coupon: "",
-                    currency: "",
-                    discount: 0.00,
-                    index: 1,
-                    item_brand: "",
-                    item_category: "",
-                    item_category2: "",
-                    item_category3: "",
-                    item_category4: "",
-                    item_category5: "",
-                    item_list_id: "",
-                    item_list_name: "",
-                    item_variant: "",
-                    location_id: "",
-                    price: 0.00,
-                    promotion_id: "",
-                    promotion_name: "",
-                    quantity: 1
-                }]
-        }
-    };
-
-    const dlOrderFailed = {
-        event: "order_failed",
-        ecommerce: {
-            currency: "USD",
-            transaction_id: "fff",
-            value: 22.00,
-            affiliation: "fgff",
-            coupon: "",
-            shipping: 0.00,
-            tax: 0.00,
-            fail_reason: "oleg",
-            items: [
-                {
-                    item_id: "cvgf",
-                    item_name: "fxcd",
-                    affiliation: "dfdd",
-                    coupon: "",
-                    currency: "",
-                    discount: 0.00,
-                    index: 0,
-                    item_brand: "",
-                    item_category: "",
-                    item_category2: "",
-                    item_category3: "",
-                    item_category4: "",
-                    item_category5: "",
-                    item_list_id: "",
-                    item_list_name: "",
-                    item_variant: "",
-                    location_id: "",
-                    price: 22.00,
-                    quantity: 1
-                }
-            ]
-        }
-    };
-
-</script>
-
-<!--<br>
-<button onclick="dataLayer.push({event: 'test_oleg'})">Send test event</button><br><br>
-<button onclick="dataLayer.push(dlPurchase)">Send purchase</button><br><br>
-<button onclick="dataLayer.push(dlOrderFailed)">Send order failed</button><br>-->
 
 <div id="app"></div>
 <script type="module" src="/browser/AppBrowser.js"></script>

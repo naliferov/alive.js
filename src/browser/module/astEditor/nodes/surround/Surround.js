@@ -1,5 +1,5 @@
-import AstNode from "../AstNode";
-import SurroundInternal from "./SurroundInternal";
+import AstNode from "../AstNode.js";
+import SurroundInternal from "./SurroundInternal.js";
 
 export default class Surround extends AstNode {
 

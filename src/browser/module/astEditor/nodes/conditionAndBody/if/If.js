@@ -1,9 +1,9 @@
-import AstNode from "../../AstNode";
-import NewLine from "../../NewLine";
-import Space from "../../Space";
-import IfCondition from "./IfCondition";
-import IfBody from "./IfBody";
-import ConditionAndBodyNode from "../ConditionAndBodyNode";
+import AstNode from "../../AstNode.js";
+import NewLine from "../../NewLine.js";
+import Space from "../../Space.js";
+import IfCondition from "./IfCondition.js";
+import IfBody from "./IfBody.js";
+import ConditionAndBodyNode from "../ConditionAndBodyNode.js";
 
 export default class If extends ConditionAndBodyNode {
 

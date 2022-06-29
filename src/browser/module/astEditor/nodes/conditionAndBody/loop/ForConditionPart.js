@@ -1,5 +1,5 @@
-import AstNode from "../../AstNode";
-import ForConditionPartInternal from "./ForConditionPartInternal";
+import AstNode from "../../AstNode.js";
+import ForConditionPartInternal from "./ForConditionPartInternal.js";
 
 export default class ForConditionPart extends AstNode {
 

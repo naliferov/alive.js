@@ -1,5 +1,5 @@
-import AstNode from "../AstNode";
-import SubIdContainer from "./SubIdContainer";
+import AstNode from "../AstNode.js";
+import SubIdContainer from "./SubIdContainer.js";
 
 export default class SubId extends AstNode {
 

@@ -1,39 +1,39 @@
 import Node from "../../../../type/Node.js";
-import NewLine from "../nodes/NewLine";
-import Id from "../nodes/id/Id";
-import SubId from "../nodes/id/SubId";
-import SubIdContainer from "../nodes/id/SubIdContainer";
-import If from "../nodes/conditionAndBody/if/If";
-import Surround from "../nodes/surround/Surround";
-import Marker from "../Marker";
-import IfCondition from "../nodes/conditionAndBody/if/IfCondition";
-import IfBody from "../nodes/conditionAndBody/if/IfBody";
-import For from "../nodes/conditionAndBody/loop/For";
-import Main from "../nodes/Main";
-import ForCondition from "../nodes/conditionAndBody/loop/ForCondition";
-import {AST_NODE_EDIT_MODE} from "../../../../io/EConstants";
-import ForConditionPart from "../nodes/conditionAndBody/loop/ForConditionPart";
-import ForConditionPartInternal from "../nodes/conditionAndBody/loop/ForConditionPartInternal";
-import Callable from "../nodes/conditionAndBody/call/callable/Callable";
-import CallableModule from "../nodes/module/CallableModule";
-import CallableConditionPart from "../nodes/conditionAndBody/call/callable/ConditionPart";
-import SurroundInternal from "../nodes/surround/SurroundInternal";
-import ConditionAndBodyNode from "../nodes/conditionAndBody/ConditionAndBodyNode";
-import ConditionNode from "../nodes/conditionAndBody/ConditionNode";
-import BodyNode from "../nodes/conditionAndBody/BodyNode";
-import ArrayChunk from "../nodes/literal/array/ArrayChunk";
-import ArrayItem from "../nodes/literal/array/ArrayItem";
-import ArrayItemParts from "../nodes/literal/array/ArrayItemParts";
-import ArrayBody from "../nodes/literal/array/ArrayBody";
-import ObjectChunk from "../nodes/literal/object/ObjectChunk";
-import ObjectItem from "../nodes/literal/object/ObjectItem";
-import ObjectItemParts from "../nodes/literal/object/ObjectItemParts";
-import ObjectKey from "../nodes/literal/object/ObjectKey";
-import ObjectValue from "../nodes/literal/object/ObjectValue";
-import ObjectBody from "../nodes/literal/object/ObjectBody";
-import Call from "../nodes/conditionAndBody/call/call/Call";
-import CallConditionPart from "../nodes/conditionAndBody/call/call/CallConditionPart";
-import ModuleFlow from "../nodes/ModuleFlow";
+import NewLine from "../nodes/NewLine.js";
+import Id from "../nodes/id/Id.js";
+import SubId from "../nodes/id/SubId.js";
+import SubIdContainer from "../nodes/id/SubIdContainer.js";
+import If from "../nodes/conditionAndBody/if/If.js";
+import Surround from "../nodes/surround/Surround.js";
+import Marker from "../Marker.js";
+import IfCondition from "../nodes/conditionAndBody/if/IfCondition.js";
+import IfBody from "../nodes/conditionAndBody/if/IfBody.js";
+import For from "../nodes/conditionAndBody/loop/For.js";
+import Main from "../nodes/Main.js";
+import ForCondition from "../nodes/conditionAndBody/loop/ForCondition.js";
+import {AST_NODE_EDIT_MODE} from "../../../../io/EConstants.js";
+import ForConditionPart from "../nodes/conditionAndBody/loop/ForConditionPart.js";
+import ForConditionPartInternal from "../nodes/conditionAndBody/loop/ForConditionPartInternal.js";
+import Callable from "../nodes/conditionAndBody/call/callable/Callable.js";
+import CallableModule from "../nodes/module/CallableModule.js";
+import CallableConditionPart from "../nodes/conditionAndBody/call/callable/ConditionPart.js";
+import SurroundInternal from "../nodes/surround/SurroundInternal.js";
+import ConditionAndBodyNode from "../nodes/conditionAndBody/ConditionAndBodyNode.js";
+import ConditionNode from "../nodes/conditionAndBody/ConditionNode.js";
+import BodyNode from "../nodes/conditionAndBody/BodyNode.js";
+import ArrayChunk from "../nodes/literal/array/ArrayChunk.js";
+import ArrayItem from "../nodes/literal/array/ArrayItem.js";
+import ArrayItemParts from "../nodes/literal/array/ArrayItemParts.js";
+import ArrayBody from "../nodes/literal/array/ArrayBody.js";
+import ObjectChunk from "../nodes/literal/object/ObjectChunk.js";
+import ObjectItem from "../nodes/literal/object/ObjectItem.js";
+import ObjectItemParts from "../nodes/literal/object/ObjectItemParts.js";
+import ObjectKey from "../nodes/literal/object/ObjectKey.js";
+import ObjectValue from "../nodes/literal/object/ObjectValue.js";
+import ObjectBody from "../nodes/literal/object/ObjectBody.js";
+import Call from "../nodes/conditionAndBody/call/call/Call.js";
+import CallConditionPart from "../nodes/conditionAndBody/call/call/CallConditionPart.js";
+import ModuleBody from "../nodes/ModuleBody.js";
 
 export default class AstEditor {
 
@@ -74,7 +74,7 @@ export default class AstEditor {
         this.mainNode = new Main();
         this.unit.in(this.mainNode.getUnit());
 
-        this.flow = new ModuleFlow();
+        this.flow = new ModuleBody();
 
         const moduleType = this.getContextModuleType();
         if (moduleType === 'callable') {
@@ -164,7 +164,7 @@ export default class AstEditor {
 
             const marked = this.marker.getFirst();
             if (marked instanceof Id) marked.switchKeyword();
-            if (marked instanceof ModuleFlow) this.switchModuleType();
+            if (marked instanceof ModuleBody) this.switchModuleType();
             this.save();
             return;
         }

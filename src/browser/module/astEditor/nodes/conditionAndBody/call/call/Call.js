@@ -1,5 +1,5 @@
-import AstNode from "../../../AstNode";
-import CallCondition from "./CallCondition";
+import AstNode from "../../../AstNode.js";
+import CallCondition from "./CallCondition.js";
 
 export default class Call extends AstNode {
 

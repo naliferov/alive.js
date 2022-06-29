@@ -1,4 +1,4 @@
-import BodyNode from "../BodyNode";
+import BodyNode from "../BodyNode.js";
 
 export default class ForBody extends BodyNode {
     constructor() {

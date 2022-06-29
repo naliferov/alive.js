@@ -3,17 +3,17 @@ import Cursor from "./Cursor";
 
 export default class Selector {
 
-    unit: Node;
+    unit;
 
-    cursor: Cursor;
-    lines: Node;
+    cursor;
+    lines;
 
-    active: boolean = false;
-    referencePos: {x: number, y: number}|null;
+    active = false;
+    referencePos;
 
-    order: string = '';
+    order = '';
 
-    constructor(lines: Node, cursor: Cursor) {
+    constructor(lines, cursor) {
         this.unit = new Node({class: ['selectorContainer']});
         this.lines = lines;
         this.cursor = cursor;
@@ -25,7 +25,7 @@ export default class Selector {
         let newCursorPos = {x: this.cursor.x, y: this.cursor.y};
         const refPos = this.referencePos;
 
-        const renderLine = (min: number, max: number, y: number) => {
+        const renderLine = (min, max, y) => {
 
             if (min === max) {
 
@@ -106,7 +106,7 @@ export default class Selector {
         this.renderSelection();
     }
 
-    activate(order: string) {
+    activate(order) {
         this.referencePos = { ...this.cursor.getPos() };
         this.active = true;
         this.order = order;

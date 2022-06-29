@@ -1,4 +1,4 @@
-import AstNode from "../../../AstNode";
+import AstNode from "../../../AstNode.js";
 
 export default class CallConditionPartInternal extends AstNode {
 

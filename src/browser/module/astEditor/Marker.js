@@ -1,6 +1,4 @@
-import List from "../../List";
-import AstNode from "./nodes/AstNode";
-import Node from "../../../type/Node.js";
+import List from "../../List.js";
 
 export default class Marker {
 

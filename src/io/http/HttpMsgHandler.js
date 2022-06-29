@@ -36,7 +36,7 @@ export default class HttpMsgHandler {
 
     async handle(req, res, next) {
 
-        const htmlFile = await this.fs.readFile(this.appDir + '/src/browser/core/view/index.html');
+        const htmlFile = await this.fs.readFile(this.appDir + '/src/browser/index.html');
 
         const m = {
             'GET:/': async() => {

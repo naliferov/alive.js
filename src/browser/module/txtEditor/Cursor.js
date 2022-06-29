@@ -2,13 +2,13 @@ import Node from "../../../type/Node.js";
 
 export default class Cursor {
 
-    unit: Node;
+    unit;
 
-    x: number;
-    y: number;
+    x;
+    y;
 
-    yStep: number;
-    xStep: number;
+    yStep;
+    xStep;
 
     blinking;
 

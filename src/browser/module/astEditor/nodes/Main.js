@@ -1,7 +1,7 @@
-import AstNode from "./AstNode";
+import AstNode from "./AstNode.js";
 
 export default class Main extends AstNode {
     constructor() {
-        super('', {className: 'mainChunk'});
+        super('', {className: 'mainNode'});
     }
 }

@@ -1,23 +1,20 @@
 import Node from "../../../type/Node.js";
 import Cursor from "./Cursor";
 import List from "../../List";
-import Selector from "./Selector";
+import Selector from "./Selector.js";
 
 export default class Lines {
 
-    unit: Node;
+    unit;
 
-    cursor: Cursor;
-    selector: Selector;
+    cursor;
+    selector;
 
-    linesList: List;
-
-    linesNumbers: Node;
-    linesView: Node;
+    linesList;
 
     contextUnit;
 
-    constructor(contextUnit: Node) {
+    constructor(contextUnit) {
 
         this.unit = new Node({class: ['lines']});
         this.linesList = new List();
@@ -67,7 +64,7 @@ export default class Lines {
 
     getUnit() { return this.unit; }
 
-    buildLinesNumbers(js: string[], linesNumbers: Node) {
+    buildLinesNumbers(js, linesNumbers) {
         linesNumbers.clear();
         for (let i = 0; i < js.length; i++) {
             linesNumbers.insert(new Node({class: ['lineNumber'], txt: String(i + 1)}));
@@ -183,7 +180,7 @@ export default class Lines {
         }
     }
 
-    tabBtn(isShift: boolean = false) {
+    tabBtn(isShift = false) {
 
         const {x, y} = this.cursor.getPos();
         const line = this.linesList.get(y);
@@ -258,7 +255,7 @@ export default class Lines {
         if (x > line.getText().length) this.cursor.setPos(line.getText().length);
     }
 
-    moveLeft(isShift: boolean) {
+    moveLeft(isShift) {
         if ((this.cursor.x - 1) < 0) return;
 
         if (isShift && !this.selector.active) this.selector.activate('left');
@@ -269,7 +266,7 @@ export default class Lines {
         else this.selector.reset();
     }
 
-    moveRight(isShift: boolean) {
+    moveRight(isShift) {
         const {x, y} = this.cursor.getPos();
         const line = this.linesList.get(y);
 
@@ -283,7 +280,7 @@ export default class Lines {
         else this.selector.reset();
     }
 
-    moveUp(isShift: boolean) {
+    moveUp(isShift) {
         const {x, y} = this.cursor.getPos();
 
         if (isShift && !this.selector.active) this.selector.activate('left');
@@ -295,7 +292,7 @@ export default class Lines {
         else this.selector.reset();
     }
 
-    moveDown(isShift: boolean) {
+    moveDown(isShift) {
         const {x, y} = this.cursor.getPos();
         if (y + 1 > this.linesList.getLength() - 1) return;
 
@@ -308,7 +305,7 @@ export default class Lines {
         else this.selector.reset();
     }
 
-    insertNewCharInLine(char: string) {
+    insertNewCharInLine(char) {
         const {x, y} = this.cursor.getPos();
         const line = this.linesList.get(y);
         const txt = line.getText();

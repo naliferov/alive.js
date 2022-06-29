@@ -1,8 +1,8 @@
-import AstNode from "../../AstNode";
-import Space from "../../Space";
-import NewLine from "../../NewLine";
-import ForCondition from "./ForCondition";
-import ForBody from "./ForBody";
+import AstNode from "../../AstNode.js";
+import Space from "../../Space.js";
+import NewLine from "../../NewLine.js";
+import ForCondition from "./ForCondition.js";
+import ForBody from "./ForBody.js";
 
 export default class For extends AstNode {
 
