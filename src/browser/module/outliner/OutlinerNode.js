@@ -6,7 +6,7 @@ export default class OutlinerNode {
     contextNode;
 
     v;
-    vData;
+    dataV;
 
     openClose;
 
@@ -19,23 +19,23 @@ export default class OutlinerNode {
         this.v = new V({id: this.domId, class: ['node']});
 
         const container = new V({class: ['nodeContainer', 'flex']});
-        e('>', container, this.v);
+        e('>', [container, this.v]);
 
         this.dataV = new V({class: ['dataUnit']});
         this.dataV.setAttr('outliner_node_id', this.domId);
         this.dataV.toggleEdit();
-        e('>', this.dataV, this.v);
+        e('>', [this.dataV, this.v]);
 
         this.openClose = new V({name: '>', class: ['openClose']});
-        this.openClose.on('click', async () => {
+        this.openClose.on('click', () => {
             if (this.openClose.hasClass('disabled')) return;
             if (this.nodes.isHidden()) this.nodes.show();
             else this.nodes.hide();
         });
-        e('>', this.openClose, container);
+        e('>', [this.openClose, container]);
 
         this.nodes = new V({class: ['subNodes']});
-        e('>', this.nodes, this.v);
+        e('>', [this.nodes, this.v]);
 
         const subNodes = this.contextNode.get('nodes');
         this.openClose.addClass('disabled');
@@ -49,29 +49,25 @@ export default class OutlinerNode {
     isEmpty() { return !this.nodes.getDOM().children.length; }
 
     insertBefore(node) {
-        const t = node.getT();
-        t.getDOM().parentNode.insertBefore(this.getT().getDOM(), t.getDOM())
+        //t.getDOM().parentNode.insertBefore(this.v.getDOM(), node.getDOM())
     }
 
     getParent() {
-        return window.outlinerNodesPool.get(this.getT().getDOM().parentNode.parentNode.id);
+        return window.outlinerNodesPool.get(this.v.parentNode.parentNode.id);
     }
 
     next() {
-        const next = this.dom.getDOM().nextSibling;
+        const next = this.v.getDOM().nextSibling;
         if (!next) return;
         return window.outlinerNodesPool.get(next.id);
     }
 
     prev() {
-        const previous = this.dom.getDOM().previousSibling;
+        const previous = this.v.getDOM().previousSibling;
         if (!previous) return;
         return window.outlinerNodesPool.get(previous.id);
     }
-
-    insert(node) {
-        //this.nodes.insert(node.getUnit())
-    }
     getContextNode() { return this.contextNode }
-    getDom() { return this.v }
+    getV() { return this.v }
+    getNodesV() { return this.v }
 }

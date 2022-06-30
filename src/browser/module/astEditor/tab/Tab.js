@@ -9,10 +9,10 @@ export default class Tab {
 
     contextUnit;
 
-    constructor(tabName, contextUnit, pubsub, fxSerializer, mindfields) {
+    constructor(tabName, contextUnit, fxSerializer, nodes) {
         this.fxTabName = new TabName(tabName, contextUnit);
         this.astEditor = new AstEditor(
-            contextUnit, pubsub, fxSerializer, new AstNodeEditor(pubsub), mindfields
+            contextUnit, fxSerializer, new AstNodeEditor(), nodes
         );
 
         this.contextUnit = contextUnit;

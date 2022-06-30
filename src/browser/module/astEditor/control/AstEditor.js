@@ -37,6 +37,8 @@ import ModuleBody from "../nodes/ModuleBody.js";
 
 export default class AstEditor {
 
+    v;
+
     mainNode;
     flow;
     context;
@@ -45,34 +47,29 @@ export default class AstEditor {
 
     nodes;
 
-    unit;
-    pubsub;
-
     marker;
     serializer;
     astEditor;
 
     constructor(
         contextNode,
-        pubsub,
         serializer,
         astEditor,
         nodes
     ) {
         this.contextNode = contextNode;
-        this.pubsub = pubsub;
         this.astEditor = astEditor;
         this.serializer = serializer;
         this.nodes = nodes;
 
-        this.unit = new Node({class: ['astEditor']});
+        this.v = new Node({class: ['astEditor']});
 
         const markerMonitor = new Node({class: ['markedNode'], name: 'markedNode: '});
-        this.unit.in(markerMonitor);
+        //this.v.in(markerMonitor);
         this.marker = new Marker(markerMonitor);
 
         this.mainNode = new Main();
-        this.unit.in(this.mainNode.getUnit());
+        //this.unit.in(this.mainNode.getUnit());
 
         this.flow = new ModuleBody();
 
@@ -94,26 +91,24 @@ export default class AstEditor {
         this.serializer.deserialize(this.flow, astNodes.chunks);
     }
 
-    show() { this.unit.show(); }
-    hide() { this.unit.hide(); }
+    show() { this.v.show(); }
+    hide() { this.v.hide(); }
     getContextUnitId() { return this.context.getId(); }
-    getUnit() { return this.unit; }
-    getContextModuleType() {
-        return this.context.getDataField('moduleType') ?? 'simple';
-    }
+    getV() { return this.v; }
+    getContextModuleType() { return this.contextNode.get('moduleType') ?? 'simple'; }
 
     switchModuleType() {
 
         console.log('test');
         //const moduleType = this.getContextModuleType();
 
-        this.callableModule = new CallableModule;
-        this.callableModule.insert(this.flow);
-        this.mainNode.insert(this.callableModule);
+        //this.callableModule = new CallableModule;
+        //this.callableModule.insert(this.flow);
+        //this.mainNode.insert(this.callableModule);
     }
 
     async save() {
-        this.context.setDataField('astNodes', {
+        this.contextNode.set('astNodes', {
             chunks: this.serializer.serialize(this.mainNode),
             markedChunksIds: this.marker.getMarkedChunksIds(),
         });
@@ -322,13 +317,13 @@ export default class AstEditor {
         const inserter = this.astEditor.createEditNode(this);
         chunk.insert(inserter);
         this.marker.unmarkAll().mark(inserter);
-        this.pubsub.pub(AST_NODE_EDIT_MODE);
+        //this.pubsub.pub(AST_NODE_EDIT_MODE);
         inserter.focus();
     }
 
     markSendEventAndFocus(editNode) {
         this.marker.unmarkAll().mark(editNode);
-        this.pubsub.pub(AST_NODE_EDIT_MODE);
+        //this.pubsub.pub(AST_NODE_EDIT_MODE);
         editNode.focus();
     }
 
@@ -604,7 +599,7 @@ export default class AstEditor {
                     this.marker.unmarkAll();
                     const forChunk = parent.getParentChunk().getParentChunk().getParentChunk();
                     if (forChunk.isBodyEmpty()) {
-                        this.pubsub.pub(AST_NODE_EDIT_MODE);
+                        //this.pubsub.pub(AST_NODE_EDIT_MODE);
                         const inserter = this.astEditor.createEditNode(this);
                         forChunk.getBody().insert(inserter);
                         this.marker.mark(inserter);

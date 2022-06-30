@@ -7,21 +7,21 @@ import V from "../../../type/V.js";
 
 export default class Nodes {
 
-    dom;
+    v;
     rootNode;
     addNodeBtn;
 
     constructor() {
-        this.dom = new V({class: ['nodes']});
+        this.v = new V({class: 'nodes'});
     }
-    getDom() { return this.dom; }
+    getV() { return this.v; }
 
     async init() {
 
-        this.addNodeBtn = new V({class: ['addBtn'], txt: 'Add node'});
-        e('>', this.addNodeBtn, this.dom);
+        this.addNodeBtn = new V({class: 'addBtn', txt: 'Add node'});
+        e('>', [this.addNodeBtn, this.v]);
 
-        this.addNodeBtn.on('click', (e) => {
+        this.addNodeBtn.on('click', () => {
             this.addNodeBtn.hide();
             this.create(this.rootNode);
         });
@@ -33,8 +33,7 @@ export default class Nodes {
         rootNode.set('nodes', nodes);
 
         const outlinerRootNode = new OutlinerNode(rootNode);
-        e('>', outlinerRootNode.getDom(), this.dom);
-
+        e('>', [outlinerRootNode.getV(), this.v]);
         //this.rootNode.get().oEditMode();
 
         const render = (outlinerNode) => {
@@ -49,9 +48,9 @@ export default class Nodes {
                 const newNode = new Node(subNodes[i]);
                 const newOutlinerNode = new OutlinerNode(newNode);
 
-                console.log(newNode);
-                //outlinerNode.insert(newOutlinerNode);
+                e('>', [newOutlinerNode.getV(), outlinerNode.getNodesV()]);
                 //this.setTById(unit.getId(), unit);
+
                 //render(newOutlinerNode);
             }
         }
@@ -168,21 +167,20 @@ export default class Nodes {
     }
 
     create(node) {
-
-        const newUnit = new OutlinerNode({
+        const newNode = new Node({
             id: uuid(),
             name: 'New node',
         });
-        const newNode = new OutlinerNode(newUnit);
-        node.insert(newNode);
-        this.setTById(newUnit.getId(), newUnit);
+        const newOutlinerNode = new OutlinerNode(newNode);
+        node.insert(newOutlinerNode);
+        this.setTById(node.get('id'), newOutlinerNode);
     }
 
-    delete(node) {
-        window.nodesPool.delete(node.getDataUnit().getId());
-        window.outlinerNodesPool.delete(node.getDomId());
-        node.getT().removeFromDom();
-    }
+    // delete(node) {
+    //     window.nodesPool.delete(node.getDataUnit().getId());
+    //     window.outlinerNodesPool.delete(node.getDomId());
+    //     node.getV().removeFromDom();
+    // }
 
     async save() {
 

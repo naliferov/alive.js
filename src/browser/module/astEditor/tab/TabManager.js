@@ -1,11 +1,10 @@
-import Nodes from "../../outliner/Nodes.js";
 import AstSerializer from "../AstSerializer.js";
 import Tab from "./Tab.js";
 import V from "../../../../type/V.js";
 
 export default class TabManager {
 
-    u;
+    v;
     tabsNamesBlock;
     tabsContentBlock;
 
@@ -18,12 +17,12 @@ export default class TabManager {
 
     constructor(nodes, localState) {
 
-        this.u = new V({class: 'tabManager'});
+        this.v = new V({class: 'tabManager'});
 
         this.tabsNamesBlock = new V({class: 'tabs'});
-        this.u.in(this.tabsNamesBlock);
+        e('>', [this.tabsNamesBlock, this.v]);
         this.tabsContentBlock = new V({class: 'tabsContent'});
-        this.u.in(this.tabsContentBlock);
+        e('>', [this.tabsContentBlock, this.v]);
 
         this.nodes = nodes;
 
@@ -32,9 +31,7 @@ export default class TabManager {
         this.localState = localState;
     }
 
-    getTabByContextUnit(unit) {
-        return this.tabs.get(unit.getId());
-    }
+    getTabByContextUnit(node) { return this.tabs.get(node.get('id')); }
 
     openTab(unit) {
 
@@ -49,7 +46,7 @@ export default class TabManager {
             this.activeTab = openedTab;
         } else {
 
-            let newTab = new Tab(unit.getName(), unit, this.pubsub, this.fxSerializer, this.mindFields);
+            let newTab = new Tab(unit.getName(), unit, this.fxSerializer, this.nodes);
             newTab.onClick((e) => this.focusTab(newTab));
             newTab.onClickClose((e) => {
                 e.stopPropagation();
@@ -103,5 +100,5 @@ export default class TabManager {
     async onKeyDown(e) {
         if (this.activeTab) this.activeTab.getFxController().onKeyDown(e);
     }
-    getUnit() { return this.u }
+    getV() { return this.v }
 }

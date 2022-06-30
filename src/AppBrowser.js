@@ -3,8 +3,7 @@ import Nodes from "./browser/module/outliner/Nodes.js";
 import Input from "./browser/Input.js";
 import {
     AST_CONTROL_MODE, OPEN_TAB,
-    NODES_CONTROL,
-    AST_NODE_EDIT_MODE
+    AST_NODE_EDIT_MODE, NODES_CONTROL_MODE
 } from "./io/EConstants.js";
 import TabManager from "./browser/module/astEditor/tab/TabManager.js";
 import LocalState from "./browser/Localstate.js";
@@ -76,15 +75,17 @@ class AppBrowser {
         window.eHandlers = {};
         window.e = new Proxy(() => {}, {
             apply(target, thisArg, args) {
-                if (window.eHandlers[args[0]]) window.eHandlers[args[0]](...args);
+                const handler = args[0];
+                const data = args[1];
+                if (window.eHandlers[handler]) window.eHandlers[handler](data);
             },
-            get(target, prop, receiver) { return 1; },
             set(target, k, v) {
                 window.eHandlers[k] = v;
                 return true;
             }
         });
-        e['>'] = (_, one, two, index) => {
+        e['>'] = (args) => {
+            const [one, two, index] = args;
 
             if (index !== undefined) {
                  one.getDOM().insertBefore(one.getDOM(), two.getDOM().children[index]);
@@ -93,53 +94,41 @@ class AppBrowser {
             two.getDOM().append(one.getDOM());
             return this;
         }
-        const pageIDE = new V({class: ['pageIDE']});
-        e('>', pageIDE, app);
 
-        /**
-         * inBr() {
-         *         this.in(new Node({tagName: 'br'}));
-         *         return this;
-         *     }
-         *     insertBefore(unit, beforeUnit) {
-         *         this.getDOM().insertBefore(unit.getDOM(), beforeUnit.getDOM());
-         *     }
-         * @type {Nodes}
-         */
+        const pageIDE = new V({class: ['pageIDE']});
+        e('>', [pageIDE, app]);
 
         const nodes = new Nodes;
         await nodes.init();
-        e('>', nodes.getDom(), app);
+        e('>', [nodes.getV(), pageIDE]);
 
         const localState = new LocalState();
 
-        const fxTabManager = new TabManager(nodes, localState);
-        const fxRuntime = new AstRuntime(fxTabManager);
-        fxRuntime.init(pageIDE);
+        const tabManager = new TabManager(nodes, localState);
+        const astRuntime = new AstRuntime(tabManager);
+        astRuntime.init(pageIDE);
+        e('>', [astRuntime.getV(), pageIDE]);
 
         const input = new Input(window);
 
-        // pubsub.sub(OPEN_TAB, ({unit}) => fxRuntime.openTab(unit));
-        // pubsub.sub(NODES_CONTROL, () => {
-        //     input.onKeyDown(async (e) => await nodes.handleKeyDown(e));
-        //     input.onKeyUp(async (e) => await nodes.handleKeyUp(e));
-        //     input.onDblClick(async (e) => await nodes.handleClick(e));
-        // });
-        // pubsub.sub(AST_CONTROL_MODE, () => {
-        //     input.onKeyDown(async (e) => await fxRuntime.onKeyDown(e));
-        // });
-        // pubsub.sub(AST_NODE_EDIT_MODE, () => {
-        //     input.disableHandlers()
-        // });
+        e[OPEN_TAB] = (unit) => astRuntime.openTab(unit);
+        e[NODES_CONTROL_MODE] = () => {
+            input.onKeyDown(async (e) => await nodes.handleKeyDown(e));
+            input.onKeyUp(async (e) => await nodes.handleKeyUp(e));
+            input.onDblClick(async (e) => await nodes.handleClick(e));
+        };
+        e[AST_CONTROL_MODE] = () => input.onKeyDown(async (e) => await astRuntime.onKeyDown(e));
+        e[AST_NODE_EDIT_MODE] = () => input.disableHandlers();
 
-        //fxRuntime.onClick(() => e(AST_CONTROL_MODE));
-        //nodes.getUnit().on('click', () => e(NODES_CONTROL));
-
+        astRuntime.onClick(() => e(AST_CONTROL_MODE));
+        nodes.getV().on('click', () => e(NODES_CONTROL_MODE));
         e(AST_CONTROL_MODE);
 
 
         const activeTabId = localState.getActiveTabId();
         const openedFx = localState.getOpenedTabs();
+
+        console.log(activeTabId, openedFx);
 
         // for (let fxId in openedFx) {
         //     const unit = await nodes.getTById(fxId);

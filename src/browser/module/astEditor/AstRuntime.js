@@ -1,27 +1,26 @@
-import Node from "../../../type/Node.js";
+import V from "../../../type/V.js";
 
 export default class AstRuntime {
 
-    unit;
-    fxTabManager;
+    v;
+    tabManager;
 
-    constructor(fxTabManager) {
-        this.unit = new Node({class: ['fxRuntimeContainer']});
-        this.fxTabManager = fxTabManager;
-    }
-    init(app) {
-        app.in(this.unit);
-        this.unit.in(this.fxTabManager.getUnit());
+    constructor(tabManager) {
+        this.v = new V({class: 'runtimeContainer'});
+        this.tabManager = tabManager;
     }
 
-    onClick(fn) { this.unit.on('click', fn); }
+    init() { e('>', [this.tabManager.getV(), this.v]); }
+    onClick(fn) { this.v.on('click', fn); }
 
-    async openTab(unit) { this.fxTabManager.openTab(unit); }
+    async openTab(unit) { this.tabManager.openTab(unit); }
     async focusTab(unit) {
-        const openedTab = this.fxTabManager.getTabByContextUnit(unit);
+        const openedTab = this.tabManager.getTabByContextUnit(unit);
         if (!openedTab) return;
-        this.fxTabManager.focusTab(openedTab);
+        this.tabManager.focusTab(openedTab);
     }
 
-    async onKeyDown(e) { await this.fxTabManager.onKeyDown(e); }
+    async onKeyDown(e) { await this.tabManager.onKeyDown(e); }
+
+    getV() { return this.v; }
 }
