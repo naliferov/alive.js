@@ -1,15 +1,15 @@
-import AstRuntime from "./module/astEditor/AstRuntime.js";
-import Nodes from "./module/outliner/Nodes.js";
-import Input from "./Input.js";
+import AstRuntime from "./browser/module/astEditor/AstRuntime.js";
+import Nodes from "./browser/module/outliner/Nodes.js";
+import Input from "./browser/Input.js";
 import {
     AST_CONTROL_MODE, OPEN_TAB,
     NODES_CONTROL,
     AST_NODE_EDIT_MODE
-} from "../io/EConstants.js";
-import TabManager from "./module/astEditor/tab/TabManager.js";
-import LocalState from "./Localstate.js";
-import HttpClient from "../io/http/HttpClient.js";
-import V from "../type/V.js";
+} from "./io/EConstants.js";
+import TabManager from "./browser/module/astEditor/tab/TabManager.js";
+import LocalState from "./browser/Localstate.js";
+import HttpClient from "./io/http/HttpClient.js";
+import V from "./type/V.js";
 
 class AppBrowser {
 
@@ -84,9 +84,9 @@ class AppBrowser {
                 return true;
             }
         });
-        e['>'] = (_, one, two, index = null) => {
+        e['>'] = (_, one, two, index) => {
 
-            if (index !== null) {
+            if (index !== undefined) {
                  one.getDOM().insertBefore(one.getDOM(), two.getDOM().children[index]);
                  return;
             }
@@ -112,47 +112,47 @@ class AppBrowser {
         e('>', nodes.getDom(), app);
 
         const localState = new LocalState();
-        return;
 
-        const fxTabManager = new TabManager(pubsub, nodes, localState);
-        const fxRuntime = new AstRuntime(pubsub, fxTabManager);
-        fxRuntime.init(pageFx);
+        const fxTabManager = new TabManager(nodes, localState);
+        const fxRuntime = new AstRuntime(fxTabManager);
+        fxRuntime.init(pageIDE);
 
         const input = new Input(window);
 
-        pubsub.sub(OPEN_TAB, ({unit}) => fxRuntime.openTab(unit));
-        pubsub.sub(NODES_CONTROL, () => {
-            input.onKeyDown(async (e) => await nodes.handleKeyDown(e));
-            input.onKeyUp(async (e) => await nodes.handleKeyUp(e));
-            input.onDblClick(async (e) => await nodes.handleClick(e));
-        });
-        pubsub.sub(AST_CONTROL_MODE, () => {
-            input.onKeyDown(async (e) => await fxRuntime.onKeyDown(e));
-        });
-        pubsub.sub(AST_NODE_EDIT_MODE, () => {
-            input.disableHandlers()
-        });
+        // pubsub.sub(OPEN_TAB, ({unit}) => fxRuntime.openTab(unit));
+        // pubsub.sub(NODES_CONTROL, () => {
+        //     input.onKeyDown(async (e) => await nodes.handleKeyDown(e));
+        //     input.onKeyUp(async (e) => await nodes.handleKeyUp(e));
+        //     input.onDblClick(async (e) => await nodes.handleClick(e));
+        // });
+        // pubsub.sub(AST_CONTROL_MODE, () => {
+        //     input.onKeyDown(async (e) => await fxRuntime.onKeyDown(e));
+        // });
+        // pubsub.sub(AST_NODE_EDIT_MODE, () => {
+        //     input.disableHandlers()
+        // });
 
-        fxRuntime.onClick(() => pubsub.pub(AST_CONTROL_MODE));
-        nodes.getUnit().on('click', () => pubsub.pub(NODES_CONTROL));
+        //fxRuntime.onClick(() => e(AST_CONTROL_MODE));
+        //nodes.getUnit().on('click', () => e(NODES_CONTROL));
 
-        pubsub.pub(AST_CONTROL_MODE);
+        e(AST_CONTROL_MODE);
+
 
         const activeTabId = localState.getActiveTabId();
         const openedFx = localState.getOpenedTabs();
 
-        for (let fxId in openedFx) {
-            const unit = await nodes.getTById(fxId);
-            if (!unit) {
-                localState.closeTab(fxId);
-                continue;
-            }
-            await fxRuntime.openTab(unit);
-        }
-        if (activeTabId && window.nodesPool.get(activeTabId)) {
-            const node = await nodes.getTById(activeTabId);
-            await fxRuntime.focusTab(node);
-        }
+        // for (let fxId in openedFx) {
+        //     const unit = await nodes.getTById(fxId);
+        //     if (!unit) {
+        //         localState.closeTab(fxId);
+        //         continue;
+        //     }
+        //     await fxRuntime.openTab(unit);
+        // }
+        // if (activeTabId && window.nodesPool.get(activeTabId)) {
+        //     const node = await nodes.getTById(activeTabId);
+        //     await fxRuntime.focusTab(node);
+        // }
     }
 
     async run() {

@@ -1,6 +1,7 @@
 import Nodes from "../../outliner/Nodes.js";
 import AstSerializer from "../AstSerializer.js";
 import Tab from "./Tab.js";
+import V from "../../../../type/V.js";
 
 export default class TabManager {
 
@@ -12,26 +13,22 @@ export default class TabManager {
     tabs;
 
     localState;
-    pubsub;
-    mindFields;
+    nodes;
     fxSerializer;
 
-    constructor(pubsub, mindFields, localState) {
+    constructor(nodes, localState) {
 
-        this.u = new Nodes({class: ['tabManager']});
+        this.u = new V({class: 'tabManager'});
 
-        this.tabsNamesBlock = new Nodes({class: ['tabs']});
+        this.tabsNamesBlock = new V({class: 'tabs'});
         this.u.in(this.tabsNamesBlock);
-        this.tabsContentBlock = new Nodes({class: ['tabsContent']});
+        this.tabsContentBlock = new V({class: 'tabsContent'});
         this.u.in(this.tabsContentBlock);
 
-        this.pubsub = pubsub;
-        this.mindFields = mindFields;
+        this.nodes = nodes;
 
         this.tabs = new Map;
         this.fxSerializer = new AstSerializer();
-
-        //todo возможно это должно быть в outliner, а outliner должен уметь сохранять некоторые
         this.localState = localState;
     }
 

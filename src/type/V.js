@@ -21,7 +21,13 @@ export default class V {
         }
 
         if (this.data.id) this.dom.id = this.data.id;
-        if (this.data.class) this.dom.className = this.data.class.join(' ');
+        if (this.data.class) {
+            if (Array.isArray(this.data.class)) {
+                this.dom.className = this.data.class.join(' ');
+            } else {
+                this.dom.className = this.data.class;
+            }
+        }
         if (this.data.txt) this.dom.innerText = this.data.txt;
         if (this.data.value) this.dom.value = this.data.value;
 

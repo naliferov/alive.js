@@ -3,11 +3,9 @@ import Node from "../../../type/Node.js";
 export default class AstRuntime {
 
     unit;
-    pubsub;
     fxTabManager;
 
-    constructor(pubsub, fxTabManager) {
-        this.pubsub = pubsub;
+    constructor(fxTabManager) {
         this.unit = new Node({class: ['fxRuntimeContainer']});
         this.fxTabManager = fxTabManager;
     }
