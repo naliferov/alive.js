@@ -85,7 +85,6 @@ export default class HttpMsgHandler {
                 await this.nodesModel.insert(userId, []);
                 this.authorize(res, authKey);
             },
-            //'GET:/sign/out': async () => {},
             'GET:/process/start': async () => {
                 await this.logger.info(req.query);
                 res.send();

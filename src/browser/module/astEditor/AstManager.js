@@ -1,21 +1,19 @@
 import V from "../../../type/V.js";
 
-export default class AstRuntime {
+export default class AstManager {
 
     v;
     tabManager;
 
     constructor(tabManager) {
-        this.v = new V({class: 'runtimeContainer'});
+        this.v = new V({class: 'astContainer'});
         this.tabManager = tabManager;
     }
-
-    init() { e('>', [this.tabManager.getV(), this.v]); }
     onClick(fn) { this.v.on('click', fn); }
 
-    async openTab(unit) { this.tabManager.openTab(unit); }
-    async focusTab(unit) {
-        const openedTab = this.tabManager.getTabByContextUnit(unit);
+    async openTab(node) { this.tabManager.openTab(node); }
+    async focusTab(node) {
+        const openedTab = this.tabManager.getTabByContextUnit(node);
         if (!openedTab) return;
         this.tabManager.focusTab(openedTab);
     }

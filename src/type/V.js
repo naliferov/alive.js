@@ -121,4 +121,8 @@ export default class V {
     oEditMode() { this.getDOM().contentEditable = 'false' }
     focus() { this.getDOM().focus(); }
     clear() { this.getDOM().innerHTML = ''; }
+
+    parentDOM() { return this.getDOM().parentNode; }
+    nextDOM() { return this.getDOM().nextSibling; }
+    prevDOM() { return this.getDOM().previousSibling; }
 }

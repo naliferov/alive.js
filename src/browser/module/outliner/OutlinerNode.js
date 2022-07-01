@@ -21,12 +21,7 @@ export default class OutlinerNode {
         const container = new V({class: ['nodeContainer', 'flex']});
         e('>', [container, this.v]);
 
-        this.dataV = new V({class: ['dataUnit']});
-        this.dataV.setAttr('outliner_node_id', this.domId);
-        this.dataV.toggleEdit();
-        e('>', [this.dataV, this.v]);
-
-        this.openClose = new V({name: '>', class: ['openClose']});
+        this.openClose = new V({txt: '>', class: 'openClose'});
         this.openClose.on('click', () => {
             if (this.openClose.hasClass('disabled')) return;
             if (this.nodes.isHidden()) this.nodes.show();
@@ -34,8 +29,13 @@ export default class OutlinerNode {
         });
         e('>', [this.openClose, container]);
 
-        this.nodes = new V({class: ['subNodes']});
-        e('>', [this.nodes, this.v]);
+        this.dataV = new V({class: 'dataUnit', txt: node.get('name')});
+        this.dataV.setAttr('outliner_node_id', this.domId);
+        this.dataV.toggleEdit();
+        e('>', [this.dataV, container]);
+
+        this.nodesV = new V({class: ['subNodes', 'shift']});
+        e('>', [this.nodesV, this.v]);
 
         const subNodes = this.contextNode.get('nodes');
         this.openClose.addClass('disabled');
@@ -45,15 +45,13 @@ export default class OutlinerNode {
     }
 
     getDomId() { return this.domId; }
+    isEmpty() { return !this.nodesV.getDOM().children.length; }
 
-    isEmpty() { return !this.nodes.getDOM().children.length; }
+    insertBefore(outLinerNode) {
 
-    insertBefore(node) {
-        //t.getDOM().parentNode.insertBefore(this.v.getDOM(), node.getDOM())
     }
-
     getParent() {
-        return window.outlinerNodesPool.get(this.v.parentNode.parentNode.id);
+        return window.outlinerNodesPool.get(this.v.parentDOM().id);
     }
 
     next() {
@@ -69,5 +67,5 @@ export default class OutlinerNode {
     }
     getContextNode() { return this.contextNode }
     getV() { return this.v }
-    getNodesV() { return this.v }
+    getNodesV() { return this.nodesV}
 }

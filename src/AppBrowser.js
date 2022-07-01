@@ -1,4 +1,4 @@
-import AstRuntime from "./browser/module/astEditor/AstRuntime.js";
+import AstManager from "./browser/module/astEditor/AstManager.js";
 import Nodes from "./browser/module/outliner/Nodes.js";
 import Input from "./browser/Input.js";
 import {
@@ -85,14 +85,17 @@ class AppBrowser {
             }
         });
         e['>'] = (args) => {
-            const [one, two, index] = args;
+            const [v1, v2, index] = args;
 
             if (index !== undefined) {
-                 one.getDOM().insertBefore(one.getDOM(), two.getDOM().children[index]);
+                 v2.getDOM().insertBefore(v1.getDOM(), v2.getDOM().children[index]);
                  return;
             }
-            two.getDOM().append(one.getDOM());
-            return this;
+            v2.getDOM().append(v1.getDOM());
+        }
+        e['insertAfter'] = (args) => {
+            const [domA, domB] = args;
+            domB.getDOM().after(domA.getDOM());
         }
 
         const pageIDE = new V({class: ['pageIDE']});
@@ -105,22 +108,23 @@ class AppBrowser {
         const localState = new LocalState();
 
         const tabManager = new TabManager(nodes, localState);
-        const astRuntime = new AstRuntime(tabManager);
-        astRuntime.init(pageIDE);
-        e('>', [astRuntime.getV(), pageIDE]);
+        const astManager = new AstManager(tabManager);
+        e('>', [astManager.getV(), pageIDE]);
+
+        e('>', [tabManager.getV(), astManager.getV()]);
 
         const input = new Input(window);
 
-        e[OPEN_TAB] = (unit) => astRuntime.openTab(unit);
+        e[OPEN_TAB] = (node) => astManager.openTab(node);
         e[NODES_CONTROL_MODE] = () => {
             input.onKeyDown(async (e) => await nodes.handleKeyDown(e));
             input.onKeyUp(async (e) => await nodes.handleKeyUp(e));
-            input.onDblClick(async (e) => await nodes.handleClick(e));
+            input.onDblClick(async (e) => await nodes.handleDblClick(e));
         };
-        e[AST_CONTROL_MODE] = () => input.onKeyDown(async (e) => await astRuntime.onKeyDown(e));
+        e[AST_CONTROL_MODE] = () => input.onKeyDown(async (e) => await astManager.onKeyDown(e));
         e[AST_NODE_EDIT_MODE] = () => input.disableHandlers();
 
-        astRuntime.onClick(() => e(AST_CONTROL_MODE));
+        astManager.onClick(() => e(AST_CONTROL_MODE));
         nodes.getV().on('click', () => e(NODES_CONTROL_MODE));
         e(AST_CONTROL_MODE);
 

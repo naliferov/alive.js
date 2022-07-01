@@ -8,8 +8,8 @@ import V from "../../../type/V.js";
 export default class Nodes {
 
     v;
-    rootNode;
     addNodeBtn;
+    outLinerRootNode;
 
     constructor() {
         this.v = new V({class: 'nodes'});
@@ -23,7 +23,7 @@ export default class Nodes {
 
         this.addNodeBtn.on('click', () => {
             this.addNodeBtn.hide();
-            this.create(this.rootNode);
+            this.create(this.outLinerRootNode);
         });
 
         const nodes = (await (new HttpClient).get('/nodes')).data;
@@ -33,6 +33,7 @@ export default class Nodes {
         rootNode.set('nodes', nodes);
 
         const outlinerRootNode = new OutlinerNode(rootNode);
+        this.outLinerRootNode = outlinerRootNode;
         e('>', [outlinerRootNode.getV(), this.v]);
         //this.rootNode.get().oEditMode();
 
@@ -40,18 +41,16 @@ export default class Nodes {
 
             const node = outlinerNode.getContextNode();
             const subNodes = node.get('nodes');
-
             if (!Array.isArray(subNodes)) return;
 
             for (let i = 0; i < subNodes.length; i++) {
-
                 const newNode = new Node(subNodes[i]);
                 const newOutlinerNode = new OutlinerNode(newNode);
-
                 e('>', [newOutlinerNode.getV(), outlinerNode.getNodesV()]);
-                //this.setTById(unit.getId(), unit);
 
-                //render(newOutlinerNode);
+                //window.nodesPool.set(newNode.get('id'), newNode);
+                window.outlinerNodesPool.set(newOutlinerNode.getDomId(), newOutlinerNode);
+                render(newOutlinerNode);
             }
         }
 
@@ -59,40 +58,41 @@ export default class Nodes {
     }
 
     isEmpty() { return this.rootNode.isEmpty()}
-
-    getTById(id) { return window.nodesPool.get(id); }
-    setTById(id, t) { window.nodesPool.set(id, t); }
+    getNodeById(id) { return window.nodesPool.get(id); }
     getOutlinerNodeById(id) { return window.outlinerNodesPool.get(id); }
 
     async handleKeyDown(e) {
 
         if (!e.target.classList.contains('dataUnit')) return;
 
-        const node = this.getOutlinerNodeById(e.target.getAttribute('nid'));
+        const outlinerNode = this.getOutlinerNodeById(e.target.getAttribute('outliner_node_id'));
+        if (!outlinerNode) { console.log('outlinerNode not found'); return; }
 
         const k = e.key;
         const ctrl = e.ctrlKey || e.metaKey;
 
         if (k === 'Enter') {
             e.preventDefault();
-            this.copy(node);
+            this.copy(outlinerNode);
         } else if (k === 'Tab') {
             e.preventDefault();
 
             if (e.shiftKey) {
-                const parent = node.getParent();
+                const parent = outlinerNode.getParent();
                 const parentOfParent = parent.getParent();
 
-                if (parent.next()) node.insertBefore(parent.next());
-                else parentOfParent.insert(node);
+                if (parent.next()) outlinerNode.insertBefore(parent.next());
+                else parentOfParent.insert(outlinerNode);
 
-            } else if (node.prev()) node.prev().insert(node);
+            } else if (outlinerNode.prev()) {
+                outlinerNode.prev().insert(outlinerNode);
+            }
 
-        } else if (ctrl && k === 'ArrowUp' && node.prev()) {
-            node.insertBefore(node.prev());
+        } else if (ctrl && k === 'ArrowUp' && outlinerNode.prev()) {
+            outlinerNode.insertBefore(outlinerNode.prev());
             e.target.focus();
-        } else if (ctrl && k === 'ArrowDown' && node.next()) {
-            node.next().insertBefore(node);
+        } else if (ctrl && k === 'ArrowDown' && outlinerNode.next()) {
+            outlinerNode.next().insertBefore(outlinerNode);
             e.target.focus();
         } else {
             return;
@@ -108,39 +108,42 @@ export default class Nodes {
         const ignoreKeys = ['Enter', 'Tab', 'Control', 'Meta', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'];
         if (new Set(ignoreKeys).has(e.key)) return;
 
-        const node = this.getOutlinerNodeById(e.target.getAttribute('nid'));
-        const unit = node.getDataUnit();
-        unit.setNameToData(e.target.innerText);
+        const outlinerNode = this.getOutlinerNodeById(e.target.getAttribute('outliner_node_id'));
+        const node = outlinerNode.getContextNode();
+        node.set('name', e.target.innerText);
 
         if (e.target.innerText.length === 0) {
 
-            const calcSubUnits = (units) => {
-                let count = units.length;
-                for (let i = 0; i < units.length; i++) {
-                    const unit = units[i];
-                    count += unit.nodes ? calcSubUnits(unit.nodes) : 0;
+            const calcSubUnits = (nodesArr) => {
+                let count = 0;
+
+                for (let i = 0; i < nodesArr.length; i++) {
+                    count++;
+                    const node = nodesArr[i];
+                    count += node.get('nodes') ? calcSubUnits(node.get('nodes')) : 0;
                 }
                 return count;
             }
 
-            const totalUnits = unit.getData().nodes ? calcSubUnits(unit.getData().nodes) : 0;
-            if (unit.getData().nodes && totalUnits > 5) {
-                if (confirm(`Really want to delete element with [${totalUnits}] units?`)) {
-
+            const totalNodes = node.get('nodes') ? calcSubUnits(node.get('nodes')) : 0;
+            if (totalNodes > 5) {
+                if (confirm(`Really want to delete element with [${totalNodes}] nodes?`)) {
+                    this.delete(outlinerNode);
                 }
             } else {
-                this.delete(node);
+                this.delete(outlinerNode);
             }
+
         }
 
         await this.save();
     }
 
-    async handleClick(e) {
+    async handleDblClick(e) {
 
         if (e.target.classList.contains('dataUnit')) {
-            let unit = this.getOutlinerNodeById(e.target.getAttribute('nid')).getContextT();
-            window.e(OPEN_TAB, {unit});
+            let node = this.getOutlinerNodeById(e.target.getAttribute('outliner_node_id')).getContextNode();
+            window.e(OPEN_TAB, {node});
             return;
         }
         if (!e.target.classList.contains('openClose')) return;
@@ -150,69 +153,54 @@ export default class Nodes {
 
     copy(outlinerNode) {
 
-        let nodeData = cloneObject(outlinerNode.getDataUnit().getData());
+        let nodeData = cloneObject(outlinerNode.getContextNode().getData());
         nodeData.id = uuid();
         delete nodeData.nodes;
-        delete nodeData.units;
 
         const newNode = new Node(nodeData);
         const newOutlinerNode = new OutlinerNode(newNode);
 
-        if (outlinerNode.next()) {
-            newNode.insertBefore(outlinerNode.next());
-        } else {
-            node.getParent().insert(newNode);
-        }
-        this.setTById(newUnit.getId(), newUnit);
+        e('insertAfter', [newOutlinerNode.getV(), outlinerNode.getV()])
+        window.outlinerNodesPool.set(newOutlinerNode.getDomId(), newOutlinerNode);
     }
 
-    create(node) {
-        const newNode = new Node({
-            id: uuid(),
-            name: 'New node',
-        });
+    create(outlinerNode) {
+        const newNode = new Node({id: uuid(), name: 'New node'});
         const newOutlinerNode = new OutlinerNode(newNode);
-        node.insert(newOutlinerNode);
-        this.setTById(node.get('id'), newOutlinerNode);
+        e('>', [newOutlinerNode.getV(), outlinerNode.getNodesV()]);
+        window.outlinerNodesPool.set(newOutlinerNode.getDomId(), newOutlinerNode);
     }
 
-    // delete(node) {
-    //     window.nodesPool.delete(node.getDataUnit().getId());
-    //     window.outlinerNodesPool.delete(node.getDomId());
-    //     node.getV().removeFromDom();
-    // }
+    delete(outlinerNode) {
+        window.nodesPool.delete(outlinerNode.getContextNode().get('id'));
+        window.outlinerNodesPool.delete(outlinerNode.getDomId());
+        outlinerNode.getV().removeFromDom();
+    }
 
     async save() {
 
-        const getNodesData = (node) => {
+        const getNodesData = (outlinerNode) => {
 
             const r = [];
 
-            for (let nodeDom of node.getNodes().getDOM().children) {
+            for (let nodeDom of outlinerNode.getNodesV().getDOM().children) {
 
-                const nodeObject = window.outlinerNodesPool.get(nodeDom.getAttribute('id'));
-                const unitData = nodeObject.getDataUnit().getData();
+                const outlinerNode = window.outlinerNodesPool.get(nodeDom.getAttribute('id'));
+                const node = outlinerNode.getContextNode();
 
-                let tData = {id: unitData.id, name: unitData.name};
-                const subNodes = getNodesData(nodeObject);
+                let tData = {id: node.get('id'), name: node.get('name')};
+
+                const subNodes = getNodesData(outlinerNode);
                 if (subNodes.length > 0) tData.nodes = subNodes;
-                if (unitData.astNodes) tData.astNodes = unitData.astNodes;
-                if (unitData.moduleType) tData.moduleType = unitData.moduleType;
+                if (node.get('astNodes')) tData.astNodes = node.get('astNodes');
+                if (node.get('moduleType')) tData.moduleType = node.get('moduleType');
 
                 r.push(tData);
             }
             return r;
         }
-        const nodes = getNodesData(this.rootNode);
 
-        console.log(nodes);
-
-        /*for (let i = 0; i < outliner.length; i++) {
-            if (outliner[i].name === 'main') {
-                console.log(outliner[i]);
-                break;
-            }
-        }*/
-       // await new HttpClient().post('/outliner', {outliner})
+        const nodes = getNodesData(this.outLinerRootNode);
+       // await new HttpClient().post('/nodes', {nodes})
     }
 }
