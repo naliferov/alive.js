@@ -244,7 +244,7 @@ export default class AstEditor {
 
     removeChunk(chunk) {
         chunk.remove();
-        if (chunk.getId()) window.astNodesPool.delete(chunk.getId());
+        if (chunk.getId()) window.astPool.delete(chunk.getId());
     }
 
     unmarkAll() { return this.marker.unmarkAll(); }

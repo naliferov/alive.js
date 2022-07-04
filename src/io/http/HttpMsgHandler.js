@@ -126,7 +126,6 @@ export default class HttpMsgHandler {
                 const user = await this.getAuthorizedUser(req);
                 if (!user) { res.send({err: 'User not found.'}); return; }
                 const userNodes = await this.nodesModel.getByUserId(user._id);
-
                 res.send(userNodes.nodes);
             },
             'POST:/nodes': async () => {

@@ -30,12 +30,16 @@ export default class HttpClient {
 
     async post(url, params = {}, headers = {}) {
 
-        if (this.userAgent && !headers['user-agent']) {
-            headers['user-agent'] = this.userAgent;
-        }
+        if (this.userAgent && !headers['user-agent']) headers['user-agent'] = this.userAgent;
+        headers['Content-Type'] = 'application/json';
 
-        let response = await this.api.post(url, params, {headers});
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify(params),
+        });
         return {
+            statusCode: response.status,
             data: response.data,
             headers: response.headers
         }

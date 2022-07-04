@@ -11,9 +11,7 @@ export default class Nodes {
     addNodeBtn;
     outLinerRootNode;
 
-    constructor() {
-        this.v = new V({class: 'nodes'});
-    }
+    constructor() { this.v = new V({class: 'nodes'}); }
     getV() { return this.v; }
 
     async init() {
@@ -34,7 +32,7 @@ export default class Nodes {
 
         const outlinerRootNode = new OutlinerNode(rootNode);
         this.outLinerRootNode = outlinerRootNode;
-        e('>', [outlinerRootNode.getV(), this.v]);
+        e('>', [outlinerRootNode, this]);
         //this.rootNode.get().oEditMode();
 
         const render = (outlinerNode) => {
@@ -57,7 +55,7 @@ export default class Nodes {
         render(outlinerRootNode);
     }
 
-    isEmpty() { return this.rootNode.isEmpty()}
+    isEmpty() { return this.outLinerRootNode.isEmpty()}
     getNodeById(id) { return window.nodesPool.get(id); }
     getOutlinerNodeById(id) { return window.outlinerNodesPool.get(id); }
 
@@ -79,25 +77,20 @@ export default class Nodes {
 
             if (e.shiftKey) {
                 const parent = outlinerNode.getParent();
-                const parentOfParent = parent.getParent();
-
-                if (parent.next()) outlinerNode.insertBefore(parent.next());
-                else parentOfParent.insert(outlinerNode);
-
+                window.e('>after', [outlinerNode.getV(), parent.getV()]);
             } else if (outlinerNode.prev()) {
-                outlinerNode.prev().insert(outlinerNode);
+                window.e('>', [outlinerNode.getV(), outlinerNode.prev().getNodesV()]);
             }
 
         } else if (ctrl && k === 'ArrowUp' && outlinerNode.prev()) {
-            outlinerNode.insertBefore(outlinerNode.prev());
-            e.target.focus();
+            window.e('>after', [outlinerNode.prev().getV(), outlinerNode.getV()]);
         } else if (ctrl && k === 'ArrowDown' && outlinerNode.next()) {
-            outlinerNode.next().insertBefore(outlinerNode);
-            e.target.focus();
+            window.e('>after', [outlinerNode.getV(), outlinerNode.next().getV()]);
         } else {
             return;
         }
 
+        e.target.focus();
         await this.save();
     }
 
@@ -124,6 +117,8 @@ export default class Nodes {
                 }
                 return count;
             }
+
+            node.get('nodes') ? console.log(calcSubUnits(node.get('nodes'))) : 0
 
             const totalNodes = node.get('nodes') ? calcSubUnits(node.get('nodes')) : 0;
             if (totalNodes > 5) {
@@ -155,6 +150,7 @@ export default class Nodes {
 
         let nodeData = cloneObject(outlinerNode.getContextNode().getData());
         nodeData.id = uuid();
+        if (nodeData.name) nodeData.name += '_copy';
         delete nodeData.nodes;
 
         const newNode = new Node(nodeData);
@@ -201,6 +197,8 @@ export default class Nodes {
         }
 
         const nodes = getNodesData(this.outLinerRootNode);
-       // await new HttpClient().post('/nodes', {nodes})
+        //console.log(nodes);
+
+        await new HttpClient().post('/nodes', {nodes})
     }
 }

@@ -23,7 +23,7 @@ export default class AstNode {
         });
         if (options.hidden) this.unit.hide();
 
-        window.astNodesPool.set(this.id, this);
+        window.astPool.set(this.id, this);
     }
 
     getId() {
@@ -46,7 +46,7 @@ export default class AstNode {
 
         for (let i = 0; i < subChildren.length; i++) {
             // @ts-ignore
-            const chunk = window.astNodesPool.get(subChildren[i].id);
+            const chunk = window.astPool.get(subChildren[i].id);
             if (chunk.constructor.name === 'Inserter') {
                 continue;
             }
@@ -69,7 +69,7 @@ export default class AstNode {
     }
 
     getParentChunk() {
-        return window.astNodesPool.get(this.unit.getDOM().parentNode.id);
+        return window.astPool.get(this.unit.getDOM().parentNode.id);
     }
 
     getParentNode() { return this.getParentChunk(); }
@@ -78,28 +78,28 @@ export default class AstNode {
         const first = this.unit.getDOM().firstChild;
         if (!first) return;
         // @ts-ignore
-        return window.astNodesPool.get(first.id);
+        return window.astPool.get(first.id);
     }
 
     getLastChunk() {
         const last = this.unit.getDOM().lastChild
         if (!last) return;
         // @ts-ignore
-        return window.astNodesPool.get(last.id);
+        return window.astPool.get(last.id);
     }
 
     getNextChunk() {
         const next = this.unit.getDOM().nextSibling;
         if (!next) return;
         // @ts-ignore
-        return window.astNodesPool.get(next.id);
+        return window.astPool.get(next.id);
     }
 
     getPrevChunk() {
         const prev = this.unit.getDOM().previousSibling;
         if (!prev) return;
         // @ts-ignore
-        return window.astNodesPool.get(prev.id);
+        return window.astPool.get(prev.id);
     }
 
     getChildrenCount() {

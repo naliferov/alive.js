@@ -24,8 +24,8 @@ export default class OutlinerNode {
         this.openClose = new V({txt: '>', class: 'openClose'});
         this.openClose.on('click', () => {
             if (this.openClose.hasClass('disabled')) return;
-            if (this.nodes.isHidden()) this.nodes.show();
-            else this.nodes.hide();
+            if (this.nodesV.isHidden()) this.nodesV.show();
+            else this.nodesV.hide();
         });
         e('>', [this.openClose, container]);
 
@@ -46,13 +46,7 @@ export default class OutlinerNode {
 
     getDomId() { return this.domId; }
     isEmpty() { return !this.nodesV.getDOM().children.length; }
-
-    insertBefore(outLinerNode) {
-
-    }
-    getParent() {
-        return window.outlinerNodesPool.get(this.v.parentDOM().id);
-    }
+    getParent() { return window.outlinerNodesPool.get(this.v.parentDOM().parentNode.id); }
 
     next() {
         const next = this.v.getDOM().nextSibling;

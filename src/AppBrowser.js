@@ -70,7 +70,7 @@ class AppBrowser {
         window.domPool = new Map;
         window.nodesPool = new Map;
         window.outlinerNodesPool = new Map;
-        window.astNodesPool = new Map;
+        window.astPool = new Map;
 
         window.eHandlers = {};
         window.e = new Proxy(() => {}, {
@@ -85,7 +85,10 @@ class AppBrowser {
             }
         });
         e['>'] = (args) => {
-            const [v1, v2, index] = args;
+            let [v1, v2, index] = args;
+
+            if (!(v1 instanceof V)) v1 = v1.getV();
+            if (!(v2 instanceof V)) v2 = v2.getV();
 
             if (index !== undefined) {
                  v2.getDOM().insertBefore(v1.getDOM(), v2.getDOM().children[index]);
@@ -93,9 +96,9 @@ class AppBrowser {
             }
             v2.getDOM().append(v1.getDOM());
         }
-        e['insertAfter'] = (args) => {
+        e['>after'] = (args) => {
             const [domA, domB] = args;
-            domB.getDOM().after(domA.getDOM());
+            domB.getDOM().after(domA.getDOM())
         }
 
         const pageIDE = new V({class: ['pageIDE']});
