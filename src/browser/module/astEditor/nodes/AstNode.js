@@ -1,10 +1,10 @@
-import Node from "../../../../type/Node.js";
 import {uuid} from "../../../../F.js";
+import V from "../../../../type/V.js";
 
 export default class AstNode {
 
     id;
-    unit;
+    v;
 
     constructor(txt = '', options = {}) {
         this.id = uuid();
@@ -15,24 +15,19 @@ export default class AstNode {
             classArr = [...options.className, ...classArr];
         } else if (options.className) classArr.push(options.className);
 
-        this.unit = new Node({
+        this.v = new V({
             id: this.id,
             tagName: (options.tagName ? options.tagName: 'div'),
             class: classArr,
-            name: txt,
+            txt,
         });
-        if (options.hidden) this.unit.hide();
+        if (options.hidden) this.v.hide();
 
         window.astPool.set(this.id, this);
     }
 
-    getId() {
-        return this.id;
-    }
-
-    getName() {
-        return this.constructor.name;
-    }
+    getId() { return this.id; }
+    getName() { return this.constructor.name; }
 
     serialize() {
         return {
@@ -41,16 +36,14 @@ export default class AstNode {
     }
 
     serializeSubChunks() {
-        const subChildren = this.getUnit().getDOM().children;
+        const subChildren = this.v.getDOM().children;
         const subChunks = [];
 
         for (let i = 0; i < subChildren.length; i++) {
-            // @ts-ignore
             const chunk = window.astPool.get(subChildren[i].id);
             if (chunk.constructor.name === 'Inserter') {
                 continue;
             }
-
             subChunks.push(chunk.serialize());
         }
 
@@ -58,130 +51,83 @@ export default class AstNode {
     }
 
     isEmpty() {
-        return this.unit.getDOM().children.length === 0;
+        return this.v.getDOM().children.length === 0;
     }
 
     in(chunk) { this.insert(chunk) }
-    insert(chunk) { this.unit.insert(chunk.getUnit()) }
+    insert(chunk) {
+        e('>', [chunk.getV(), this.v]);
+    }
 
     insertBefore(chunk, beforeChunk) {
-        this.unit.insertBefore(chunk.getUnit(), beforeChunk.getUnit());
+        //console.log('insertBefore', chunk, beforeChunk);
+        //this.v.insertBefore(chunk.getV(), beforeChunk.getUnit());
     }
 
     getParentChunk() {
-        return window.astPool.get(this.unit.getDOM().parentNode.id);
+        return window.astPool.get(this.v.getDOM().parentNode.id);
     }
-
     getParentNode() { return this.getParentChunk(); }
 
     getFirstChunk() {
-        const first = this.unit.getDOM().firstChild;
+        const first = this.v.getDOM().firstChild;
         if (!first) return;
-        // @ts-ignore
         return window.astPool.get(first.id);
     }
 
     getLastChunk() {
-        const last = this.unit.getDOM().lastChild
+        const last = this.v.getDOM().lastChild
         if (!last) return;
-        // @ts-ignore
         return window.astPool.get(last.id);
     }
 
     getNextChunk() {
-        const next = this.unit.getDOM().nextSibling;
+        const next = this.v.getDOM().nextSibling;
         if (!next) return;
-        // @ts-ignore
         return window.astPool.get(next.id);
     }
 
     getPrevChunk() {
-        const prev = this.unit.getDOM().previousSibling;
+        const prev = this.v.getDOM().previousSibling;
         if (!prev) return;
-        // @ts-ignore
         return window.astPool.get(prev.id);
     }
 
-    getChildrenCount() {
-        return this.unit.getDOM().children.length
-    }
-    getChildren() {
-        return this.unit.getDOM().children
-    }
+    getChildrenCount() { return this.v.getDOM().children.length }
+    getChildren() { return this.v.getDOM().children }
 
-    getUnit() { return this.unit }
-    newLine() { this.unit.removeClass('inline') }
-    mark() { this.unit.addClass('chunkSelected') }
-    unmark() { this.unit.removeClass('chunkSelected') }
-    show() { this.unit.show() }
-    hide() { this.unit.hide() }
-    remove() {
-        this.unit.removeFromDom()
-    }
-
-    getTxt() {
-        return this.unit.getTxt();
-    }
-
-    clearTxt() {
-        this.unit.clear();
-    }
-
-    setTxt(txt) {
-        this.unit.setTxt(txt);
-    }
-
-    iEditTxt() {
-        this.unit.iEditMod();
-    }
-
-    oEditTxt() {
-        this.unit.oEditMode();
-    }
-
-    toggleEditTxt() {
-        this.unit.toggleEdit();
-    }
-
-    focus() {
-        this.unit.focus();
-    }
-
-    toggleDisplay() { this.unit.toggleDisplay() }
-
-    isShowed() { return this.unit.isShowed() }
+    getV() { return this.v }
+    newLine() { this.v.removeClass('inline') }
+    mark() { this.v.addClass('chunkSelected') }
+    unmark() { this.v.removeClass('chunkSelected') }
+    show() { this.v.show() }
+    hide() { this.v.hide() }
+    remove() { this.v.removeFromDom() }
+    getTxt() { return this.v.getTxt(); }
+    setTxt(txt) { this.v.setTxt(txt); }
+    iEditTxt() { this.v.iEditMod(); }
+    oEditTxt() { this.v.oEditMode(); }
+    toggleEditTxt() { this.v.toggleEdit(); }
+    focus() { this.v.focus(); }
+    toggleDisplay() { this.v.toggleDisplay() }
+    isShowed() { return this.v.isShowed() }
 
     onControlBack(callback) {
 
         const handler = (e) => {
             if (e.key === 'Escape' || e.key === 'Enter') {
                 e.preventDefault();
-                this.unit.off('keydown', handler);
+                this.v.off('keydown', handler);
 
                 setTimeout(callback, 150);
             }
         }
-        this.unit.on('keydown', handler);
+        this.v.on('keydown', handler);
     }
 
-    iKeydown(fn) {
-        this.unit.on('keydown', fn);
-    }
-
-    iKeydownDisable(fn) {
-        this.unit.off('keydown', fn);
-    }
-
-    iKeyup(fn) {
-        this.unit.on('keyup', fn);
-    }
-
-    iKeyupDisable(fn) {
-        this.unit.off('keyup', fn);
-    }
-
-    visibilityHide() {
-        this.unit.visibilityHide();
-        return this;
-    }
+    iKeydown(fn) { this.v.on('keydown', fn); }
+    iKeydownDisable(fn) { this.v.off('keydown', fn); }
+    iKeyup(fn) { this.v.on('keyup', fn); }
+    iKeyupDisable(fn) { this.v.off('keyup', fn); }
+    visibilityHide() { this.v.visibilityHide(); }
 }

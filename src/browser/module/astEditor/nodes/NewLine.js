@@ -7,17 +7,17 @@ export default class NewLine extends AstNode {
         this.newLine();
     }
 
-    isShifted() { return this.unit.hasClass('verticalShift'); }
+    isShifted() { return this.v.hasClass('verticalShift'); }
 
     addVerticalShift() {
-        this.unit.addClass('verticalShift');
+        this.v.addClass('verticalShift');
     }
 
     removeVerticalShift() {
-        this.unit.removeClass('verticalShift');
+        this.v.removeClass('verticalShift');
     }
 
     hasVerticalShift() {
-        return this.unit.hasClass('verticalShift');
+        return this.v.hasClass('verticalShift');
     }
 }

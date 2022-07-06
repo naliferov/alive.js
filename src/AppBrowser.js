@@ -1,4 +1,3 @@
-import AstManager from "./browser/module/astEditor/AstManager.js";
 import Nodes from "./browser/module/outliner/Nodes.js";
 import Input from "./browser/Input.js";
 import {
@@ -15,58 +14,7 @@ class AppBrowser {
     app;
     input;
 
-    async showSignPage(app, type) {
-
-        const isSignIn = type === 'sign_in';
-        const formName = isSignIn ? 'Sign in': 'Sign up';
-
-        const pageSign = new Nodes({class: ['pageSign']});
-        app.in(pageSign);
-
-        const signContainer = new Nodes({class: ['signContainer']});
-        pageSign.in(signContainer);
-
-        const sign = new Nodes({class: ['signBlock']});
-        signContainer.in(sign);
-
-        sign.in(new Nodes({txt: formName})).inBr();
-
-        sign.in(new Nodes({name: 'Email'}));
-        const email = new Nodes({tagName: 'input', class: ['emailInput']});
-        sign.in(email).inBr();
-
-        sign.in(new Nodes({name: 'Password'}));
-        const password = new Nodes({tagName: 'input', class: ['emailInput']});
-        password.setAttr('type', 'password');
-        sign.in(password);
-
-        sign.inBr().inBr();
-        const btn = new Nodes({tagName: 'button', name: formName})
-        sign.in(btn);
-
-        const submit = async () => {
-            const data = {email: email.getValue(), password: password.getValue()};
-            const res = await new HttpClient().post(document.location.pathname, data);
-            if (!res.err) {
-                document.location.href = '/'; return;
-            }
-            document.location.reload();
-        };
-        const inputProcess = async (e) => e.key === 'Enter' ? submit() : null;
-
-        email.on('keydown', (e) => inputProcess(e));
-        password.on('keydown', (e) => inputProcess(e));
-        btn.on('click', async () => submit());
-
-        if (isSignIn) {
-            sign.inBr().inBr();
-            sign.in(new Nodes({tagName: 'span', name: "Don't have an account? "}));
-            sign.in(new Nodes({tagName: 'a', name: "Sign up"}).setAttr('href', '/sign/up'));
-        }
-    }
-
-    async showIDE(app) {
-
+    initGlobals() {
         window.domPool = new Map;
         window.nodesPool = new Map;
         window.outlinerNodesPool = new Map;
@@ -91,8 +39,8 @@ class AppBrowser {
             if (!(v2 instanceof V)) v2 = v2.getV();
 
             if (index !== undefined) {
-                 v2.getDOM().insertBefore(v1.getDOM(), v2.getDOM().children[index]);
-                 return;
+                v2.getDOM().insertBefore(v1.getDOM(), v2.getDOM().children[index]);
+                return;
             }
             v2.getDOM().append(v1.getDOM());
         }
@@ -100,6 +48,61 @@ class AppBrowser {
             const [domA, domB] = args;
             domB.getDOM().after(domA.getDOM())
         }
+    }
+
+    async showSignPage(app, type) {
+
+        this.initGlobals();
+
+        const isSignIn = type === 'sign_in';
+        const formName = isSignIn ? 'Sign in': 'Sign up';
+
+        const pageSign = new V({class: 'pageSign'});
+        e('>', [pageSign, app]);
+
+        const signContainer = new V({class: 'signContainer'});
+        e('>', [signContainer, pageSign]);
+
+        const sign = new V({class: 'signBlock'});
+        e('>', [sign, signContainer]);
+
+        e('>', [new V({txt: formName}), sign]);
+        e('>', [new V({name: 'Email'}), sign]);
+
+        const email = new V({tagName: 'input', class: 'emailInput'});
+        e('>', [email, sign]);
+
+        e('>', [new V({name: 'Password'}), sign]);
+
+        const password = new V({tagName: 'input', class: ['emailInput']});
+        password.setAttr('type', 'password');
+        e('>', [password, sign]);
+
+        const btn = new V({tagName: 'button', txt: formName});
+        e('>', [btn, sign]);
+
+        const submit = async () => {
+            const data = {email: email.getValue(), password: password.getValue()};
+            const res = await new HttpClient().post(document.location.pathname, data);
+            if (!res.err) {
+                document.location.href = '/'; return;
+            }
+            document.location.reload();
+        };
+        const inputProcess = async (e) => e.key === 'Enter' ? submit() : null;
+
+        email.on('keydown', (e) => inputProcess(e));
+        password.on('keydown', (e) => inputProcess(e));
+        btn.on('click', async () => submit());
+
+        if (isSignIn) {
+            e('>', [new V({tagName: 'span', txt: "Don't have an account? "}), sign]);
+            e('>', [new V({tagName: 'a', txt: "Sign up"}).setAttr('href', '/sign/up'), sign]);
+        }
+    }
+
+    async showIDE(app) {
+        this.initGlobals();
 
         const pageIDE = new V({class: ['pageIDE']});
         e('>', [pageIDE, app]);
@@ -110,24 +113,22 @@ class AppBrowser {
 
         const localState = new LocalState();
 
+        const astContainer = new V({class: 'astContainer'});
         const tabManager = new TabManager(nodes, localState);
-        const astManager = new AstManager(tabManager);
-        e('>', [astManager.getV(), pageIDE]);
-
-        e('>', [tabManager.getV(), astManager.getV()]);
+        e('>', [tabManager.getV(), pageIDE]);
 
         const input = new Input(window);
 
-        e[OPEN_TAB] = (node) => astManager.openTab(node);
+        e[OPEN_TAB] = ({node}) => tabManager.openTab(node);
         e[NODES_CONTROL_MODE] = () => {
             input.onKeyDown(async (e) => await nodes.handleKeyDown(e));
             input.onKeyUp(async (e) => await nodes.handleKeyUp(e));
             input.onDblClick(async (e) => await nodes.handleDblClick(e));
         };
-        e[AST_CONTROL_MODE] = () => input.onKeyDown(async (e) => await astManager.onKeyDown(e));
+        e[AST_CONTROL_MODE] = () => input.onKeyDown(async (e) => await tabManager.onKeyDown(e));
         e[AST_NODE_EDIT_MODE] = () => input.disableHandlers();
 
-        astManager.onClick(() => e(AST_CONTROL_MODE));
+        astContainer.on('click', () => e(AST_CONTROL_MODE));
         nodes.getV().on('click', () => e(NODES_CONTROL_MODE));
         e(AST_CONTROL_MODE);
 
@@ -135,20 +136,20 @@ class AppBrowser {
         const activeTabId = localState.getActiveTabId();
         const openedFx = localState.getOpenedTabs();
 
-        console.log(activeTabId, openedFx);
 
-        // for (let fxId in openedFx) {
-        //     const unit = await nodes.getTById(fxId);
-        //     if (!unit) {
-        //         localState.closeTab(fxId);
-        //         continue;
-        //     }
-        //     await fxRuntime.openTab(unit);
-        // }
-        // if (activeTabId && window.nodesPool.get(activeTabId)) {
-        //     const node = await nodes.getTById(activeTabId);
-        //     await fxRuntime.focusTab(node);
-        // }
+        for (let nodeId in openedFx) {
+            const node = await nodes.getNodeById(nodeId);
+            if (!node) {
+                localState.closeTab(nodeId);
+                continue;
+            }
+            await tabManager.openTab(node);
+        }
+
+        if (activeTabId && window.nodesPool.get(activeTabId)) {
+            const node = await nodes.getNodeById(activeTabId);
+            await tabManager.focusTab(node);
+        }
     }
 
     async run() {

@@ -3,7 +3,7 @@ import Op from "./nodes/Op.js";
 import Literal from "./nodes/literal/Literal.js";
 import NewLine from "./nodes/NewLine.js";
 import For from "./nodes/conditionAndBody/loop/For.js";
-import If from "./nodes/conditionAndBody/if/IfBody.js";
+import If from "./nodes/conditionAndBody/if/If.js";
 import ForConditionPart from "./nodes/conditionAndBody/loop/ForConditionPart.js";
 import Callable from "./nodes/conditionAndBody/call/callable/Callable.js";
 import CallableConditionPart from "./nodes/conditionAndBody/call/callable/ConditionPart.js";
@@ -153,7 +153,7 @@ export default class AstSerializer {
                     const nameChunk = new Id(d.name);
                     if (d.mode === 'let') nameChunk.enableLet();
                     if (d.mode === 'new') nameChunk.enableNew();
-                    chunkForIns = nameChunk
+                    chunkForIns = nameChunk;
 
                     /*if (d.subId) {
                         const subId = deserializeSubId(d.subId);

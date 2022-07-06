@@ -29,8 +29,8 @@ export default class LocalState {
         return this.openedFx[unitId];
     }
 
-    openTab(unitId) {
-        this.openedFx[unitId] = {};
+    openTab(nodeId) {
+        this.openedFx[nodeId] = {};
         localStorage.setItem('openedTabs', JSON.stringify(this.openedFx));
     }
 
@@ -39,8 +39,8 @@ export default class LocalState {
         return openedScriptsJSON ? JSON.parse(openedScriptsJSON) : {};
     }
 
-    closeTab(unitId) {
-        delete this.openedFx[unitId];
+    closeTab(nodeId) {
+        delete this.openedFx[nodeId];
         localStorage.setItem('openedTabs', JSON.stringify(this.openedFx));
     }
 

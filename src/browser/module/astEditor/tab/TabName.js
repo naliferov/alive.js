@@ -1,51 +1,31 @@
-import Node from "../../../../type/Node.js";
+import V from "../../../../type/V.js";
 
 export default class TabName {
 
-    u;
+    v;
 
-    tabName;
+    name;
     closeBtn;
 
-    contextUnitId;
+    contextNodeId;
 
-    constructor(name, contextUnit) {
-        this.u = new Node({class: ['tab']});
+    constructor(name, contextNode) {
+        this.v = new V({class: 'tab'});
 
-        this.tabName = new Node({class: ['tabName'], name});
-        this.u.in(this.tabName);
+        this.name = new V({class: 'tabName', txt: name});
+        e('>', [this.name, this.v]);
 
-        this.closeBtn = new Node({class: ['tabCloseBtn'], name: 'x'});
-        this.u.in(this.closeBtn);
+        this.closeBtn = new V({class: 'tabCloseBtn', txt: 'x'});
+        e('>', [this.closeBtn, this.v]);
 
-        this.contextUnitId = contextUnit.getId();
+        this.contextNodeId = contextNode.get('id');
     }
 
-    getContextUnitId() {
-        return this.contextUnitId;
-    }
-
-    activate() {
-        this.u.addClass('active');
-    }
-
-    deactivate() {
-        this.u.removeClass('active');
-    }
-
-    onTabClick(fn) {
-        this.u.on('click', (e) => fn(e));
-    }
-
-    onTabCloseClick(fn) {
-        this.closeBtn.on('click', (e) => fn(e));
-    }
-
-    close() {
-        this.u.removeFromDom();
-    }
-
-    getUnit() {
-        return this.u;
-    }
+    getContextNodeId() { return this.contextNodeId; }
+    activate() { this.v.addClass('active'); }
+    deactivate() { this.v.removeClass('active'); }
+    onTabClick(fn) { this.v.on('click', (e) => fn(e)); }
+    onTabCloseClick(fn) { this.closeBtn.on('click', (e) => fn(e)); }
+    close() { this.v.removeFromDom(); }
+    getV() { return this.v; }
 }

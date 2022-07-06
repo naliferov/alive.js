@@ -8,7 +8,8 @@ export default class Keyword extends AstNode {
         super('', {className: ['keyword']});
 
         this.kType = new AstNode(type, {className: 'keyword'});
-        const closeSpace = new AstNode('.').visibilityHide();
+        const closeSpace = new AstNode('.');
+        closeSpace.visibilityHide();
 
         super.insert(this.kType);
         super.insert(closeSpace);

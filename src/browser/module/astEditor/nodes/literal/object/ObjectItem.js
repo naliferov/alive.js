@@ -4,30 +4,22 @@ import ObjectValue from "./ObjectValue.js";
 
 export default class ObjectItem extends AstNode {
 
-    k
-    v
-
     constructor() {
         super('', {className: 'objectItem'});
-        this.k = new ObjectKey; super.insert(this.k);
+        this.key = new ObjectKey; super.insert(this.key);
         super.insert(new AstNode(': ', {className: 'kvSeparator'}));
-        this.v = new ObjectValue; super.insert(this.v);
+        this.value = new ObjectValue; super.insert(this.value);
         super.insert(new AstNode(', ', {className: 'comma'}));
     }
 
-    getKey() {
-        return this.k;
-    }
-
-    getValue() {
-        return this.v;
-    }
+    getKey() { return this.key; }
+    getValue() { return this.value; }
 
     serialize() {
         return {
             t: this.constructor.name,
-            k: this.k.serialize(),
-            v: this.v.serialize(),
+            k: this.key.serialize(),
+            v: this.value.serialize(),
         }
     }
 }

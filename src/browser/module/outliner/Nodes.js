@@ -33,7 +33,6 @@ export default class Nodes {
         const outlinerRootNode = new OutlinerNode(rootNode);
         this.outLinerRootNode = outlinerRootNode;
         e('>', [outlinerRootNode, this]);
-        //this.rootNode.get().oEditMode();
 
         const render = (outlinerNode) => {
 
@@ -46,7 +45,7 @@ export default class Nodes {
                 const newOutlinerNode = new OutlinerNode(newNode);
                 e('>', [newOutlinerNode.getV(), outlinerNode.getNodesV()]);
 
-                //window.nodesPool.set(newNode.get('id'), newNode);
+                window.nodesPool.set(newNode.get('id'), newNode);
                 window.outlinerNodesPool.set(newOutlinerNode.getDomId(), newOutlinerNode);
                 render(newOutlinerNode);
             }

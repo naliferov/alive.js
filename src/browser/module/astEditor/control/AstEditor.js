@@ -1,3 +1,4 @@
+import V from '../../../../type/V.js';
 import Node from "../../../../type/Node.js";
 import NewLine from "../nodes/NewLine.js";
 import Id from "../nodes/id/Id.js";
@@ -41,7 +42,7 @@ export default class AstEditor {
 
     mainNode;
     flow;
-    context;
+    contextNode;
 
     callableModule;
 
@@ -62,29 +63,29 @@ export default class AstEditor {
         this.serializer = serializer;
         this.nodes = nodes;
 
-        this.v = new Node({class: ['astEditor']});
+        this.v = new V({class: 'astEditor'});
 
-        const markerMonitor = new Node({class: ['markedNode'], name: 'markedNode: '});
-        //this.v.in(markerMonitor);
+        const markerMonitor = new V({class: 'markedNode', txt: 'markedNode: '});
+        e('>', [markerMonitor, this.v]);
         this.marker = new Marker(markerMonitor);
 
         this.mainNode = new Main();
-        //this.unit.in(this.mainNode.getUnit());
+        e('>', [this.mainNode.getV(), this.v]);
 
         this.flow = new ModuleBody();
 
         const moduleType = this.getContextModuleType();
         if (moduleType === 'callable') {
-            this.callableModule = new CallableModule;
+            //this.callableModule = new CallableModule;
             //this.mainNode.insertInBody(this.callableModule);
             //flow.insert();
         } else {
             this.mainNode.insert(this.flow);
         }
 
-        const astNodes = this.context.get('astNodes');
+        const astNodes = this.contextNode.get('astNodes');
         if (!astNodes) {
-            console.log(`astNodes not found in unit ${this.context.getId()}`);
+            console.log(`astNodes not found in unit ${this.contextNode.get('id')}`);
             return;
         }
 
@@ -93,7 +94,7 @@ export default class AstEditor {
 
     show() { this.v.show(); }
     hide() { this.v.hide(); }
-    getContextUnitId() { return this.context.getId(); }
+    getContextUnitId() { return this.contextNode.get('id'); }
     getV() { return this.v; }
     getContextModuleType() { return this.contextNode.get('moduleType') ?? 'simple'; }
 

@@ -4,48 +4,36 @@ import AstNodeEditor from "../control/AstNodeEditor.js";
 
 export default class Tab {
 
-    fxTabName;
+    tabName;
     astEditor;
 
-    contextUnit;
+    contextNode;
 
-    constructor(tabName, contextUnit, fxSerializer, nodes) {
-        this.fxTabName = new TabName(tabName, contextUnit);
+    constructor(tabName, contextNode, fxSerializer, nodes) {
+        this.tabName = new TabName(tabName, contextNode);
         this.astEditor = new AstEditor(
-            contextUnit, fxSerializer, new AstNodeEditor(), nodes
+            contextNode, fxSerializer, new AstNodeEditor(), nodes
         );
 
-        this.contextUnit = contextUnit;
+        this.contextNode = contextNode;
     }
 
-    getContextUnitId() {
-        return this.contextUnit.getId();
-    }
-
-    getTabName() { return this.fxTabName; }
-
-    getFxController() { return this.astEditor; }
+    getContextNodeId() { return this.contextNode.get('id'); }
+    getTabName() { return this.tabName; }
+    getAstEditor() { return this.astEditor; }
 
     activate() {
-        this.fxTabName.activate();
+        this.tabName.activate();
         this.astEditor.show();
     }
-
     deactivate() {
-        this.fxTabName.deactivate();
+        this.tabName.deactivate();
         this.astEditor.hide();
     }
-
-    onClick(fn) {
-        this.fxTabName.onTabClick(fn);
-    }
-
-    onClickClose(fn) {
-        this.fxTabName.onTabCloseClick(fn);
-    }
-
+    onClick(fn) { this.tabName.onTabClick(fn); }
+    onClickClose(fn) { this.tabName.onTabCloseClick(fn); }
     close() {
-        this.fxTabName.close();
+        this.tabName.close();
         this.astEditor.close();
     }
 }

@@ -7,9 +7,12 @@ export default class Op extends AstNode {
     constructor(op) {
         super('', {className: 'op'});
 
-        const openSpace = new AstNode('.').visibilityHide();
+        const openSpace = new AstNode('.');
+        openSpace.visibilityHide();
+
         this.opType = new AstNode(op, {className: 'opType'});
-        const closeSpace = new AstNode('.').visibilityHide();
+        const closeSpace = new AstNode('.');
+        closeSpace.visibilityHide();
 
         super.insert(openSpace);
         super.insert(this.opType);

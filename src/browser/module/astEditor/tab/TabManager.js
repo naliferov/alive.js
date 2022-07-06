@@ -13,7 +13,7 @@ export default class TabManager {
 
     localState;
     nodes;
-    fxSerializer;
+    astSerializer;
 
     constructor(nodes, localState) {
 
@@ -27,16 +27,16 @@ export default class TabManager {
         this.nodes = nodes;
 
         this.tabs = new Map;
-        this.fxSerializer = new AstSerializer();
+        this.astSerializer = new AstSerializer();
         this.localState = localState;
     }
 
-    getTabByContextUnit(node) { return this.tabs.get(node.get('id')); }
+    getTabByContextNode(node) { return this.tabs.get(node.get('id')); }
 
-    openTab(unit) {
+    openTab(node) {
 
-        let openedTab = this.tabs.get(unit.getId());
-        if (openedTab && this.activeTab.getContextUnitId() === openedTab.getContextUnitId()) {
+        let openedTab = this.tabs.get(node.get('id'));
+        if (openedTab && this.activeTab.getContextNodeId() === openedTab.getContextNodeId()) {
             return;
         }
         if (this.activeTab) this.activeTab.deactivate();
@@ -46,7 +46,7 @@ export default class TabManager {
             this.activeTab = openedTab;
         } else {
 
-            let newTab = new Tab(unit.getName(), unit, this.fxSerializer, this.nodes);
+            let newTab = new Tab(node.get('name'), node, this.astSerializer, this.nodes);
             newTab.onClick((e) => this.focusTab(newTab));
             newTab.onClickClose((e) => {
                 e.stopPropagation();
@@ -54,38 +54,42 @@ export default class TabManager {
             });
             newTab.activate();
 
-            this.tabsNamesBlock.insert(newTab.getTabName().getUnit());
-            this.tabs.set(newTab.getContextUnitId(), newTab);
+            e('>', [newTab.getTabName().getV(), this.tabsNamesBlock]);
+
+            this.tabs.set(newTab.getContextNodeId(), newTab);
 
             this.activeTab = newTab;
-            this.tabsContentBlock.in(this.activeTab.getFxController().getUnit());
+            e('>', [this.activeTab.getAstEditor().getV(), this.tabsContentBlock]);
         }
 
-        this.localState.openTab(this.activeTab.getContextUnitId());
-        this.localState.setActiveTabId(this.activeTab.getContextUnitId());
+        this.localState.openTab(this.activeTab.getContextNodeId());
+        this.localState.setActiveTabId(this.activeTab.getContextNodeId());
     }
 
-    focusTab(tab) {
+    focusTab(node) {
+        const nodeId = node.get('id');
+        const tab = this.tabs.get(nodeId);
+        if (!tab) { console.log('tabId not found', nodeId); return; }
+
         if (this.activeTab) {
-            if (this.activeTab.getContextUnitId() === tab.getContextUnitId()) {
+            if (this.activeTab.getContextNodeId() === tab.getContextNodeId()) {
                 return;
             }
             this.activeTab.deactivate();
         }
         this.activeTab = tab;
         tab.activate();
-        this.localState.setActiveTabId(tab.getContextUnitId());
+        this.localState.setActiveTabId(tab.getContextNodeId());
     }
 
     closeTab(tab) {
 
-        const contextUnitId = tab.getContextUnitId();
-        const isActiveTab = this.activeTab && this.activeTab.getContextUnitId() === contextUnitId;
+        const contextUnitId = tab.getContextNodeId();
+        const isActiveTab = this.activeTab && this.activeTab.getContextNodeId() === contextUnitId;
 
         if (isActiveTab) {
-            for (let [key, tab] of this.tabs) {
-
-                if (tab.getContextUnitId() === contextUnitId) continue;
+            for (let [_, tab] of this.tabs) {
+                if (tab.getContextNodeId() === contextUnitId) continue;
                 this.focusTab(tab);
                 break;
             }
@@ -98,7 +102,7 @@ export default class TabManager {
     }
 
     async onKeyDown(e) {
-        if (this.activeTab) this.activeTab.getFxController().onKeyDown(e);
+        if (this.activeTab) this.activeTab.getAstEditor().onKeyDown(e);
     }
     getV() { return this.v }
 }
