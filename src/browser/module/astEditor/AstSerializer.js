@@ -192,6 +192,8 @@ export default class AstSerializer {
             }
         }
 
+        console.log(chunksData)
+
         buildAST(mainChunk, chunksData);
     }
 }

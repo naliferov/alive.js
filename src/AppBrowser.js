@@ -117,7 +117,6 @@ class AppBrowser {
 
         const localState = new LocalState();
 
-        const astContainer = new V({class: 'astContainer'});
         const tabManager = new TabManager(nodes, localState);
         e('>', [tabManager.getV(), pageIDE]);
 
@@ -129,13 +128,15 @@ class AppBrowser {
             input.onKeyUp(async (e) => await nodes.handleKeyUp(e));
             input.onDblClick(async (e) => await nodes.handleDblClick(e));
         };
-        e[AST_CONTROL_MODE] = () => {
-            input.onKeyDown(async (e) => await tabManager.onKeyDown(e));
-        }
+        e[AST_CONTROL_MODE] = () => input.onKeyDown(async (e) => await tabManager.onKeyDown(e));
         e[AST_NODE_EDIT_MODE] = () => input.disableHandlers();
 
-        astContainer.on('click', () => e(AST_CONTROL_MODE));
-        nodes.getV().on('click', () => e(NODES_CONTROL_MODE));
+        tabManager.getV().on('click', () => {
+            e(AST_CONTROL_MODE)
+        });
+        nodes.getV().on('click', () => {
+            e(NODES_CONTROL_MODE)
+        });
         e(AST_CONTROL_MODE);
 
 

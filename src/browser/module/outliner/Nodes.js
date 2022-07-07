@@ -187,7 +187,7 @@ export default class Nodes {
 
                 const subNodes = getNodesData(outlinerNode);
                 if (subNodes.length > 0) tData.nodes = subNodes;
-                if (node.get('astNodes')) tData.astNodes = node.get('astNodes');
+                if (node.get('AST')) tData.astNodes = node.get('AST');
                 if (node.get('moduleType')) tData.moduleType = node.get('moduleType');
 
                 r.push(tData);
@@ -198,6 +198,6 @@ export default class Nodes {
         const nodes = getNodesData(this.outLinerRootNode);
         //console.log(nodes);
 
-        //await new HttpClient().post('/nodes', {nodes})
+        await new HttpClient().post('/nodes', {nodes})
     }
 }

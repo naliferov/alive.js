@@ -33,14 +33,14 @@ import ObjectValue from "../nodes/literal/object/ObjectValue.js";
 import ObjectBody from "../nodes/literal/object/ObjectBody.js";
 import Call from "../nodes/conditionAndBody/call/call/Call.js";
 import CallConditionPart from "../nodes/conditionAndBody/call/call/CallConditionPart.js";
-import ModuleBody from "../nodes/ModuleBody.js";
+import Module from "../nodes/Module.js";
 
 export default class AstEditor {
 
     v;
 
     mainNode;
-    moduleBody;
+    module;
 
     contextNode;
 
@@ -72,24 +72,29 @@ export default class AstEditor {
         this.mainNode = new Main();
         e('>', [this.mainNode.getV(), this.v]);
 
-        this.moduleBody = new ModuleBody();
+        this.module = new Module();
 
         const moduleType = this.getContextModuleType();
         if (moduleType === 'callable') {
-            //this.callableModule = new CallableModule;
-            //this.mainNode.insertInBody(this.callableModule);
+            this.callableModule = new CallableModule;
+            this.mainNode.insertInBody(this.callableModule);
             //flow.insert();
-        } else {
-            this.mainNode.insert(this.moduleBody);
-        }
+        } else {}
 
-        const astNodes = this.contextNode.get('astNodes');
+        this.mainNode.insert(this.module);
+
+        const astNodes = this.contextNode.get('AST') || this.contextNode.get('astNodes');
+
         if (!astNodes) {
             console.log(`astNodes not found in unit ${this.contextNode.get('id')}`);
             return;
         }
 
-        this.serializer.deserialize(this.moduleBody, astNodes.chunks);
+        if (astNodes.nodes) {
+            this.serializer.deserialize(this.module, astNodes.nodes);
+        } else {
+            this.serializer.deserialize(this.module, astNodes.chunks);
+        }
     }
 
     show() { this.v.show(); }
@@ -109,9 +114,9 @@ export default class AstEditor {
     }
 
     async save() {
-        this.contextNode.set('astNodes', {
-            chunks: this.serializer.serialize(this.mainNode),
-            markedChunksIds: this.marker.getMarkedChunksIds(),
+        this.contextNode.set('AST', {
+            nodes: this.serializer.serialize(this.module),
+            markedNodesIds: this.marker.getMarkedChunksIds(),
         });
         await this.nodes.save();
     }
@@ -160,7 +165,7 @@ export default class AstEditor {
 
             const marked = this.marker.getFirst();
             if (marked instanceof Id) marked.switchKeyword();
-            if (marked instanceof ModuleBody) this.switchModuleType();
+            if (marked instanceof Module) this.switchModuleType();
             this.save();
             return;
         }
@@ -343,9 +348,14 @@ export default class AstEditor {
             //INSERT NEW LINE
             if (ctrl && shift && marked) {
                 const newLine = new NewLine;
-                if (marked instanceof NewLine) newLine.addVerticalShift();
-                if (marked.getPrevChunk() instanceof NewLine) newLine.addVerticalShift();
-                marked.getParentChunk().insertBefore(newLine, marked);
+                if (
+                    marked instanceof NewLine ||
+                    marked.getPrevChunk() instanceof NewLine
+                ) {
+                    newLine.addVerticalShift();
+                }
+
+                e('>before', [newLine.getV(), marked.getV()]);
                 this.save();
                 return;
             }
