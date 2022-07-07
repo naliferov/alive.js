@@ -155,7 +155,7 @@ export default class Nodes {
         const newNode = new Node(nodeData);
         const newOutlinerNode = new OutlinerNode(newNode);
 
-        e('insertAfter', [newOutlinerNode.getV(), outlinerNode.getV()])
+        e('>after', [newOutlinerNode.getV(), outlinerNode.getV()]);
         window.outlinerNodesPool.set(newOutlinerNode.getDomId(), newOutlinerNode);
     }
 
@@ -198,6 +198,6 @@ export default class Nodes {
         const nodes = getNodesData(this.outLinerRootNode);
         //console.log(nodes);
 
-        await new HttpClient().post('/nodes', {nodes})
+        //await new HttpClient().post('/nodes', {nodes})
     }
 }

@@ -180,6 +180,7 @@ export default class AstSerializer {
                 else if (d.t === 'Keyword') chunkForIns = new Keyword(d.keyword);
                 else {
                     console.error(`No handler for chunk [${d.t}].`);
+                    console.log(d);
                     continue;
                     //throw new Error(`No handler for chunk [${d.t}].`)
                 }

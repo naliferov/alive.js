@@ -1,5 +1,4 @@
 import V from '../../../../type/V.js';
-import Node from "../../../../type/Node.js";
 import NewLine from "../nodes/NewLine.js";
 import Id from "../nodes/id/Id.js";
 import SubId from "../nodes/id/SubId.js";
@@ -41,7 +40,8 @@ export default class AstEditor {
     v;
 
     mainNode;
-    flow;
+    moduleBody;
+
     contextNode;
 
     callableModule;
@@ -72,7 +72,7 @@ export default class AstEditor {
         this.mainNode = new Main();
         e('>', [this.mainNode.getV(), this.v]);
 
-        this.flow = new ModuleBody();
+        this.moduleBody = new ModuleBody();
 
         const moduleType = this.getContextModuleType();
         if (moduleType === 'callable') {
@@ -80,7 +80,7 @@ export default class AstEditor {
             //this.mainNode.insertInBody(this.callableModule);
             //flow.insert();
         } else {
-            this.mainNode.insert(this.flow);
+            this.mainNode.insert(this.moduleBody);
         }
 
         const astNodes = this.contextNode.get('astNodes');
@@ -89,7 +89,7 @@ export default class AstEditor {
             return;
         }
 
-        this.serializer.deserialize(this.flow, astNodes.chunks);
+        this.serializer.deserialize(this.moduleBody, astNodes.chunks);
     }
 
     show() { this.v.show(); }
@@ -226,11 +226,13 @@ export default class AstEditor {
         if (this.marker.getLength() !== 1) return;
 
         const marked = this.marker.getFirst();
-        if (marked.getNextChunk()) {
-            marked.getParentChunk().insertBefore(chunk, marked.getNextChunk());
-        } else {
-            marked.getParentChunk().insert(chunk);
-        }
+        e('>after', [chunk.getV(), marked.getV()]);
+
+        // if (marked.getNextChunk()) {
+        //     marked.getParentChunk().insertBefore(chunk, marked.getNextChunk());
+        // } else {
+        //     marked.getParentChunk().insert(chunk);
+        // }
         return true;
     }
 
@@ -238,8 +240,7 @@ export default class AstEditor {
         if (this.marker.isEmpty()) return;
         if (this.marker.getLength() !== 1) return;
 
-        const marked = this.marker.getFirst();
-        marked.getParentChunk().insertBefore(chunk, marked);
+        e('>before', [chunk.getV(), this.marker.getFirst().getV()]);
         return true;
     }
 
@@ -318,13 +319,13 @@ export default class AstEditor {
         const inserter = this.astEditor.createEditNode(this);
         chunk.insert(inserter);
         this.marker.unmarkAll().mark(inserter);
-        //this.pubsub.pub(AST_NODE_EDIT_MODE);
+        e(AST_NODE_EDIT_MODE);
         inserter.focus();
     }
 
     markSendEventAndFocus(editNode) {
         this.marker.unmarkAll().mark(editNode);
-        //this.pubsub.pub(AST_NODE_EDIT_MODE);
+        e(AST_NODE_EDIT_MODE);
         editNode.focus();
     }
 
@@ -896,5 +897,5 @@ export default class AstEditor {
         }
     }
 
-    close() { this.unit.removeFromDom(); }
+    close() { this.v.removeFromDom(); }
 }

@@ -19,6 +19,7 @@ export default class Tab {
     }
 
     getContextNodeId() { return this.contextNode.get('id'); }
+    getContextNode() { return this.contextNode; }
     getTabName() { return this.tabName; }
     getAstEditor() { return this.astEditor; }
 

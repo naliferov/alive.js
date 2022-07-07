@@ -19,11 +19,8 @@ const MODE_EDIT = 'edit';
 
 export default class AstNodeEditor {
 
-    pubsub;
     node;
     mode;
-
-    constructor(pubsub) { this.pubsub = pubsub; }
 
     resetState() {
         this.node = null;
@@ -50,21 +47,20 @@ export default class AstNodeEditor {
             this.node.iEditTxt();
         } else return;
 
-        this.pubsub.pub(AST_NODE_EDIT_MODE);
+        e(AST_NODE_EDIT_MODE);
         this.processNodeInput(node, fxController);
     }
 
-    async insertNewChunk(newChunk, insertAgain = false, fxController) {
+    insertNewChunk(newChunk, insertAgain = false, astEditor) {
 
         const node = this.node;
 
-        node.getParentChunk().insertBefore(newChunk, node);
-        fxController.removeChunk(node);
-        fxController.unmarkAll().mark(newChunk);
-        //todo удалить inserter если контроль получает AST_CONTROL_MODE
+        e('>after', [newChunk.getV(), node.getV()]);
+        astEditor.removeChunk(node);
+        astEditor.unmarkAll().mark(newChunk);
 
         if (insertAgain) {
-            const newInserter = this.createEditNode(fxController);
+            const newInserter = this.createEditNode(astEditor);
             const nextChunk = newChunk.getNextChunk();
             if (nextChunk) {
                 newChunk.getParentChunk().insertBefore(newInserter, nextChunk);
@@ -72,7 +68,7 @@ export default class AstNodeEditor {
                 newChunk.getParentChunk().insert(newInserter);
             }
 
-            fxController.unmarkAll().mark(newInserter);
+            astEditor.unmarkAll().mark(newInserter);
             newInserter.focus();
         }
     }
@@ -162,7 +158,7 @@ export default class AstNodeEditor {
                 }
 
                 this.resetState();
-                setTimeout(() => this.pubsub.pub(AST_CONTROL_MODE), 300);
+                setTimeout(() => window.e(AST_CONTROL_MODE), 300);
             } else if (key === 'Enter') {
 
                 e.preventDefault();
@@ -177,7 +173,7 @@ export default class AstNodeEditor {
                     node.iKeyupDisable(keyUp);
                 }
 
-                setTimeout(() => this.pubsub.pub(AST_CONTROL_MODE), 300);
+                setTimeout(() => window.e(AST_CONTROL_MODE), 300);
                 fxController.save();
             }
         };

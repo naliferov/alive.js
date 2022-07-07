@@ -46,8 +46,8 @@ export default class TabManager {
             this.activeTab = openedTab;
         } else {
 
-            let newTab = new Tab(node.get('name'), node, this.astSerializer, this.nodes);
-            newTab.onClick((e) => this.focusTab(newTab));
+            const newTab = new Tab(node.get('name'), node, this.astSerializer, this.nodes);
+            newTab.onClick((e) => this.focusTab(node));
             newTab.onClickClose((e) => {
                 e.stopPropagation();
                 this.closeTab(newTab)
@@ -90,7 +90,7 @@ export default class TabManager {
         if (isActiveTab) {
             for (let [_, tab] of this.tabs) {
                 if (tab.getContextNodeId() === contextUnitId) continue;
-                this.focusTab(tab);
+                this.focusTab(tab.getContextNode());
                 break;
             }
         }

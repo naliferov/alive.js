@@ -48,6 +48,10 @@ class AppBrowser {
             const [domA, domB] = args;
             domB.getDOM().after(domA.getDOM())
         }
+        e['>before'] = (args) => {
+            const [domA, domB] = args;
+            domB.getDOM().before(domA.getDOM())
+        }
     }
 
     async showSignPage(app, type) {
@@ -125,7 +129,9 @@ class AppBrowser {
             input.onKeyUp(async (e) => await nodes.handleKeyUp(e));
             input.onDblClick(async (e) => await nodes.handleDblClick(e));
         };
-        e[AST_CONTROL_MODE] = () => input.onKeyDown(async (e) => await tabManager.onKeyDown(e));
+        e[AST_CONTROL_MODE] = () => {
+            input.onKeyDown(async (e) => await tabManager.onKeyDown(e));
+        }
         e[AST_NODE_EDIT_MODE] = () => input.disableHandlers();
 
         astContainer.on('click', () => e(AST_CONTROL_MODE));
