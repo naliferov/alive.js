@@ -96,6 +96,13 @@
             border-right: 1px solid lightgray;
         }
         .nodes > .node > .nodeContainer > .openClose { display: none; }
+
+        .btnsBar {
+            display: flex;
+            min-height: 29px;
+            background: #F3F3F3;
+        }
+
         .subFields { margin-left: 12px; }
         .dataUnit { cursor: pointer; }
         .openClose {
@@ -285,13 +292,25 @@
         .flex { display: flex; }
         .gap { gap: 10px; }
         .btn {
+            background: #2B2B2B;
+            color: white;
             cursor: pointer;
             display: inline-block;
             border: 1px solid black;
+            padding: 5px;
         }
         .btn:hover {
-            background: #dcdcdc;
+            background: white;
+            color: #2B2B2B;
         }
+
+        .btnImg {
+            width: 16px;
+        }
+        .rotate180 {
+            transform: rotate(180deg);
+        }
+
         .key {
             border: 1px solid black;
             padding: 0.2em 0.9em;

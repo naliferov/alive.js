@@ -90,8 +90,6 @@ export default class AstEditor {
             return;
         }
 
-        console.log(AST.versions);
-
         try {
             const lastVersion = AST.versions[ AST.versions.length - 1 ];
             this.serializer.deserialize(this.moduleNode, lastVersion);

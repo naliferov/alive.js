@@ -16,27 +16,33 @@ export default class Nodes {
 
     async init() {
 
-        this.addNodeBtn = new V({class: 'addBtn', txt: 'Add node'});
-        e('>', [this.addNodeBtn, this.v]);
+        const btnsBar = new V({class: 'btnsBar'});
+        e('>', [btnsBar, this.v]);
+
+        this.addNodeBtn = new V({class: ['btn'], txt: '+'});
+        //this.addNodeBtn.setAttr('src', '/img/plus2.svg');
+        e('>', [this.addNodeBtn, btnsBar]);
 
         this.addNodeBtn.on('click', () => {
             this.addNodeBtn.hide();
             this.create(this.outLinerRootNode);
         });
 
-        const back = new V({class: 'backBtn', txt: 'back ', style: {display: 'inline'}});
-        e('>', [back, this.v]);
-        const forward = new V({class: 'forwardBtn', txt: 'forward', style: {display: 'inline'}});
-        e('>', [forward, this.v]);
+        const back = new V({class: 'btn', txt: '<', style: {display: 'inline'}});
+        e('>', [back, btnsBar]);
+        const forward = new V({class: 'btn', txt: '>', style: {display: 'inline'}});
+        e('>', [forward, btnsBar]);
 
 
         const nodes = (await (new HttpClient).get('/nodes')).data;
-        if (nodes.length) this.addNodeBtn.hide();
+        //if (nodes.length) this.addNodeBtn.hide();
 
         const rootNode = new Node();
         rootNode.set('nodes', nodes);
 
         const outlinerRootNode = new OutlinerNode(rootNode);
+        outlinerRootNode.removeSubNodesShift();
+
         this.outLinerRootNode = outlinerRootNode;
         e('>', [outlinerRootNode, this]);
 

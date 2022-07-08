@@ -62,4 +62,6 @@ export default class OutlinerNode {
     getContextNode() { return this.contextNode }
     getV() { return this.v }
     getNodesV() { return this.nodesV}
+
+    removeSubNodesShift() { this.nodesV.removeClass('shift'); }
 }
