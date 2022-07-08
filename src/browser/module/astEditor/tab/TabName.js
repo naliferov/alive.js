@@ -15,7 +15,7 @@ export default class TabName {
         this.name = new V({class: 'tabName', txt: name});
         e('>', [this.name, this.v]);
 
-        this.closeBtn = new V({class: 'tabCloseBtn', txt: 'x'});
+        this.closeBtn = new V({class: 'tabCloseBtn', txt: ''});
         e('>', [this.closeBtn, this.v]);
 
         this.contextNodeId = contextNode.get('id');

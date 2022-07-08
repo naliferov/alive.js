@@ -33,7 +33,7 @@ import ObjectValue from "../nodes/literal/object/ObjectValue.js";
 import ObjectBody from "../nodes/literal/object/ObjectBody.js";
 import Call from "../nodes/conditionAndBody/call/call/Call.js";
 import CallConditionPart from "../nodes/conditionAndBody/call/call/CallConditionPart.js";
-import Module from "../nodes/Module.js";
+import Module from "../nodes/module/Module.js";
 
 export default class AstEditor {
 
