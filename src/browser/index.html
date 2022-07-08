@@ -90,20 +90,15 @@
         }
 
         .nodes {
+            height: 100vh;
             min-width: 16em;
             background: white;
             padding-bottom: 1em;
             border-right: 1px solid lightgray;
         }
-        .nodes > .node > .nodeContainer > .openClose {
-            display: none;
-        }
-        .subFields {
-            margin-left: 12px;
-        }
-        .dataUnit {
-            cursor: pointer;
-        }
+        .nodes > .node > .nodeContainer > .openClose { display: none; }
+        .subFields { margin-left: 12px; }
+        .dataUnit { cursor: pointer; }
         .openClose {
             margin-right: 5px;
             color: #656565;
@@ -113,11 +108,13 @@
             opacity: 0.15;
         }
 
+        .tabManager {
+            flex-grow: 1;
+        }
         .astContainer {
             background: var(--bg-color);
         }
         .tabs {
-            width: 100vw;
             display: flex;
             min-height: 29px;
             background: #F3F3F3;
