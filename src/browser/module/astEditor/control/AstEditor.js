@@ -40,7 +40,7 @@ export default class AstEditor {
     v;
 
     mainNode;
-    module;
+    moduleNode;
 
     contextNode;
 
@@ -63,6 +63,7 @@ export default class AstEditor {
         this.serializer = serializer;
         this.nodes = nodes;
 
+
         this.v = new V({class: 'astEditor'});
 
         const markerMonitor = new V({class: 'markedNode', txt: 'markedNode: '});
@@ -72,28 +73,30 @@ export default class AstEditor {
         this.mainNode = new Main();
         e('>', [this.mainNode.getV(), this.v]);
 
-        this.module = new Module();
+        this.moduleNode = new Module();
 
         const moduleType = this.getContextModuleType();
         if (moduleType === 'callable') {
-            this.callableModule = new CallableModule;
+            this.callableModuleCondition = new CallableModule;
             this.mainNode.insertInBody(this.callableModule);
             //flow.insert();
         } else {}
 
-        this.mainNode.insert(this.module);
+        this.mainNode.insert(this.moduleNode);
 
-        const astNodes = this.contextNode.get('AST') || this.contextNode.get('astNodes');
-
-        if (!astNodes) {
-            console.log(`astNodes not found in unit ${this.contextNode.get('id')}`);
+        const AST = this.contextNode.get('AST');
+        if (!AST) {
+            console.log(`AST not found in unit ${this.contextNode.get('id')}`);
             return;
         }
 
-        if (astNodes.nodes) {
-            this.serializer.deserialize(this.module, astNodes.nodes);
-        } else {
-            this.serializer.deserialize(this.module, astNodes.chunks);
+        console.log(AST.versions);
+
+        try {
+            const lastVersion = AST.versions[ AST.versions.length - 1 ];
+            this.serializer.deserialize(this.moduleNode, lastVersion);
+        } catch (e) {
+            console.log('deserialization fails', this.contextNode, e);
         }
     }
 
@@ -114,10 +117,15 @@ export default class AstEditor {
     }
 
     async save() {
-        this.contextNode.set('AST', {
-            nodes: this.serializer.serialize(this.module),
-            markedNodesIds: this.marker.getMarkedChunksIds(),
-        });
+
+        const AST = {
+            versions: this.contextNode.get('AST').versions ?? [],
+            //markedNodeIds: this.marker.getMarkedChunksIds(),
+        };
+        AST.versions.push(this.serializer.serialize(this.moduleNode));
+
+        this.contextNode.set('AST', AST);
+
         await this.nodes.save();
     }
 
@@ -176,6 +184,23 @@ export default class AstEditor {
         if (ctrl && k === 'KeyC') {
             e.preventDefault();
 
+            /*const lastLine = (this.linesList.getLength() - 1) === y;
+
+            const line = this.linesList.get(y);
+            line.removeFromDom();
+            this.linesList.del(y);
+
+            if (lastLine) this.cursor.up();
+
+            this.syncLinesNumbers(this.linesList.getLength());
+
+            this.save();*/
+        }
+
+        if (ctrl && code === 'KeyZ') {
+            e.preventDefault();
+
+            console.log('undo');
             /*const lastLine = (this.linesList.getLength() - 1) === y;
 
             const line = this.linesList.get(y);
@@ -294,9 +319,12 @@ export default class AstEditor {
                 return;
             }
 
-            if (chunkForMarking) {
-                this.marker.unmarkAll().mark(chunkForMarking);
+            if (marked instanceof Module) {
+                console.log('You can not delete Module node.');
+                return;
             }
+
+            if (chunkForMarking) this.marker.unmarkAll().mark(chunkForMarking);
             if (! (marked instanceof Main)) {
                 this.removeChunk(marked);
             }
@@ -337,7 +365,7 @@ export default class AstEditor {
     enterBtn(shift = false, ctrl = false) {
 
         if (this.marker.isEmpty()) {
-            this.switchToInsertingMode(this.mainNode);
+            this.switchToInsertingMode(this.moduleNode);
             return;
         }
         if (this.marker.getLength() === 1) {
@@ -459,7 +487,7 @@ export default class AstEditor {
 
     moveLeft(isShift, isCtrl) {
 
-        if (this.mainNode.isEmpty()) this.switchToInsertingMode(this.mainNode);
+        if (this.moduleNode.isEmpty()) this.switchToInsertingMode(this.moduleNode);
         if (this.marker.isEmpty()) return;
 
         if (this.marker.getLength() === 1) {
@@ -564,9 +592,9 @@ export default class AstEditor {
     moveRight(isShift, isCtrl) {
 
         if (this.marker.isEmpty()) {
-            const chunk = this.mainNode.getFirstChunk();
+            const chunk = this.moduleNode.getFirstChunk();
             if (!chunk) {
-                this.switchToInsertingMode(this.mainNode)
+                this.switchToInsertingMode(this.moduleNode)
                 return;
             }
 

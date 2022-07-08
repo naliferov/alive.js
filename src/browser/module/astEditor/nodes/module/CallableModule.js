@@ -7,6 +7,8 @@ import ConditionAndBodyNode from "../conditionAndBody/ConditionAndBodyNode.js";
 
 export default class CallableModule extends ConditionAndBodyNode {
 
+
+
     constructor() {
         super('', {className: ['callableModule']});
         let openBracket = new AstNode('['); super.insert(openBracket);
@@ -15,9 +17,9 @@ export default class CallableModule extends ConditionAndBodyNode {
 
         super.insert(new Space());
 
-        super.insert(new NewLine());
-        this.body = new CallableBody(); super.insert(this.body);
-        super.insert(new NewLine());
+        // super.insert(new NewLine());
+        // this.body = new CallableBody(); super.insert(this.body);
+        // super.insert(new NewLine());
     }
 
     insert(chunk) {

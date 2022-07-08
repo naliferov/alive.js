@@ -24,6 +24,12 @@ export default class Nodes {
             this.create(this.outLinerRootNode);
         });
 
+        const back = new V({class: 'backBtn', txt: 'back ', style: {display: 'inline'}});
+        e('>', [back, this.v]);
+        const forward = new V({class: 'forwardBtn', txt: 'forward', style: {display: 'inline'}});
+        e('>', [forward, this.v]);
+
+
         const nodes = (await (new HttpClient).get('/nodes')).data;
         if (nodes.length) this.addNodeBtn.hide();
 
@@ -178,16 +184,16 @@ export default class Nodes {
 
             const r = [];
 
-            for (let nodeDom of outlinerNode.getNodesV().getDOM().children) {
+            for (let outlinerNodeDom of outlinerNode.getNodesV().getDOM().children) {
 
-                const outlinerNode = window.outlinerNodesPool.get(nodeDom.getAttribute('id'));
+                const outlinerNode = window.outlinerNodesPool.get(outlinerNodeDom.getAttribute('id'));
                 const node = outlinerNode.getContextNode();
 
                 let tData = {id: node.get('id'), name: node.get('name')};
 
                 const subNodes = getNodesData(outlinerNode);
                 if (subNodes.length > 0) tData.nodes = subNodes;
-                if (node.get('AST')) tData.astNodes = node.get('AST');
+                if (node.get('AST')) tData.AST = node.get('AST');
                 if (node.get('moduleType')) tData.moduleType = node.get('moduleType');
 
                 r.push(tData);
