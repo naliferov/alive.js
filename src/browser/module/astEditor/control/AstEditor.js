@@ -50,16 +50,16 @@ export default class AstEditor {
 
     marker;
     serializer;
-    astEditor;
+    astNodeEditor;
 
     constructor(
         contextNode,
         serializer,
-        astEditor,
+        astNodeEditor,
         nodes
     ) {
         this.contextNode = contextNode;
-        this.astEditor = astEditor;
+        this.astNodeEditor = astNodeEditor;
         this.serializer = serializer;
         this.nodes = nodes;
 
@@ -158,7 +158,7 @@ export default class AstEditor {
             e.preventDefault();
             if (this.marker.isEmpty()) return;
             if (this.marker.getLength() > 1) return;
-            this.astEditor.editNode(this.marker.getFirst(), this);
+            this.astNodeEditor.editNode(this.marker.getFirst(), this);
             //setTimeout(() => this.pubsub.pub(AST_CONTROL_MODE), 300);
 
             return;
@@ -349,7 +349,7 @@ export default class AstEditor {
     }
 
     switchToInsertingMode(chunk) {
-        const inserter = this.astEditor.createEditNode(this);
+        const inserter = this.astNodeEditor.createEditNode(this);
         chunk.insert(inserter);
         this.marker.unmarkAll().mark(inserter);
         e(AST_NODE_EDIT_MODE);
@@ -397,7 +397,7 @@ export default class AstEditor {
                 }
             }
 
-            const inserter = this.astEditor.createEditNode(this);
+            const inserter = this.astNodeEditor.createEditNode(this);
             if (
                 marked instanceof ObjectKey ||
                 marked instanceof ObjectValue
@@ -640,7 +640,7 @@ export default class AstEditor {
                     const forChunk = parent.getParentChunk().getParentChunk().getParentChunk();
                     if (forChunk.isBodyEmpty()) {
                         //this.pubsub.pub(AST_NODE_EDIT_MODE);
-                        const inserter = this.astEditor.createEditNode(this);
+                        const inserter = this.astNodeEditor.createEditNode(this);
                         forChunk.getBody().insert(inserter);
                         this.marker.mark(inserter);
                     }
@@ -736,7 +736,7 @@ export default class AstEditor {
 
                 const objectValue = objectKeyOrValue.getNextChunk().getNextChunk();
                 if (objectValue.isEmpty()) {
-                    const inserter = this.astEditor.createEditNode(this);
+                    const inserter = this.astNodeEditor.createEditNode(this);
                     objectValue.insert(inserter);
                     this.markSendEventAndFocus(inserter);
                 } else {
@@ -812,7 +812,7 @@ export default class AstEditor {
         }
 
         const marked = this.marker.getFirst();
-        const inserter = this.astEditor.createEditNode(this);
+        const inserter = this.astNodeEditor.createEditNode(this);
 
         if (isCtrl && !isShift) {
 
