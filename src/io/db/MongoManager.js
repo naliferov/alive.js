@@ -9,7 +9,6 @@ export default class MongoManager {
 
     createMongoClient(conf, logger) {
         this.conf = conf;
-        // @ts-ignore
         const uri = `mongodb+srv://${conf.username}:${conf.password}@cluster0.17igt.mongodb.net/${conf.database}?retryWrites=true&w=majority`;
         this.client = new MongoClient(uri);
         this.logger = logger;

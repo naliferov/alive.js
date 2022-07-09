@@ -9,15 +9,14 @@ export default class HttpServer {
 
         let app = express();
 
-        app.use(express.static('src'));
         app.use(cookieParser());
         app.use(bodyParser.json({limit: '50mb'}));
+        app.use(express.static('src'));
         app.use(async (req, res, next) => await httpMsgHandler.handle(req, res, next));
         this.server = createServer({}, app);
     }
 
-    getServer() {
-        return this.server;
-    }
+    listen(port) { this.server.listen(port); }
+    getServer() { return this.server; }
 }
 

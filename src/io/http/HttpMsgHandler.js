@@ -72,12 +72,8 @@ export default class HttpMsgHandler {
                 if (email.length > 20) {
                     res.send({err: 'Email length limit is 20 symbols.'}); return;
                 }
-                if (!password) {
-                    res.send({err: 'Password is missing.'}); return;
-                }
-                if (password.length > 20) {
-                    res.send({err: 'Password length limit is 20 symbols.'}); return;
-                }
+                if (!password) { res.send({err: 'Password is missing.'}); return; }
+                if (password.length > 20) { res.send({err: 'Password length limit is 20 symbols.'}); return; }
 
                 const authKey = crypto.randomBytes(32).toString('hex');
                 const userId = await this.usersModel.insert(email, password, authKey);
@@ -103,25 +99,25 @@ export default class HttpMsgHandler {
                 await fileSet.d(processName);*/
                 res.send({ok: processName});
             },
-            'GET:/deploy': async () => {
-
-                if (!await this.getAuthorizedUser(req)) {
-                    res.send({err: 'forbidden'});
-                    return;
-                }
-                //await (new OsExec('node x.js webServer ', [], '', this.logger)).run();
-
-                res.send();
-                /*const fileSet = fSet(PIDS_FILE);
-                const pid = await fileSet.r(processName);
-                if (!pid) {
-                    res.send({ok: `PID not found for process name ${processName}.`});
-                    return;
-                }
-                await (new OsExec('kill', [pid], '', new Logger())).run();
-                await fileSet.d(processName);*/
-                //res.send({ok: processName});
-            },
+            // 'GET:/deploy': async () => {
+            //
+            //     if (!await this.getAuthorizedUser(req)) {
+            //         res.send({err: 'forbidden'});
+            //         return;
+            //     }
+            //     //await (new OsExec('node x.js webServer ', [], '', this.logger)).run();
+            //
+            //     res.send();
+            //     /*const fileSet = fSet(PIDS_FILE);
+            //     const pid = await fileSet.r(processName);
+            //     if (!pid) {
+            //         res.send({ok: `PID not found for process name ${processName}.`});
+            //         return;
+            //     }
+            //     await (new OsExec('kill', [pid], '', new Logger())).run();
+            //     await fileSet.d(processName);*/
+            //     //res.send({ok: processName});
+            // },
             'GET:/nodes': async () => {
                 const user = await this.getAuthorizedUser(req);
                 if (!user) { res.send({err: 'User not found.'}); return; }

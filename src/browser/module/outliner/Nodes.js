@@ -1,6 +1,5 @@
 import {cloneObject, uuid} from "../../../F.js";
 import OutlinerNode from "./OutlinerNode.js";
-import {OPEN_TAB} from "../../../io/EConstants.js";
 import HttpClient from "../../../io/http/HttpClient.js";
 import Node from "../../../type/Node.js"
 import V from "../../../type/V.js";
@@ -8,7 +7,6 @@ import V from "../../../type/V.js";
 export default class Nodes {
 
     v;
-    addNodeBtn;
     outLinerRootNode;
 
     constructor() { this.v = new V({class: 'nodes'}); }
@@ -19,19 +17,16 @@ export default class Nodes {
         const btnsBar = new V({class: 'btnsBar'});
         e('>', [btnsBar, this.v]);
 
-        this.addNodeBtn = new V({class: ['btn'], txt: '+'});
-        //this.addNodeBtn.setAttr('src', '/img/plus2.svg');
-        e('>', [this.addNodeBtn, btnsBar]);
+        const addNodeBtn = new V({class: ['btn'], txt: '+'});
+        e('>', [addNodeBtn, btnsBar]);
 
-        this.addNodeBtn.on('click', () => {
-            this.addNodeBtn.hide();
-            this.create(this.outLinerRootNode);
-        });
+        const prev = new V({class: 'btn', txt: '<'});
+        e('>', [prev, btnsBar]);
+        prev.on('click', (e) => window.e('ASTPrevVersion'));
 
-        const back = new V({class: 'btn', txt: '<', style: {display: 'inline'}});
-        e('>', [back, btnsBar]);
-        const forward = new V({class: 'btn', txt: '>', style: {display: 'inline'}});
-        e('>', [forward, btnsBar]);
+        const next = new V({class: 'btn', txt: '>'});
+        e('>', [next, btnsBar]);
+        next.on('click', (e) => window.e('ASTNextVersion'));
 
 
         const nodes = (await (new HttpClient).get('/nodes')).data;
@@ -149,7 +144,7 @@ export default class Nodes {
 
         if (e.target.classList.contains('dataUnit')) {
             let node = this.getOutlinerNodeById(e.target.getAttribute('outliner_node_id')).getContextNode();
-            window.e(OPEN_TAB, {node});
+            window.e('openTab', {node});
             return;
         }
         if (!e.target.classList.contains('openClose')) return;
@@ -209,7 +204,6 @@ export default class Nodes {
 
         const nodes = getNodesData(this.outLinerRootNode);
         //console.log(nodes);
-
         await new HttpClient().post('/nodes', {nodes})
     }
 }

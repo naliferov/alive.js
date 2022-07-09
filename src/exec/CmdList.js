@@ -27,7 +27,7 @@ export const cmdList = {
         const httpServer = new HttpServer(createServer, express, httpMsgHandler);
 
         const port = cliArgs.port || '8080';
-        httpServer.getServer().listen(port);
+        httpServer.listen(port);
         await logger.info(`Webserver start on port: [${port}]`);
     },
 }

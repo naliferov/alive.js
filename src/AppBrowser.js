@@ -1,7 +1,7 @@
 import Nodes from "./browser/module/outliner/Nodes.js";
 import Input from "./browser/Input.js";
 import {
-    AST_CONTROL_MODE, OPEN_TAB,
+    AST_CONTROL_MODE,
     AST_NODE_EDIT_MODE, NODES_CONTROL_MODE
 } from "./io/EConstants.js";
 import TabManager from "./browser/module/astEditor/tab/TabManager.js";
@@ -122,7 +122,7 @@ class AppBrowser {
 
         const input = new Input(window);
 
-        e[OPEN_TAB] = ({node}) => tabManager.openTab(node);
+        e['openTab'] = ({node}) => tabManager.openTab(node);
         e[NODES_CONTROL_MODE] = () => {
             input.onKeyDown(async (e) => await nodes.handleKeyDown(e));
             input.onKeyUp(async (e) => await nodes.handleKeyUp(e));
@@ -130,6 +130,12 @@ class AppBrowser {
         };
         e[AST_CONTROL_MODE] = () => input.onKeyDown(async (e) => await tabManager.onKeyDown(e));
         e[AST_NODE_EDIT_MODE] = () => input.disableHandlers();
+        e['ASTPrevVersion'] = () => {
+            console.log('prev');
+        }
+        e['ASTNextVersion'] = () => {
+            console.log('next');
+        }
 
         tabManager.getV().on('click', () => {
             e(AST_CONTROL_MODE)
