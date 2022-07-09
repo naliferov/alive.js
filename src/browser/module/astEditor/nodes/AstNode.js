@@ -112,6 +112,8 @@ export default class AstNode {
     toggleDisplay() { this.v.toggleDisplay() }
     isShowed() { return this.v.isShowed() }
 
+    clear() { this.v.clear(); }
+
     onControlBack(callback) {
 
         const handler = (e) => {

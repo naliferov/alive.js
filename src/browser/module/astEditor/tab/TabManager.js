@@ -82,6 +82,14 @@ export default class TabManager {
         this.localState.setActiveTabId(tab.getContextNodeId());
     }
 
+    ASTPrevVersion() {
+        if (this.activeTab) this.activeTab.getAstEditor().switchASTToPrevVersion();
+    }
+
+    ASTNextVersion() {
+        if (this.activeTab) this.activeTab.getAstEditor().switchASTToNextVersion();
+    }
+
     closeTab(tab) {
 
         const contextUnitId = tab.getContextNodeId();

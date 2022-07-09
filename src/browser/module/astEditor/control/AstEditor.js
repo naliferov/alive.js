@@ -84,15 +84,24 @@ export default class AstEditor {
 
         this.mainNode.insert(this.moduleNode);
 
-        const AST = this.contextNode.get('AST');
+        this.renderAST();
+    }
+
+    renderAST() {
+
+        this.moduleNode.clear();
+
+        let AST = this.contextNode.get('AST');
         if (!AST) {
             console.log(`AST not found in unit ${this.contextNode.get('id')}`);
             return;
         }
 
         try {
-            const lastVersion = AST.versions[ AST.versions.length - 1 ];
-            this.serializer.deserialize(this.moduleNode, lastVersion);
+            AST.currentVersion = AST.currentVersion ?? AST.versions.length - 1;
+
+            const ASTVersion = AST.versions[AST.currentVersion];
+            this.serializer.deserialize(this.moduleNode, ASTVersion);
         } catch (e) {
             console.log('deserialization fails', this.contextNode, e);
         }
@@ -112,6 +121,26 @@ export default class AstEditor {
         //this.callableModule = new CallableModule;
         //this.callableModule.insert(this.flow);
         //this.mainNode.insert(this.callableModule);
+    }
+
+    switchASTToPrevVersion() {
+        let AST = this.contextNode.get('AST');
+        if (AST.currentVersion <= 0) return;
+
+        AST.currentVersion--;
+        this.marker.unmarkAll();
+        this.renderAST();
+        console.log('switch to AST to prev version.');
+    }
+
+    switchASTToNextVersion() {
+        let AST = this.contextNode.get('AST');
+        if (AST.currentVersion >= AST.versions.length - 1) return;
+
+        AST.currentVersion++;
+        this.marker.unmarkAll();
+        this.renderAST();
+        console.log('switch to AST to prev version.');
     }
 
     async save() {

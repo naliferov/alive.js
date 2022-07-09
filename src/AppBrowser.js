@@ -130,12 +130,8 @@ class AppBrowser {
         };
         e[AST_CONTROL_MODE] = () => input.onKeyDown(async (e) => await tabManager.onKeyDown(e));
         e[AST_NODE_EDIT_MODE] = () => input.disableHandlers();
-        e['ASTPrevVersion'] = () => {
-            console.log('prev');
-        }
-        e['ASTNextVersion'] = () => {
-            console.log('next');
-        }
+        e['ASTPrevVersion'] = () => tabManager.ASTPrevVersion();
+        e['ASTNextVersion'] = () => tabManager.ASTNextVersion();
 
         tabManager.getV().on('click', () => {
             e(AST_CONTROL_MODE)
