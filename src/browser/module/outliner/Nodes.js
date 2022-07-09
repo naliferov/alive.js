@@ -14,21 +14,6 @@ export default class Nodes {
 
     async init() {
 
-        const btnsBar = new V({class: 'btnsBar'});
-        e('>', [btnsBar, this.v]);
-
-        const addNodeBtn = new V({class: ['btn'], txt: '+'});
-        e('>', [addNodeBtn, btnsBar]);
-
-        const prev = new V({class: 'btn', txt: '<'});
-        e('>', [prev, btnsBar]);
-        prev.on('click', (e) => window.e('ASTPrevVersion'));
-
-        const next = new V({class: 'btn', txt: '>'});
-        e('>', [next, btnsBar]);
-        next.on('click', (e) => window.e('ASTNextVersion'));
-
-
         const nodes = (await (new HttpClient).get('/nodes')).data;
         //if (nodes.length) this.addNodeBtn.hide();
 
@@ -38,8 +23,9 @@ export default class Nodes {
         const outlinerRootNode = new OutlinerNode(rootNode);
         outlinerRootNode.removeSubNodesShift();
 
+
         this.outLinerRootNode = outlinerRootNode;
-        e('>', [outlinerRootNode, this]);
+        e('>', [outlinerRootNode, this.getV()]);
 
         const render = (outlinerNode) => {
 

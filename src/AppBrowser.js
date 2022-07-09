@@ -107,9 +107,28 @@ class AppBrowser {
         const pageIDE = new V({class: ['pageIDE']});
         e('>', [pageIDE, app]);
 
+
+        const sideBar = new V({class: 'sidebar'});
+        e('>', [sideBar, pageIDE]);
+
+        const btnsBar = new V({class: 'btnsBar'});
+        e('>', [btnsBar, sideBar]);
+
+        const addNodeBtn = new V({class: ['btn'], txt: '+'});
+        e('>', [addNodeBtn, btnsBar]);
+
+        const prev = new V({class: 'btn', txt: '<'});
+        e('>', [prev, btnsBar]);
+        prev.on('click', (e) => window.e('ASTPrevVersion'));
+
+        const next = new V({class: 'btn', txt: '>'});
+        e('>', [next, btnsBar]);
+        next.on('click', (e) => window.e('ASTNextVersion'));
+
+
         const nodes = new Nodes;
         await nodes.init();
-        e('>', [nodes.getV(), pageIDE]);
+        e('>', [nodes.getV(), sideBar]);
 
         const localState = new LocalState();
 
