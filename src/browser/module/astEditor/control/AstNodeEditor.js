@@ -1,5 +1,4 @@
 import Inserter from "../nodes/Inserter.js";
-import {AST_NODE_EDIT_MODE, AST_CONTROL_MODE} from "../../../../io/EConstants.js";
 import ForConditionPartInternal from "../nodes/conditionAndBody/loop/ForConditionPartInternal.js";
 import Main from "../nodes/Main.js";
 import Id from "../nodes/id/Id.js";
@@ -47,7 +46,7 @@ export default class AstNodeEditor {
             this.node.iEditTxt();
         } else return;
 
-        e(AST_NODE_EDIT_MODE);
+        e('astNodeEditMode');
         this.processNodeInput(node, fxController);
     }
 
@@ -158,7 +157,7 @@ export default class AstNodeEditor {
                 }
 
                 this.resetState();
-                setTimeout(() => window.e(AST_CONTROL_MODE), 300);
+                setTimeout(() => window.e('astControlMode'), 300);
             } else if (key === 'Enter') {
 
                 e.preventDefault();
@@ -173,7 +172,7 @@ export default class AstNodeEditor {
                     node.iKeyupDisable(keyUp);
                 }
 
-                setTimeout(() => window.e(AST_CONTROL_MODE), 300);
+                setTimeout(() => window.e('astControlMode'), 300);
                 fxController.save();
             }
         };

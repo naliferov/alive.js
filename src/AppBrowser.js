@@ -1,9 +1,5 @@
 import Nodes from "./browser/module/outliner/Nodes.js";
 import Input from "./browser/Input.js";
-import {
-    AST_CONTROL_MODE,
-    AST_NODE_EDIT_MODE, NODES_CONTROL_MODE
-} from "./io/EConstants.js";
 import TabManager from "./browser/module/astEditor/tab/TabManager.js";
 import LocalState from "./browser/Localstate.js";
 import HttpClient from "./io/http/HttpClient.js";
@@ -123,23 +119,19 @@ class AppBrowser {
         const input = new Input(window);
 
         e['openTab'] = ({node}) => tabManager.openTab(node);
-        e[NODES_CONTROL_MODE] = () => {
+        e['nodesControlMode'] = () => {
             input.onKeyDown(async (e) => await nodes.handleKeyDown(e));
             input.onKeyUp(async (e) => await nodes.handleKeyUp(e));
             input.onDblClick(async (e) => await nodes.handleDblClick(e));
         };
-        e[AST_CONTROL_MODE] = () => input.onKeyDown(async (e) => await tabManager.onKeyDown(e));
-        e[AST_NODE_EDIT_MODE] = () => input.disableHandlers();
+        e['astControlMode'] = () => input.onKeyDown(async (e) => await tabManager.onKeyDown(e));
+        e['astNodeEditMode'] = () => input.disableHandlers();
         e['ASTPrevVersion'] = () => tabManager.ASTPrevVersion();
         e['ASTNextVersion'] = () => tabManager.ASTNextVersion();
 
-        tabManager.getV().on('click', () => {
-            e(AST_CONTROL_MODE)
-        });
-        nodes.getV().on('click', () => {
-            e(NODES_CONTROL_MODE)
-        });
-        e(AST_CONTROL_MODE);
+        tabManager.getV().on('click', () => e('astControlMode'));
+        nodes.getV().on('click', () => e('nodesControlMode'));
+        e('astControlMode');
 
 
         const activeTabId = localState.getActiveTabId();

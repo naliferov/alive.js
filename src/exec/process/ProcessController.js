@@ -1,6 +1,5 @@
 import OsExec from "./OsExec.js";
 import FS from "../../io/fs/FS.js";
-import {PROCESS_DIR} from "../../AppConstants.js";
 
 export default class ProcessController {
 
@@ -15,7 +14,7 @@ export default class ProcessController {
     getName() { return this.processName; }
 
     getProcessDir(processName) {
-        return `${__dirname}/${PROCESS_DIR}/${processName}`;
+        return `${__dirname}/process'/${processName}`;
     }
 
     getProcessDirFileNames(processName) {

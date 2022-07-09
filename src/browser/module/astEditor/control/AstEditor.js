@@ -11,7 +11,6 @@ import IfBody from "../nodes/conditionAndBody/if/IfBody.js";
 import For from "../nodes/conditionAndBody/loop/For.js";
 import Main from "../nodes/Main.js";
 import ForCondition from "../nodes/conditionAndBody/loop/ForCondition.js";
-import {AST_NODE_EDIT_MODE} from "../../../../io/EConstants.js";
 import ForConditionPart from "../nodes/conditionAndBody/loop/ForConditionPart.js";
 import ForConditionPartInternal from "../nodes/conditionAndBody/loop/ForConditionPartInternal.js";
 import Callable from "../nodes/conditionAndBody/call/callable/Callable.js";
@@ -379,13 +378,13 @@ export default class AstEditor {
         const inserter = this.astNodeEditor.createEditNode(this);
         chunk.insert(inserter);
         this.marker.unmarkAll().mark(inserter);
-        e(AST_NODE_EDIT_MODE);
+        e('astNodeEditMode');
         inserter.focus();
     }
 
     markSendEventAndFocus(editNode) {
         this.marker.unmarkAll().mark(editNode);
-        e(AST_NODE_EDIT_MODE);
+        e('astNodeEditMode');
         editNode.focus();
     }
 
