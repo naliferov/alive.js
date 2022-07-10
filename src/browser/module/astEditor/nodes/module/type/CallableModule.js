@@ -1,9 +1,9 @@
-import AstNode from "../AstNode.js";
-import CallableCondition from "../conditionAndBody/call/callable/CallableCondition.js";
-import CallableBody from "../conditionAndBody/call/callable/CallableBody.js";
-import NewLine from "../NewLine.js";
-import Space from "../Space.js";
-import ConditionAndBodyNode from "../conditionAndBody/ConditionAndBodyNode.js";
+import AstNode from "../../AstNode.js";
+import CallableCondition from "../../conditionAndBody/call/callable/CallableCondition.js";
+import CallableBody from "../../conditionAndBody/call/callable/CallableBody.js";
+import NewLine from "../../NewLine.js";
+import Space from "../../Space.js";
+import ConditionAndBodyNode from "../../conditionAndBody/ConditionAndBodyNode.js";
 
 export default class CallableModule extends ConditionAndBodyNode {
 

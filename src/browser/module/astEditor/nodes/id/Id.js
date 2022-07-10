@@ -6,6 +6,8 @@ export default class Id extends AstNode {
     newChunk;
     nameChunk;
 
+    space;
+
     subId;
 
     constructor(name) {
@@ -14,6 +16,10 @@ export default class Id extends AstNode {
         this.newChunk = new AstNode('new ', {className: 'keyword', hidden: true});
         super.insert(this.letChunk);
         super.insert(this.newChunk);
+
+        this.space = new AstNode('.', {className: 'space', hidden: true});
+        this.space.visibilityHide();
+        super.insert(this.space);
 
         this.nameChunk = new AstNode(name, {className: 'namePart'});
         super.insert(this.nameChunk);
@@ -55,6 +61,7 @@ export default class Id extends AstNode {
         } else if (this.isNew()) {
             this.letChunk.hide()
             this.newChunk.hide();
+            this.space.hide();
         } else {
             this.letChunk.show();
         }
@@ -70,10 +77,12 @@ export default class Id extends AstNode {
 
     enableLet() {
         this.letChunk.show();
+        this.space.show()
     }
 
     enableNew() {
         this.newChunk.show();
+        this.space.show()
     }
 
     toggleLetDisplay() {

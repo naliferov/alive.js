@@ -1,7 +1,7 @@
 import OsExec from "./process/OsExec.js";
 import HttpMsgHandler from "../io/http/HttpMsgHandler.js";
 import HttpServer from "../io/http/HttpServer.js";
-import {createServer} from "node:http";
+import http from "node:http";
 import express from 'express';
 
 export const cmdList = {
@@ -24,7 +24,7 @@ export const cmdList = {
         await logger.info('Connected to mongo server.');
 
         const httpMsgHandler = new HttpMsgHandler(fs, logger, appDir, mongoManager);
-        const httpServer = new HttpServer(createServer, express, httpMsgHandler);
+        const httpServer = new HttpServer(http.createServer, express, httpMsgHandler);
 
         const port = cliArgs.port || '8080';
         httpServer.listen(port);

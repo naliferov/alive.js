@@ -119,12 +119,11 @@ class AppBrowser {
 
         const prev = new V({class: 'btn', txt: '<'});
         e('>', [prev, btnsBar]);
-        prev.on('click', (e) => window.e('ASTPrevVersion'));
+        prev.on('click', () => e('ASTPrevVersion'));
 
         const next = new V({class: 'btn', txt: '>'});
         e('>', [next, btnsBar]);
-        next.on('click', (e) => window.e('ASTNextVersion'));
-
+        next.on('click', () => e('ASTNextVersion'));
 
         const nodes = new Nodes;
         await nodes.init();

@@ -14,7 +14,7 @@ import ForCondition from "../nodes/conditionAndBody/loop/ForCondition.js";
 import ForConditionPart from "../nodes/conditionAndBody/loop/ForConditionPart.js";
 import ForConditionPartInternal from "../nodes/conditionAndBody/loop/ForConditionPartInternal.js";
 import Callable from "../nodes/conditionAndBody/call/callable/Callable.js";
-import CallableModule from "../nodes/module/CallableModule.js";
+import CallableModule from "../nodes/module/type/CallableModule.js";
 import CallableConditionPart from "../nodes/conditionAndBody/call/callable/ConditionPart.js";
 import SurroundInternal from "../nodes/surround/SurroundInternal.js";
 import ConditionAndBodyNode from "../nodes/conditionAndBody/ConditionAndBodyNode.js";
@@ -98,9 +98,10 @@ export default class AstEditor {
 
         try {
             AST.currentVersion = AST.currentVersion ?? AST.versions.length - 1;
-
             const ASTVersion = AST.versions[AST.currentVersion];
             this.serializer.deserialize(this.moduleNode, ASTVersion);
+
+            console.log(`version: ${AST.currentVersion}/${AST.versions.length - 1}`);
         } catch (e) {
             console.log('deserialization fails', this.contextNode, e);
         }
@@ -139,20 +140,21 @@ export default class AstEditor {
         AST.currentVersion++;
         this.marker.unmarkAll();
         this.renderAST();
-        console.log('switch to AST to prev version.');
+        console.log('switch to AST to next version.');
     }
 
     async save() {
 
-        const AST = {
-            versions: this.contextNode.get('AST').versions ?? [],
-            //markedNodeIds: this.marker.getMarkedChunksIds(),
-        };
+        let AST = this.contextNode.get('AST') ?? {}
+        AST.versions = AST.versions ?? [];
         AST.versions.push(this.serializer.serialize(this.moduleNode));
+        AST.currentVersion = AST.versions.length - 1;
 
         this.contextNode.set('AST', AST);
 
-        await this.nodes.save();
+        console.log(this.contextNode.getData())
+
+        //await this.nodes.save();
     }
 
     onKeyDown(e) {

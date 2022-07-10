@@ -17,7 +17,7 @@ import Call from "./nodes/conditionAndBody/call/call/Call.js";
 
 export default class AstSerializer {
 
-    serialize(mainChunk) { return mainChunk.serializeSubChunks(); }
+    serialize(chunk) { return chunk.serializeSubChunks(); }
 
     deserialize(mainChunk, chunksData) {
 
