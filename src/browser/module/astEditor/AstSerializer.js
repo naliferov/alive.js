@@ -17,9 +17,9 @@ import Call from "./nodes/conditionAndBody/call/call/Call.js";
 
 export default class AstSerializer {
 
-    serialize(chunk) { return chunk.serializeSubChunks(); }
+    serialize(chunk) { return chunk.serialize(); }
 
-    deserialize(mainChunk, chunksData) {
+    deserialize(moduleNode, chunksData) {
 
         const deserializeIfChunk = (ifData) => {
             const if_ = new If();
@@ -192,6 +192,8 @@ export default class AstSerializer {
             }
         }
 
-        buildAST(mainChunk, chunksData);
+        if (chunksData.imports) buildAST(moduleNode.getImports(), chunksData.imports);
+        if (chunksData.callableCondition) buildAST(moduleNode.getCallableCondition(), chunksData.callableCondition);
+        if (chunksData.body) buildAST(moduleNode.getBody(), chunksData.body);
     }
 }

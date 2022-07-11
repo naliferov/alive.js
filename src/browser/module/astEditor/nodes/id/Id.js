@@ -1,4 +1,5 @@
 import AstNode from "../AstNode.js";
+import Keyword from "../Keyword.js";
 
 export default class Id extends AstNode {
 
@@ -12,8 +13,12 @@ export default class Id extends AstNode {
 
     constructor(name) {
         super('', {className: 'id'});
-        this.letChunk = new AstNode('let ', {className: 'keyword', hidden: true});
-        this.newChunk = new AstNode('new ', {className: 'keyword', hidden: true});
+        this.letChunk = new Keyword('let');
+        this.letChunk.hide()
+
+        this.newChunk = new Keyword('new ');
+        this.newChunk.hide();
+
         super.insert(this.letChunk);
         super.insert(this.newChunk);
 

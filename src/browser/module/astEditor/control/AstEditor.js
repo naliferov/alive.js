@@ -152,9 +152,8 @@ export default class AstEditor {
 
         this.contextNode.set('AST', AST);
 
-        console.log(this.contextNode.getData())
 
-        //await this.nodes.save();
+        await this.nodes.save();
     }
 
     onKeyDown(e) {

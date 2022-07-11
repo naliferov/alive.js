@@ -20,13 +20,17 @@ export default class Module extends AstNode {
 
     serialize() {
         return {
-            imports: this.imports.serialize(),
-            callableCondition: this.callableCondition.serialize(),
-            body: this.body.serialize(),
+            imports: this.imports.serializeSubChunks(),
+            callableCondition: this.callableCondition.serializeSubChunks(),
+            body: this.body.serializeSubChunks(),
         };
     }
 
     insert(chunk) { this.body.insert(chunk); }
+
+    getImports() { return this.imports; }
+    getCallableCondition() { return this.callableCondition; }
+    getBody() { return this.body; }
 
     clear() {
         this.imports.clear();
