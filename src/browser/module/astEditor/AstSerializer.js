@@ -140,7 +140,6 @@ export default class AstSerializer {
             return subId;
         }
 
-
         const buildAST = (chunk, data) => {
 
             let lastInsertedChunk = null;

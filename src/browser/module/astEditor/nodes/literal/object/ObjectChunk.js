@@ -24,7 +24,7 @@ export default class ObjectChunk extends AstNode {
     serialize() {
         return {
             t: this.constructor.name,
-            body: this.objectBody.serializeSubChunks(),
+            body: this.objectBody.serializeSubNodes(),
         }
     }
 

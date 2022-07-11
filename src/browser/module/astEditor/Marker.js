@@ -20,7 +20,7 @@ export default class Marker {
     mark(chunk) {
         chunk.mark();
         this.markedChunks.add(chunk);
-        this.monitor.setTxt('markedNode: ' + chunk.getName());
+        this.monitor.setTxt('Marked node: [' + chunk.getName() + ']', );
     }
 
     unmark(chunk) {
@@ -28,12 +28,12 @@ export default class Marker {
         //todo тут удаление происходит в зависимости от дирекшена
         //todo также для точного удаления можно взять индекс по порядку dom.
         this.markedChunks.delLast();
-        this.monitor.setTxt('markedNode: ');
+        this.monitor.setTxt('Marked node: []');
     }
     unmarkAll() {
         this.markedChunks.iterate((chunk) => chunk.unmark());
         this.markedChunks.reset();
-        this.monitor.setTxt('markedNode: ');
+        this.monitor.setTxt('Marked node: []');
         return this;
     }
     iterate(callback) { this.markedChunks.iterate(callback); }

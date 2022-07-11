@@ -35,19 +35,18 @@ export default class AstNode {
         }
     }
 
-    serializeSubChunks() {
+    serializeSubNodes() {
         const subChildren = this.v.getDOM().children;
-        const subChunks = [];
+        const subNodes = [];
 
         for (let i = 0; i < subChildren.length; i++) {
-            const chunk = window.astPool.get(subChildren[i].id);
-            if (chunk.constructor.name === 'Inserter') {
-                continue;
-            }
-            subChunks.push(chunk.serialize());
+            const node = window.astPool.get(subChildren[i].id);
+            if (node.constructor.name === 'Inserter') continue;
+
+            subNodes.push(node.serialize());
         }
 
-        return subChunks;
+        return subNodes;
     }
 
     isEmpty() {

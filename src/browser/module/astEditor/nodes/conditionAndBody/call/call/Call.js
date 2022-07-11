@@ -18,7 +18,7 @@ export default class Call extends AstNode {
     serialize() {
         return {
             t: this.constructor.name,
-            condition: this.condition.serializeSubChunks(),
+            condition: this.condition.serializeSubNodes(),
         };
     }
 

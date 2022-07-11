@@ -40,6 +40,8 @@
             --function-color: #A77C43;
 
             --bracket-color: black;
+
+            --standart-line-height: 1.55em;
         }
         .darkTheme {
             --bg-color: #2B2B2B;
@@ -122,9 +124,7 @@
         .tabManager {
             flex-grow: 1;
         }
-        .astContainer {
-            background: var(--bg-color);
-        }
+        .astContainer { background: var(--bg-color); }
         .tabs {
             display: flex;
             min-height: 29px;
@@ -138,16 +138,8 @@
             padding: 5px 10px;
             cursor: pointer;
         }
-        .tab.active {
-            background: #FFFFFF;
-        }
-
-        .tabName {
-        }
-
-        .tabsContent {
-            margin: 0 15px;
-        }
+        .tab.active { background: #FFFFFF; }
+        .tabsContent { margin: 0 15px; }
         .tabHeader {
             color: black;
             cursor: pointer;
@@ -177,70 +169,50 @@
             overflow: inherit;
         }
 
-        .lineNumber {
-            margin: 0; padding: 0;
-            height: 18px;
-            font-size: 14px;
-        }
-        .lineNumbers {
-            text-align: center;
-            background: white;
-        }
-        .lines { margin: 0; z-index: 3; }
-
-        .fxList {
-            margin-bottom: 1em;
-        }
-
         .markedNode {
-            margin: 0.5em 0;
-            font-weight: 400;
+            margin: 0.5em 0; font-weight: 400;
         }
 
-        /*pre.sq {
-            line-height: 20px;
-        }
-        pre.inline {
-            display: inline;
-        }
-
-        pre.bracket { color: var(--bracket-color) }
-
-        pre.keyword { color: var(--keyword-color); }
-        pre.name { color: var(--name-color); }
-        pre.op { color: var(--op-color); }
-
-        pre.string { color: var(--string-color); }
-        pre.number { color: var(--number-color); }
-        pre.propName { color: var(--prop-name-color); }
-        pre.function { color: var(--function-color); }*/
-
-        /*pre[contenteditable="true"] {
-            padding: 0 4px;
-        }*/
         .ASTNode {
             display: inline-block;
             font-family: 'JetBrains Mono', sans-serif;
             font-size: 13px;
             line-height: 1.55em;
         }
+
+        .ASTNode.mainNode { display: block; }
+        .ASTNode.module { display: block; }
+        .ASTNode.moduleImports {
+            display: block;
+            border-bottom: 1px solid lightgray;
+
+            min-height: 1em;
+        }
+        .ASTNode.moduleCallableCondition {
+            display: block;
+            border-bottom: 1px solid lightgray;
+
+            min-height: 1em;
+        }
+        .ASTNode.moduleBody {
+            display: block;
+            border-bottom: 1px solid lightgray;
+            min-height: 1em;
+        }
+
         .ASTNode.newLine {
             display: block;
             width: 7px;
         }
         .ASTNode.newLine.verticalShift {
-            height: 1.55em;
+            height: var(--standart-line-height);
         }
         .ASTNode.inserter {
             background: #A6D2FF;
             padding: 0 1px;
         }
 
-        div.callableBody {
-            display: block;
-        }
-
-
+        div.callableBody { display: block; }
         div.bracket { color: var(--bracket-color) }
 
         div.keyword { color: var(--keyword-color); }

@@ -18,8 +18,8 @@ export default class ConditionAndBodyNode extends AstNode {
     serialize() {
         return {
             t: this.constructor.name,
-            condition: this.condition.serializeSubChunks(),
-            body: this.body.serializeSubChunks(),
+            condition: this.condition.serializeSubNodes(),
+            body: this.body.serializeSubNodes(),
         };
     }
 }

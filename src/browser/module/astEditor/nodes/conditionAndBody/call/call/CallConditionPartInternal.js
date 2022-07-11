@@ -15,7 +15,7 @@ export default class CallConditionPartInternal extends AstNode {
     /*serialize(): object {
         return {
             t: this.constructor.name,
-            internal: this.internal.serializeSubChunks(),
+            internal: this.internal.serializeSubNodes(),
         };
     }*/
 

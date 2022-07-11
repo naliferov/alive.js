@@ -20,9 +20,9 @@ export default class Module extends AstNode {
 
     serialize() {
         return {
-            imports: this.imports.serializeSubChunks(),
-            callableCondition: this.callableCondition.serializeSubChunks(),
-            body: this.body.serializeSubChunks(),
+            imports: this.imports.serializeSubNodes(),
+            callableCondition: this.callableCondition.serializeSubNodes(),
+            body: this.body.serializeSubNodes(),
         };
     }
 

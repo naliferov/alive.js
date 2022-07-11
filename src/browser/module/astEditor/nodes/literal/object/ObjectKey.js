@@ -21,7 +21,7 @@ export default class ObjectKey extends AstNode {
     serialize() {
         return {
             t: this.constructor.name,
-            itemParts: this.itemParts.serializeSubChunks(),
+            itemParts: this.itemParts.serializeSubNodes(),
         }
     }
 

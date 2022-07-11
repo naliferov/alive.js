@@ -36,7 +36,7 @@ export default class SubId extends AstNode {
 
     serialize() {
         let d = super.serialize();
-        if (this.container) d.container = this.container.serializeSubChunks();
+        if (this.container) d.container = this.container.serializeSubNodes();
         return d;
     }
 

@@ -14,7 +14,6 @@ import ForCondition from "../nodes/conditionAndBody/loop/ForCondition.js";
 import ForConditionPart from "../nodes/conditionAndBody/loop/ForConditionPart.js";
 import ForConditionPartInternal from "../nodes/conditionAndBody/loop/ForConditionPartInternal.js";
 import Callable from "../nodes/conditionAndBody/call/callable/Callable.js";
-import CallableModule from "../nodes/module/type/CallableModule.js";
 import CallableConditionPart from "../nodes/conditionAndBody/call/callable/ConditionPart.js";
 import SurroundInternal from "../nodes/surround/SurroundInternal.js";
 import ConditionAndBodyNode from "../nodes/conditionAndBody/ConditionAndBodyNode.js";
@@ -33,6 +32,10 @@ import ObjectBody from "../nodes/literal/object/ObjectBody.js";
 import Call from "../nodes/conditionAndBody/call/call/Call.js";
 import CallConditionPart from "../nodes/conditionAndBody/call/call/CallConditionPart.js";
 import Module from "../nodes/module/Module.js";
+import ModuleBody from "../nodes/module/ModuleBody.js";
+import ModuleImports from "../nodes/module/ModuleImports.js";
+import ModuleCallableCondition from "../nodes/module/ModuleCallableCondition.js";
+import Import from "../nodes/module/Import.js";
 
 export default class AstEditor {
 
@@ -65,7 +68,7 @@ export default class AstEditor {
 
         this.v = new V({class: 'astEditor'});
 
-        const markerMonitor = new V({class: 'markedNode', txt: 'markedNode: '});
+        const markerMonitor = new V({class: 'markedNode', txt: 'Marked node: []'});
         e('>', [markerMonitor, this.v]);
         this.marker = new Marker(markerMonitor);
 
@@ -73,14 +76,6 @@ export default class AstEditor {
         e('>', [this.mainNode.getV(), this.v]);
 
         this.moduleNode = new Module();
-
-        const moduleType = this.getContextModuleType();
-        if (moduleType === 'callable') {
-            this.callableModuleCondition = new CallableModule;
-            this.mainNode.insertInBody(this.callableModule);
-            //flow.insert();
-        } else {}
-
         this.mainNode.insert(this.moduleNode);
 
         this.renderAST();
@@ -101,7 +96,7 @@ export default class AstEditor {
             const ASTVersion = AST.versions[AST.currentVersion];
             this.serializer.deserialize(this.moduleNode, ASTVersion);
 
-            console.log(`version: ${AST.currentVersion}/${AST.versions.length - 1}`);
+            //console.log(`version: ${AST.currentVersion}/${AST.versions.length - 1}`);
         } catch (e) {
             console.log('deserialization fails', this.contextNode, e);
         }
@@ -109,7 +104,6 @@ export default class AstEditor {
 
     show() { this.v.show(); }
     hide() { this.v.hide(); }
-    getContextUnitId() { return this.contextNode.get('id'); }
     getV() { return this.v; }
     getContextModuleType() { return this.contextNode.get('moduleType') ?? 'simple'; }
 
@@ -153,7 +147,7 @@ export default class AstEditor {
         this.contextNode.set('AST', AST);
 
 
-        await this.nodes.save();
+        //await this.nodes.save();
     }
 
     onKeyDown(e) {
@@ -168,6 +162,14 @@ export default class AstEditor {
             'ArrowUp': (e) => { e.preventDefault(); this.moveUp(e.shiftKey, ctrl); },
             'ArrowDown': (e) => { e.preventDefault(); this.moveDown(e.shiftKey, ctrl); },
             'Backspace': (e) => {
+
+                const marked = this.marker.getFirst();
+                if (
+                    marked instanceof ModuleBody ||
+                    marked instanceof ModuleCallableCondition ||
+                    marked instanceof ModuleImports
+                ) { return; }
+
                 if (ctrl) { this.deleteBtn(); return; }
                 this.backspaceBtn();
             },
@@ -844,7 +846,17 @@ export default class AstEditor {
         if (isCtrl && !isShift) {
 
             if (marked instanceof Id) return;
-            else if (marked instanceof Surround) {
+            else if (marked instanceof ModuleImports && marked.isEmpty()) {
+                const importNode = new Import();
+                marked.insert(importNode);
+
+                this.switchToInsertingMode(importNode.getImportName());
+
+            } else if ((marked instanceof ModuleCallableCondition || marked instanceof ModuleBody)
+                 && marked.isEmpty()
+            ) {
+                this.switchToInsertingMode(marked);
+            } else if (marked instanceof Surround) {
                 this.marker.unmarkAll().mark(marked.getFirstChunk());
             } else if (marked instanceof BodyNode) {
 
@@ -923,9 +935,6 @@ export default class AstEditor {
                 }
 
             } else if (marked instanceof ObjectKey) {
-
-                //if empty insert inserter
-                //else
                 this.marker.unmarkAll().mark(marked.getFirstChunk().getFirstChunk());
 
             } else if (marked instanceof ObjectValue) {
