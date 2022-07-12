@@ -33,9 +33,9 @@ import Call from "../nodes/conditionAndBody/call/call/Call.js";
 import CallConditionPart from "../nodes/conditionAndBody/call/call/CallConditionPart.js";
 import Module from "../nodes/module/Module.js";
 import ModuleBody from "../nodes/module/ModuleBody.js";
-import ModuleImports from "../nodes/module/ModuleImports.js";
+import ModuleImports from "../nodes/module/import/ModuleImports.js";
 import ModuleCallableCondition from "../nodes/module/ModuleCallableCondition.js";
-import Import from "../nodes/module/Import.js";
+import Import from "../nodes/module/import/Import.js";
 
 export default class AstEditor {
 
@@ -286,12 +286,6 @@ export default class AstEditor {
 
         const marked = this.marker.getFirst();
         e('>after', [chunk.getV(), marked.getV()]);
-
-        // if (marked.getNextChunk()) {
-        //     marked.getParentChunk().insertBefore(chunk, marked.getNextChunk());
-        // } else {
-        //     marked.getParentChunk().insert(chunk);
-        // }
         return true;
     }
 
@@ -377,7 +371,7 @@ export default class AstEditor {
         }
     }
 
-    switchToInsertingMode(chunk) {
+    switchToEditMode(chunk) {
         const inserter = this.astNodeEditor.createEditNode(this);
         chunk.insert(inserter);
         this.marker.unmarkAll().mark(inserter);
@@ -394,7 +388,7 @@ export default class AstEditor {
     enterBtn(shift = false, ctrl = false) {
 
         if (this.marker.isEmpty()) {
-            this.switchToInsertingMode(this.moduleNode);
+            this.switchToEditMode(this.moduleNode);
             return;
         }
         if (this.marker.getLength() === 1) {
@@ -416,15 +410,17 @@ export default class AstEditor {
                 this.save();
                 return;
             }
-            //INSERT SUBID
+            //INSERT SUBID IN ID
             if (ctrl && marked) {
                 if (marked instanceof Id || marked instanceof SubId) {
                     const subId = new SubId();
                     this.addChunkAfterMarked(subId);
-                    this.switchToInsertingMode(subId);
+                    this.switchToEditMode(subId);
                     return;
                 }
             }
+
+            if (marked instanceof ModuleCallableCondition) return;
 
             const inserter = this.astNodeEditor.createEditNode(this);
             if (
@@ -480,7 +476,7 @@ export default class AstEditor {
 
                 const forConditionPart = new ForConditionPart();
                 marked.getParentChunk().insert(forConditionPart);
-                this.switchToInsertingMode(forConditionPart);
+                this.switchToEditMode(forConditionPart);
                 return;
             }
             if (marked instanceof ForCondition) {
@@ -488,17 +484,32 @@ export default class AstEditor {
                 const forConditionPart = new ForConditionPart();
                 marked.insert(forConditionPart);
 
-                this.switchToInsertingMode(forConditionPart);
+                this.switchToEditMode(forConditionPart);
                 return;
             }
             if (marked instanceof ConditionNode || marked instanceof BodyNode) {
-                this.switchToInsertingMode(marked);
+                this.switchToEditMode(marked);
+                return;
+            }
+            if (marked instanceof ModuleImports) {
+                const importNode = new Import();
+                marked.insert(importNode);
+                this.switchToEditMode(importNode.getImportName());
+                return;
+            }
+            if (marked instanceof Import) {
+                const importNode = new Import();
+                marked.insert(importNode);
+                if (this.addChunkAfterMarked(importNode)) {
+                    this.switchToEditMode(importNode.getImportName());
+                }
                 return;
             }
 
+
             //INSERT INTO MARKED
             if (ctrl && marked) {
-                this.switchToInsertingMode(marked instanceof If ? marked.getCondition() : marked);
+                this.switchToEditMode(marked instanceof If ? marked.getCondition() : marked);
                 return;
             }
             if (marked instanceof NewLine && this.addChunkBeforeMarked(inserter)) {
@@ -516,7 +527,7 @@ export default class AstEditor {
 
     moveLeft(isShift, isCtrl) {
 
-        if (this.moduleNode.isEmpty()) this.switchToInsertingMode(this.moduleNode);
+        if (this.moduleNode.isEmpty()) this.switchToEditMode(this.moduleNode);
         if (this.marker.isEmpty()) return;
 
         if (this.marker.getLength() === 1) {
@@ -596,7 +607,7 @@ export default class AstEditor {
 
                 const objectKey = objectKeyOrValue.getPrevChunk().getPrevChunk();
                 if (objectKey.isEmpty()) {
-                    this.switchToInsertingMode(objectKey);
+                    this.switchToEditMode(objectKey);
                 } else {
                     this.marker.unmarkAll().mark(objectKey.getLastChunk());
                 }
@@ -607,7 +618,7 @@ export default class AstEditor {
             if (ifCondition.getLastChunk()) {
                 this.marker.unmarkAll().mark(ifCondition.getLastChunk());
             } else {
-                this.switchToInsertingMode(ifCondition);
+                this.switchToEditMode(ifCondition);
             }
         } else if (parent instanceof SubIdContainer) {
 
@@ -623,7 +634,7 @@ export default class AstEditor {
         if (this.marker.isEmpty()) {
             const chunk = this.moduleNode.getFirstChunk();
             if (!chunk) {
-                this.switchToInsertingMode(this.moduleNode)
+                this.switchToEditMode(this.moduleNode)
                 return;
             }
 
@@ -646,7 +657,7 @@ export default class AstEditor {
                     const ifChunk = parent.getParentChunk();
 
                     if (ifChunk.isBodyEmpty()) {
-                        this.switchToInsertingMode(ifChunk.getBody())
+                        this.switchToEditMode(ifChunk.getBody())
                     } else {
                         const first = ifChunk.getBody().getFirstChunk();
                         if (!first) return;
@@ -659,7 +670,7 @@ export default class AstEditor {
 
                     const forChunk = parent.getParentChunk();
                     if (forChunk.isBodyEmpty()) {
-                        this.switchToInsertingMode(forChunk.getBody())
+                        this.switchToEditMode(forChunk.getBody())
                     }
                     return;
                 }
@@ -706,7 +717,7 @@ export default class AstEditor {
 
                     const newForConditionPart = new ForConditionPart();
                     forCondition.getParentChunk().insertInCondition(newForConditionPart);
-                    this.switchToInsertingMode(newForConditionPart);
+                    this.switchToEditMode(newForConditionPart);
                     return;
                 }
 
@@ -778,7 +789,7 @@ export default class AstEditor {
             if (ifBody.getFirstChunk()) {
                 this.marker.unmarkAll().mark(ifBody.getFirstChunk());
             } else {
-                this.switchToInsertingMode(ifBody);
+                this.switchToEditMode(ifBody);
             }
         }
     }
@@ -850,18 +861,14 @@ export default class AstEditor {
                 const importNode = new Import();
                 marked.insert(importNode);
 
-                this.switchToInsertingMode(importNode.getImportName());
+                this.switchToEditMode(importNode.getImportName());
 
-            } else if ((marked instanceof ModuleCallableCondition || marked instanceof ModuleBody)
-                 && marked.isEmpty()
-            ) {
-                this.switchToInsertingMode(marked);
             } else if (marked instanceof Surround) {
                 this.marker.unmarkAll().mark(marked.getFirstChunk());
             } else if (marked instanceof BodyNode) {
 
                 if (marked.isEmpty()) {
-                    this.switchToInsertingMode(marked);
+                    this.switchToEditMode(marked);
                 } else {
                     this.marker.unmarkAll().mark(marked.getFirstChunk());
                 }
@@ -869,7 +876,7 @@ export default class AstEditor {
             } else if (marked instanceof ConditionAndBodyNode) {
 
                 if (marked.isConditionEmpty() && marked.isBodyEmpty()) {
-                    this.switchToInsertingMode(marked.getCondition());
+                    this.switchToEditMode(marked.getCondition());
                 } else {
                     this.marker.unmarkAll().mark(marked.getCondition());
                 }
@@ -879,7 +886,7 @@ export default class AstEditor {
                 if (marked.isConditionEmpty() && marked.isBodyEmpty()) {
                     const forConditionPart = new ForConditionPart();
                     marked.insertInCondition(forConditionPart);
-                    this.switchToInsertingMode(forConditionPart);
+                    this.switchToEditMode(forConditionPart);
                 } else {
                     this.marker.unmarkAll().mark(marked.getCondition());
                 }
@@ -889,7 +896,7 @@ export default class AstEditor {
                 if (marked.isConditionEmpty()) {
                     const callConditionPart = new CallConditionPart();
                     marked.insertInCondition(callConditionPart);
-                    this.switchToInsertingMode(callConditionPart);
+                    this.switchToEditMode(callConditionPart);
                 }
 
             } else if (marked instanceof Callable) {
@@ -898,7 +905,7 @@ export default class AstEditor {
                     const callableConditionPart = new CallableConditionPart();
                     marked.insertInCondition(callableConditionPart);
 
-                    this.switchToInsertingMode(callableConditionPart);
+                    this.switchToEditMode(callableConditionPart);
                 }
 
             }  else if (marked instanceof ForConditionPart) {
@@ -938,9 +945,11 @@ export default class AstEditor {
                 this.marker.unmarkAll().mark(marked.getFirstChunk().getFirstChunk());
 
             } else if (marked instanceof ObjectValue) {
-                this.switchToInsertingMode(marked);
+                this.switchToEditMode(marked);
             } else if (marked instanceof SubId) {
                 this.marker.unmarkAll().mark(marked.getFirstContainerNode());
+            } else if (marked.isEmpty()) {
+                this.switchToEditMode(marked);
             } else {
                 const firstChunk = marked.getFirstChunk();
                 if (firstChunk) this.marker.unmarkAll().mark(firstChunk);
