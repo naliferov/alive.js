@@ -14,7 +14,7 @@ import ForCondition from "../nodes/conditionAndBody/loop/ForCondition.js";
 import ForConditionPart from "../nodes/conditionAndBody/loop/ForConditionPart.js";
 import ForConditionPartInternal from "../nodes/conditionAndBody/loop/ForConditionPartInternal.js";
 import Callable from "../nodes/conditionAndBody/call/callable/Callable.js";
-import CallableConditionPart from "../nodes/conditionAndBody/call/callable/ConditionPart.js";
+import CallableConditionPart from "../nodes/conditionAndBody/call/callable/CallableConditionPart.js";
 import SurroundInternal from "../nodes/surround/SurroundInternal.js";
 import ConditionAndBodyNode from "../nodes/conditionAndBody/ConditionAndBodyNode.js";
 import ConditionNode from "../nodes/conditionAndBody/ConditionNode.js";
@@ -146,8 +146,9 @@ export default class AstEditor {
 
         this.contextNode.set('AST', AST);
 
+        //console.log(this.contextNode.get('AST'));
 
-        //await this.nodes.save();
+        await this.nodes.save();
     }
 
     onKeyDown(e) {
@@ -843,7 +844,6 @@ export default class AstEditor {
             return;
         }
     }
-
     moveDown(isShift, isCtrl) {
 
         if (this.marker.isEmpty()) {
@@ -856,12 +856,25 @@ export default class AstEditor {
 
         if (isCtrl && !isShift) {
 
-            if (marked instanceof Id) return;
-            else if (marked instanceof ModuleImports && marked.isEmpty()) {
+            if (marked instanceof Id) {
+                return;
+            } else if (marked instanceof ModuleImports && marked.isEmpty()) {
+
                 const importNode = new Import();
                 marked.insert(importNode);
-
                 this.switchToEditMode(importNode.getImportName());
+
+            } else if (marked instanceof ModuleCallableCondition) {
+
+                if (marked.isEmpty()) {
+                    const moduleCallableCondition = marked.getBody();
+                    const callableConditionPart = new CallableConditionPart();
+                    moduleCallableCondition.insert(callableConditionPart);
+
+                    this.switchToEditMode(callableConditionPart);
+                } else {
+                    this.marker.unmarkAll().mark(marked.getBody());
+                }
 
             } else if (marked instanceof Surround) {
                 this.marker.unmarkAll().mark(marked.getFirstChunk());

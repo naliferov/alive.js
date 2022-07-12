@@ -6,7 +6,7 @@ import For from "./nodes/conditionAndBody/loop/For.js";
 import If from "./nodes/conditionAndBody/if/If.js";
 import ForConditionPart from "./nodes/conditionAndBody/loop/ForConditionPart.js";
 import Callable from "./nodes/conditionAndBody/call/callable/Callable.js";
-import CallableConditionPart from "./nodes/conditionAndBody/call/callable/ConditionPart.js";
+import CallableConditionPart from "./nodes/conditionAndBody/call/callable/CallableConditionPart.js";
 import ArrayChunk from "./nodes/literal/array/ArrayChunk.js";
 import ArrayItem from "./nodes/literal/array/ArrayItem.js";
 import ObjectItem from "./nodes/literal/object/ObjectItem.js";
@@ -14,12 +14,20 @@ import ObjectChunk from "./nodes/literal/object/ObjectChunk.js";
 import Keyword from "./nodes/Keyword.js";
 import SubId from "./nodes/id/SubId.js";
 import Call from "./nodes/conditionAndBody/call/call/Call.js";
+import Import from "./nodes/module/import/Import.js";
 
 export default class AstSerializer {
 
     serialize(chunk) { return chunk.serialize(); }
 
     deserialize(moduleNode, chunksData) {
+
+        const deserializeImportNode = (data) => {
+            const _import = new Import();
+            if (data.importName) _import.insertInImportName(new Id(data.importName));
+            if (data.importPath) _import.insertInImportPath(new Id(data.importPath));
+            return _import;
+        }
 
         const deserializeIfChunk = (ifData) => {
             const if_ = new If();
@@ -174,12 +182,19 @@ export default class AstSerializer {
                 else if (d.t === 'For') chunkForIns = deserializeForChunk(d);
                 else if (d.t === 'Call') chunkForIns = deserializeCall(d);
                 else if (d.t === 'Callable') chunkForIns = deserializeCallable(d);
+                else if (d.t === 'CallableConditionPart') {
+
+                    const callableConditionPart = new CallableConditionPart;
+                    buildAST(callableConditionPart, d.internal);
+                    chunkForIns = callableConditionPart;
+                }
                 else if (d.t === 'ArrayChunk') chunkForIns = deserializeArrayChunk(d);
                 else if (d.t === 'ObjectChunk') chunkForIns = deserializeObjectChunk(d);
                 else if (d.t === 'Keyword') chunkForIns = new Keyword(d.keyword);
+                else if (d.t === 'Import') chunkForIns = deserializeImportNode(d);
                 else {
                     console.error(`No handler for chunk [${d.t}].`);
-                    console.log(d);
+                    console.log(chunk, d);
                     continue;
                     //throw new Error(`No handler for chunk [${d.t}].`)
                 }

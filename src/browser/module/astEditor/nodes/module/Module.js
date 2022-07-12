@@ -21,7 +21,7 @@ export default class Module extends AstNode {
     serialize() {
         return {
             imports: this.imports.serializeSubNodes(),
-            callableCondition: this.callableCondition.serializeSubNodes(),
+            callableCondition: this.callableCondition.serialize(),
             body: this.body.serializeSubNodes(),
         };
     }

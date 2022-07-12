@@ -125,6 +125,12 @@ class AppBrowser {
         e('>', [next, btnsBar]);
         next.on('click', () => e('ASTNextVersion'));
 
+        const run = new V({class: 'btn', txt: 'run'});
+        e('>', [run, btnsBar]);
+        run.on('click', () => {
+
+        });
+
         const nodes = new Nodes;
         await nodes.init();
         e('>', [nodes.getV(), sideBar]);

@@ -1,5 +1,5 @@
 import AstNode from "../../../AstNode.js";
-import CallableConditionPartInternal from "./ConditionPartInternal.js";
+import CallableConditionPartInternal from "./CallableConditionPartInternal.js";
 
 export default class CallableConditionPart extends AstNode {
 
