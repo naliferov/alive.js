@@ -112,5 +112,7 @@ export default class TabManager {
     async onKeyDown(e) {
         if (this.activeTab) this.activeTab.getAstEditor().onKeyDown(e);
     }
+
+    getActiveTab() { return this.activeTab; }
     getV() { return this.v }
 }

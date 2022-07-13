@@ -95,7 +95,7 @@ export default class HttpMsgHandler {
                     res.send({ok: `PID not found for process name ${processName}.`});
                     return;
                 }
-                await (new OsExec('kill', [pid], '', new Logger())).run();
+                await (new OsExec('kill', [pid], '', new Logger())).process();
                 await fileSet.d(processName);*/
                 res.send({ok: processName});
             },
@@ -105,7 +105,7 @@ export default class HttpMsgHandler {
             //         res.send({err: 'forbidden'});
             //         return;
             //     }
-            //     //await (new OsExec('node x.js webServer ', [], '', this.logger)).run();
+            //     //await (new OsExec('node x.js webServer ', [], '', this.logger)).process();
             //
             //     res.send();
             //     /*const fileSet = fSet(PIDS_FILE);
@@ -114,7 +114,7 @@ export default class HttpMsgHandler {
             //         res.send({ok: `PID not found for process name ${processName}.`});
             //         return;
             //     }
-            //     await (new OsExec('kill', [pid], '', new Logger())).run();
+            //     await (new OsExec('kill', [pid], '', new Logger())).process();
             //     await fileSet.d(processName);*/
             //     //res.send({ok: processName});
             // },

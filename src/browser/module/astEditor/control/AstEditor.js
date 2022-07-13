@@ -81,24 +81,25 @@ export default class AstEditor {
         this.renderAST();
     }
 
-    renderAST() {
-
-        this.moduleNode.clear();
-
+    getLastASTVersion() {
         let AST = this.contextNode.get('AST');
         if (!AST) {
-            console.log(`AST not found in unit ${this.contextNode.get('id')}`);
+            console.log(`AST not found in unit ${this.contextNode.get('id')}.`);
             return;
         }
 
-        try {
-            AST.currentVersion = AST.currentVersion ?? AST.versions.length - 1;
-            const ASTVersion = AST.versions[AST.currentVersion];
-            this.serializer.deserialize(this.moduleNode, ASTVersion);
+        AST.currentVersion = AST.currentVersion ?? AST.versions.length - 1;
+        return AST.versions[AST.currentVersion];
+    }
 
+    renderAST() {
+        this.moduleNode.clear();
+        try {
+            const ASTVersion = this.getLastASTVersion();
+            this.serializer.deserialize(this.moduleNode, ASTVersion);
             //console.log(`version: ${AST.currentVersion}/${AST.versions.length - 1}`);
         } catch (e) {
-            console.log('deserialization fails', this.contextNode, e);
+            console.log('Deserialization fails.', this.contextNode, e);
         }
     }
 

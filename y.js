@@ -19,18 +19,18 @@ x['main'] = async () => {
 
 x['io.HttpServer.imports'] = async () => {
     return {
-        http: await import('node:http'),
-        express: await import('express')
+        http: (await import('node:http')).default,
+        express: (await import('express')).default
     };
 }
 
 x['io.HttpServer'] = async () => {
 
     const {http, express} = await x['io.HttpServer.imports']();
-    console.log(http, express);
+    console.log(express);
 
     //console.log(http);
-    console.log(Object.keys(express));
+    //console.log(Object.keys(express));
 
     class Class3 {
         constructor() {
@@ -44,5 +44,8 @@ x['io.HttpServer'] = async () => {
 x['io.HttpMsgHandler'] = class {
     handleMsg(req, res, next) {}
 }
+
+
+await x['io.HttpServer']();
 
 x.main();

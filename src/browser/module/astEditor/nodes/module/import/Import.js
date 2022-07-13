@@ -24,7 +24,9 @@ export default class Import extends AstNode {
     serialize() {
         const serialized = super.serialize();
         //todo maybe importModuleId, aka NodeId;
+        serialized.name = this.importName.getTxt();
         serialized.importName = this.importName.getTxt();
+        serialized.path = this.importPath.getTxt();
         serialized.importPath = this.importPath.getTxt();
 
         return serialized;

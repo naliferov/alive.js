@@ -26,7 +26,7 @@ export default class Process {
 
         console.log(`Run process [${args[0]}]. PID: [${process.pid}]. CliArgs:`, args);
         /*const exec = new OsExec('node', [filePath], process.cwd(), new Logger( 'exec: '));
-        const resp = await exec.run((childCreated) => {
+        const resp = await exec.process((childCreated) => {
             child = childCreated; console.log('child PID', child.pid);
             pidsSet.w(args[0], child.pid);
         }, detach);

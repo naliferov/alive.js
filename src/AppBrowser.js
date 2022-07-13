@@ -4,6 +4,7 @@ import TabManager from "./browser/module/astEditor/tab/TabManager.js";
 import LocalState from "./browser/Localstate.js";
 import HttpClient from "./io/http/HttpClient.js";
 import V from "./type/V.js";
+import AstRunner from "./browser/module/astEditor/AstRunner.js";
 
 class AppBrowser {
 
@@ -127,9 +128,7 @@ class AppBrowser {
 
         const run = new V({class: 'btn', txt: 'run'});
         e('>', [run, btnsBar]);
-        run.on('click', () => {
-
-        });
+        run.on('click', () => e('runASTModule'));
 
         const nodes = new Nodes;
         await nodes.init();
@@ -152,6 +151,16 @@ class AppBrowser {
         e['astNodeEditMode'] = () => input.disableHandlers();
         e['ASTPrevVersion'] = () => tabManager.ASTPrevVersion();
         e['ASTNextVersion'] = () => tabManager.ASTNextVersion();
+        e['runASTModule'] = () => {
+            const activeTab = tabManager.getActiveTab();
+            if (!activeTab) return;
+
+            const node = activeTab.getContextNode();
+            const lastASTVersion = activeTab.getAstEditor().getLastASTVersion();
+            const ASTRunner = new AstRunner();
+            ASTRunner.run(node, lastASTVersion);
+            //show some panel for execution process;
+        }
 
         tabManager.getV().on('click', () => e('astControlMode'));
         nodes.getV().on('click', () => e('nodesControlMode'));

@@ -24,8 +24,8 @@ export default class AstSerializer {
 
         const deserializeImportNode = (data) => {
             const _import = new Import();
-            if (data.importName) _import.insertInImportName(new Id(data.importName));
-            if (data.importPath) _import.insertInImportPath(new Id(data.importPath));
+            if (data.name) _import.insertInImportName(new Id(data.name));
+            if (data.path) _import.insertInImportPath(new Id(data.path));
             return _import;
         }
 

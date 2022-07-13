@@ -4,9 +4,9 @@ export default class ModuleCallableCondition extends AstNode {
     constructor() {
         super('', {className: 'moduleCallableCondition'});
 
-        let openBracket = new AstNode('('); super.insert(openBracket);
+        super.insert(new AstNode('('));
         this.body = new AstNode('', {className: 'moduleCallableConditionBody'}); super.insert(this.body);
-        let closeBracket = new AstNode(')');  super.insert(closeBracket);
+        super.insert(new AstNode(')'));
     }
 
     getBody() { return this.body; }

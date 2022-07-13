@@ -14,7 +14,6 @@ export default class Tab {
         this.astEditor = new AstEditor(
             contextNode, fxSerializer, new AstNodeEditor(), nodes
         );
-
         this.contextNode = contextNode;
     }
 
