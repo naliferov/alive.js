@@ -1,6 +1,8 @@
 import * as crypto from 'node:crypto';
 import UsersModel from "../db/model/UsersModel.js";
 import NodesModel from "../db/model/NodesModel.js";
+import OsExec from "../../exec/process/OsExec.js";
+import ProcessManager from "../../exec/process/ProcessManager.js";
 
 const COOKIE_KEY = 'fx';
 
@@ -81,12 +83,18 @@ export default class HttpMsgHandler {
                 await this.nodesModel.insert(userId, []);
                 this.authorize(res, authKey);
             },
-            'GET:/process/start': async () => {
-                await this.logger.info(req.query);
-                res.send();
-            },
+            'POST:/process/start': async () => {
 
-            'GET:/process/stop': async () => {
+                const js = req.body.js;
+                if (!js) { res.send({err: 'Js is empty.'}); return; }
+
+                const processManager = new ProcessManager();
+                await processManager.runProcess(js, this.appDir);
+
+                //new OsExec();
+                res.send({ok: 1});
+            },
+            'POST:/process/stop': async () => {
 
                 const processName = req.query.processName;
                 /*const fileSet = fSet(PIDS_FILE);

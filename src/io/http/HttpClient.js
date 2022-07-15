@@ -19,11 +19,10 @@ export default class HttpClient {
         }
 
         const response = await fetch(url, {headers});
-        const responseJSON = await response.json();
 
         return {
             statusCode: response.status,
-            data: responseJSON,
+            data: await response.json(),
             headers: response.headers
         }
     }
@@ -38,9 +37,13 @@ export default class HttpClient {
             headers: headers,
             body: JSON.stringify(params),
         });
+        // for (let i of response.headers.entries()) {
+        //     console.log(i);
+        // }
+
         return {
             statusCode: response.status,
-            data: response.data,
+            data: await response.json(),
             headers: response.headers
         }
     }

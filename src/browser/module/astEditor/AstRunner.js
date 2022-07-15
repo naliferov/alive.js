@@ -1,4 +1,5 @@
 import Id from "./nodes/id/Id.js";
+import CallableConditionPart from "./nodes/conditionAndBody/call/callable/CallableConditionPart.js";
 
 export default class AstRunner {
 
@@ -16,7 +17,21 @@ export default class AstRunner {
         return js;
     }
 
-    createJavascriptFromList(body, spaceCounts, addInitialSpace = true) {
+    createCallCode(d, spaceCounts) {
+        const condition = d.condition;
+
+        let js = ''
+
+        for (let i = 0; i < condition.length; i++) {
+            if (!condition[i].internal) throw new Error('invalid data ' + JSON.stringify(condition[i]))
+            js += this.createJSFromList(condition[i].internal, spaceCounts);
+        }
+
+        return js;
+    }
+
+
+    createJSFromList(body, spaceCounts, addInitialSpace = true) {
 
         let s = '';
 
@@ -46,11 +61,10 @@ export default class AstRunner {
                 addSpace = true;
             } else if (d.t === 'SubId') {
                 const container = d.container;
-                s += '.' + this.createJavascriptFromList(container, spaceCounts, false);
+                s += '.' + this.createJSFromList(container, spaceCounts, false);
             } else if (d.t === 'Call') {
-              s += '()';
-            }
-            else {
+                s += '(' + this.createCallCode(d, 0) + ')';
+            } else {
                 console.log('Unknown astNode type', d);
             }
         }
@@ -59,8 +73,6 @@ export default class AstRunner {
     }
 
     createJavascriptCodeForFile(AST) {
-
-        console.log(AST);
 
         const js = [];
         js.push('let x = {}');
@@ -71,20 +83,15 @@ export default class AstRunner {
         js.push("}");
         js.push("x['main'] = async () => {");
 
-        js.push(this.createJavascriptFromList(AST.body, 4));
+        js.push(this.createJSFromList(AST.body, 4));
 
         js.push("}");
 
         return js;
     }
 
-    run(node, AST) {
-
+    createJsCode(node, AST) {
         const js = this.createJavascriptCodeForFile(AST);
-
-        //console.log('build javascript AST from AST and execute it', node, AST);
-        console.log(js.join('\n'));
-
-        e('processRun', {js});
+        return js.join('\n');
     }
 }

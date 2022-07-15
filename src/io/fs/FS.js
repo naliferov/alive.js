@@ -18,13 +18,8 @@ export default class FS {
         return await this.close(fd);
     }
 
-    async readFile(path) {
-        return await this.readFileNative(path, 'utf8');
-    }
-
-    async writeFile(path, data) {
-        return await this.writeFileNative(path, data);
-    }
+    async readFile(path) { return await this.readFileNative(path, 'utf8'); }
+    async writeFile(path, data) { return await this.writeFileNative(path, data); }
 
     async mv(oldPath, newPath) {
         return await this.renameNative(oldPath, newPath);

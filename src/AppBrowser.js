@@ -151,15 +151,20 @@ class AppBrowser {
         e['astNodeEditMode'] = () => input.disableHandlers();
         e['ASTPrevVersion'] = () => tabManager.ASTPrevVersion();
         e['ASTNextVersion'] = () => tabManager.ASTNextVersion();
-        e['runASTModule'] = () => {
+        e['runASTModule'] = async () => {
             const activeTab = tabManager.getActiveTab();
             if (!activeTab) return;
 
             const node = activeTab.getContextNode();
             const lastASTVersion = activeTab.getAstEditor().getLastASTVersion();
             const ASTRunner = new AstRunner();
-            ASTRunner.run(node, lastASTVersion);
-            //show some panel for execution process;
+            const js = ASTRunner.createJsCode(node, lastASTVersion);
+
+            console.log(js);
+
+            //todo make request but need server side listening for live update console block
+            let res = await new HttpClient().post('/process/start', {js});
+            console.log(res);
         }
 
         tabManager.getV().on('click', () => e('astControlMode'));

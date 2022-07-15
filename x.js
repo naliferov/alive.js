@@ -24,7 +24,6 @@ const cmdRun = async (cliArgs, deps) => {
         await cmdList[cmd](cliArgs, deps);
         return;
     }
-
     await deps.processController.run(cmd, cmdList[cmd], cliArgs, deps);
 };
 

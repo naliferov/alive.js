@@ -12,7 +12,7 @@ export default class Call extends AstNode {
         super.insert(new AstNode(')'));
     }
 
-    insertInCondition(chunk) { this.condition.insert(chunk); }
+    insertInCondition(node) { this.condition.insert(node); }
     isConditionEmpty() { return this.condition.getChildrenCount() < 1; }
 
     serialize() {

@@ -1,11 +1,9 @@
-import {spawn} from 'child_process';
+import {spawn, exec} from 'node:child_process';
 
 export default class OsExec {
 
     cmd;
     args;
-    cwd;
-    logger;
 
     process;
 
@@ -16,17 +14,30 @@ export default class OsExec {
         this.logger = logger;
     }
 
-    async run(detach = false, childCallback = null) {
+    async run(detached = false, childCallback = null) {
 
         return new Promise((resolve) => {
-            const proc = spawn(this.cmd, this.args, {cwd: this.cwd, detached: detach});
+
+            console.log('run', this.cmd, this.args);
+
+            const proc = spawn(this.cmd, this.args, {cwd: this.cwd, detached});
             this.process = proc;
+            //if (childCallback) childCallback(proc);
 
-            if (childCallback) childCallback(proc);
-
-            proc.stdout.on('data', (data) => this.logger.info(data.toString().trim()));
-            proc.stderr.on('data', (data) => this.logger.error(data.toString().trim()));
-            proc.on('close', (code) => resolve({code}));
+            proc.stdout.on('data', (data) => {
+                this.logger.info(data.toString().trim())
+            });
+            proc.stderr.on('data', (data) => {
+                this.logger.error(data.toString().trim())
+            });
+            proc.on('error', (err) => {
+                console.log(err, 'err');
+                resolve()
+            });
+            proc.on('close', (code) => {
+                console.log('close', code);
+                resolve({code})
+            });
         });
     }
 

@@ -15,6 +15,7 @@ import Keyword from "./nodes/Keyword.js";
 import SubId from "./nodes/id/SubId.js";
 import Call from "./nodes/conditionAndBody/call/call/Call.js";
 import Import from "./nodes/module/import/Import.js";
+import CallCondition from "./nodes/conditionAndBody/call/call/CallCondition.js";
 
 export default class AstSerializer {
 
@@ -81,26 +82,18 @@ export default class AstSerializer {
         }
         const deserializeCall = (data) => {
 
-            const call = new Call();
+            const call = new Call;
+            const callCondition = new CallCondition;
+            call.insertInCondition(callCondition);
 
-            /*const condition = data.condition;
-            const body = data.body;
+            const condition = data.condition;
+            for (let i = 0; i < condition.length; i++) {
+                if (!condition[i].internal) throw new Error('invalid data ' + JSON.stringify(condition[i]))
 
-            if (condition && condition.length > 0) {
-                for (let i = 0; i < condition.length; i++) {
-
-                    if (!condition[i].internal) {
-                        throw new Error('invalid data ' + JSON.stringify(condition[i]))
-                    }
-
-                    const conditionPart = new CallableConditionPart();
-                    callable.insertInCondition(conditionPart);
-                    buildAST(conditionPart, condition[i].internal);
-                }
+                const conditionPart = new CallableConditionPart;
+                callCondition.insert(conditionPart);
+                buildAST(conditionPart, condition[i].internal);
             }
-            if (body && body.length > 0) buildAST(callable.getBody(), body);*/
-
-            console.log(data);
 
             return call;
         }
