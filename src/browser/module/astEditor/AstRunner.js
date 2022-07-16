@@ -11,7 +11,7 @@ export default class AstRunner {
         let js = s + 'return {\n';
         for (let i = 0; i < imports.length; i++) {
             const {name, path} = imports[i];
-            js += s2 + `${name}: await import(${path}).default\n`;
+            js += s2 + `${name}: (await import(${path})).default\n`;
         }
         js += s + '}';
         return js;
@@ -74,18 +74,24 @@ export default class AstRunner {
 
     createJavascriptCodeForFile(AST) {
 
+        const modules = [];
+
         const js = [];
         js.push('let x = {}');
         js.push("x['main.imports'] = async () => {");
-
-        js.push(this.createModuleImports(AST.imports, 4));
-
+            js.push(this.createModuleImports(AST.imports, 4));
         js.push("}");
+
         js.push("x['main'] = async () => {");
 
-        js.push(this.createJSFromList(AST.body, 4));
+        //todo get import names from above imports;
+        js.push("let {http} = await x['main.imports']();");
 
+        js.push(this.createJSFromList(AST.body, 4));
         js.push("}");
+
+        js.push("\n");
+        js.push("await x['main']()");
 
         return js;
     }

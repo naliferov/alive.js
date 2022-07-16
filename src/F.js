@@ -114,7 +114,7 @@ export let fSet = (path) => {
 }
 
 export const getTimestamp = () => {
-    const dt = new Date();
+    const dt = new Date;
     let year = dt.getFullYear().toString().padStart(4, '0');
     let day = dt.getDate().toString().padStart(2, '0');
     const month = (dt.getMonth()+1).toString().padStart(2, '0')

@@ -16,6 +16,7 @@ import SubId from "./nodes/id/SubId.js";
 import Call from "./nodes/conditionAndBody/call/call/Call.js";
 import Import from "./nodes/module/import/Import.js";
 import CallCondition from "./nodes/conditionAndBody/call/call/CallCondition.js";
+import CallConditionPart from "./nodes/conditionAndBody/call/call/CallConditionPart.js";
 
 export default class AstSerializer {
 
@@ -24,14 +25,14 @@ export default class AstSerializer {
     deserialize(moduleNode, chunksData) {
 
         const deserializeImportNode = (data) => {
-            const _import = new Import();
+            const _import = new Import;
             if (data.name) _import.insertInImportName(new Id(data.name));
             if (data.path) _import.insertInImportPath(new Id(data.path));
             return _import;
         }
 
         const deserializeIfChunk = (ifData) => {
-            const if_ = new If();
+            const if_ = new If;
             buildAST(if_.getCondition(), ifData.condition);
             buildAST(if_.getBody(), ifData.body);
 
@@ -39,7 +40,7 @@ export default class AstSerializer {
         }
 
         const deserializeForChunk = (chunkData) => {
-            const forChunk = new For();
+            const forChunk = new For;
 
             const condition = chunkData.condition;
             const body = chunkData.body;
@@ -47,7 +48,7 @@ export default class AstSerializer {
             if (condition && condition.length > 0) {
                 for (let i = 0; i < condition.length; i++) {
 
-                    const forConditionPart = new ForConditionPart();
+                    const forConditionPart = new ForConditionPart;
                     forChunk.insertInCondition(forConditionPart);
                     buildAST(forConditionPart, condition[i].internal);
                 }
@@ -60,7 +61,7 @@ export default class AstSerializer {
         }
         const deserializeCallable = (data) => {
 
-            const callable = new Callable();
+            const callable = new Callable;
             const condition = data.condition;
             const body = data.body;
 
@@ -71,7 +72,7 @@ export default class AstSerializer {
                         throw new Error('invalid data ' + JSON.stringify(condition[i]))
                     }
 
-                    const conditionPart = new CallableConditionPart();
+                    const conditionPart = new CallableConditionPart;
                     callable.insertInCondition(conditionPart);
                     buildAST(conditionPart, condition[i].internal);
                 }
@@ -83,15 +84,15 @@ export default class AstSerializer {
         const deserializeCall = (data) => {
 
             const call = new Call;
-            const callCondition = new CallCondition;
-            call.insertInCondition(callCondition);
-
             const condition = data.condition;
-            for (let i = 0; i < condition.length; i++) {
-                if (!condition[i].internal) throw new Error('invalid data ' + JSON.stringify(condition[i]))
 
-                const conditionPart = new CallableConditionPart;
-                callCondition.insert(conditionPart);
+            for (let i = 0; i < condition.length; i++) {
+
+                if (!condition[i].internal) {
+                    throw new Error('invalid data ' + JSON.stringify(condition[i]))
+                }
+                const conditionPart = new CallConditionPart;
+                call.insertInCondition(conditionPart);
                 buildAST(conditionPart, condition[i].internal);
             }
 
@@ -99,7 +100,7 @@ export default class AstSerializer {
         }
         const deserializeArrayChunk = (data) => {
 
-            const array = new ArrayChunk();
+            const array = new ArrayChunk;
             const body = data.body;
 
             if (!body) {
@@ -107,7 +108,7 @@ export default class AstSerializer {
             }
             for (let i = 0; i < body.length; i++) {
 
-                const arrayItem = new ArrayItem();
+                const arrayItem = new ArrayItem;
                 buildAST(arrayItem, body[i].itemParts);
 
                 array.insert(arrayItem);
@@ -117,7 +118,7 @@ export default class AstSerializer {
         }
         const deserializeObjectChunk = (data) => {
 
-            const object = new ObjectChunk();
+            const object = new ObjectChunk;
             const body = data.body;
 
             if (!object) {
@@ -136,7 +137,7 @@ export default class AstSerializer {
 
             if (!subIdData) throw new Error('invalid subIdData ' + JSON.stringify(subIdData));
 
-            const subId = new SubId();
+            const subId = new SubId;
             buildAST(subId, subIdData.container);
             return subId;
         }
@@ -167,7 +168,7 @@ export default class AstSerializer {
                 } else if (d.t === 'Literal') {
                     chunkForIns = new Literal(d.txt, d.type);
                 } else if (d.t === 'NewLine') {
-                    const newLine = new NewLine();
+                    const newLine = new NewLine;
                     if (lastInsertedChunk instanceof NewLine) newLine.addVerticalShift();
                     chunkForIns = newLine;
                 }

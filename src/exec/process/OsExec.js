@@ -16,26 +16,20 @@ export default class OsExec {
 
     async run(detached = false, childCallback = null) {
 
-        return new Promise((resolve) => {
-
-            console.log('run', this.cmd, this.args);
+        return new Promise((resolve, reject) => {
 
             const proc = spawn(this.cmd, this.args, {cwd: this.cwd, detached});
             this.process = proc;
             //if (childCallback) childCallback(proc);
 
-            proc.stdout.on('data', (data) => {
-                this.logger.info(data.toString().trim())
-            });
-            proc.stderr.on('data', (data) => {
-                this.logger.error(data.toString().trim())
-            });
+            proc.stdout.on('data', (data) => this.logger.info(data.toString().trim()));
+            proc.stderr.on('data', (data) => this.logger.error(data.toString().trim()));
             proc.on('error', (err) => {
-                console.log(err, 'err');
-                resolve()
+                this.logger.info(err);
+                reject(err);
             });
             proc.on('close', (code) => {
-                console.log('close', code);
+                this.logger.info('Process close:', {code});
                 resolve({code})
             });
         });

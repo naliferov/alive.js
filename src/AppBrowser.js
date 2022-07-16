@@ -160,21 +160,20 @@ class AppBrowser {
             const ASTRunner = new AstRunner();
             const js = ASTRunner.createJsCode(node, lastASTVersion);
 
-            console.log(js);
-
-            //todo make request but need server side listening for live update console block
             let res = await new HttpClient().post('/process/start', {js});
-            console.log(res);
+        }
+        e['markASTNode'] = async ([contextNode, ASTNode]) => {
+            const contextNodeId = contextNode.get('id');
+            const ASTNodeId = ASTNode.getId();
+            localState.setMarkedASTNodeId(contextNodeId, ASTNodeId);
         }
 
         tabManager.getV().on('click', () => e('astControlMode'));
         nodes.getV().on('click', () => e('nodesControlMode'));
         e('astControlMode');
 
-
         const activeTabId = localState.getActiveTabId();
         const openedFx = localState.getOpenedTabs();
-
 
         for (let nodeId in openedFx) {
             const node = await nodes.getNodeById(nodeId);
@@ -188,6 +187,12 @@ class AppBrowser {
         if (activeTabId && window.nodesPool.get(activeTabId)) {
             const node = await nodes.getNodeById(activeTabId);
             await tabManager.focusTab(node);
+
+            const markedASTNodeId = localState.getMarkedASTNodeId(activeTabId);
+            const markedASTNode = markedASTNodeId ? window.astPool.get(markedASTNodeId) : null;
+            if (markedASTNode) {
+                tabManager.getActiveTab().getAstEditor().mark(markedASTNode);
+            }
         }
     }
 

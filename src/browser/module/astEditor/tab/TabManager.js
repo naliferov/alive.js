@@ -27,7 +27,7 @@ export default class TabManager {
         this.nodes = nodes;
 
         this.tabs = new Map;
-        this.astSerializer = new AstSerializer();
+        this.astSerializer = new AstSerializer;
         this.localState = localState;
     }
 

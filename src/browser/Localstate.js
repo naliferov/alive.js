@@ -3,10 +3,14 @@ export default class LocalState {
     //todo доделать тут всё как положено для сохранения fxIdsl
 
     openedFx;
+    marked;
 
     constructor() {
         const openedFxJSON = localStorage.getItem('openedTabs');
         this.openedFx = openedFxJSON ? JSON.parse(openedFxJSON) : {};
+
+        const markedJSON = localStorage.getItem('marked');
+        this.marked = markedJSON ? JSON.parse(markedJSON) : {};
     }
 
     setScriptPanelStatus(status) {
@@ -52,10 +56,14 @@ export default class LocalState {
         return localStorage.getItem('activeTabId');
     }
 
-    getMarkedChunk(tabId) {
-        const script = this.openedFx[tabId];
-        if (script) {
-            return script.cursorPos;
-        }
+    deleteMarkedASTNodeId(tabId) {
+        delete this.marked[tabId];
+        localStorage.setItem('marked', JSON.stringify(this.marked));
     }
+
+    setMarkedASTNodeId(nodeId, astNodeId) {
+        this.marked[nodeId] = astNodeId;
+        localStorage.setItem('marked', JSON.stringify(this.marked));
+    }
+    getMarkedASTNodeId(nodeId) { return this.marked[nodeId]; }
 }

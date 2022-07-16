@@ -1,7 +1,6 @@
 import {parseCliArgs} from "./src/F.js";
 import Logger from "./src/log/Logger.js";
 import FS from "./src/io/fs/FS.js";
-import ProcessController from "./src/exec/process/ProcessController.js";
 import {cmdList} from "./src/exec/CmdList.js";
 import MongoManager from "./src/io/db/MongoManager.js";
 
@@ -24,11 +23,13 @@ const cmdRun = async (cliArgs, deps) => {
         await cmdList[cmd](cliArgs, deps);
         return;
     }
-    await deps.processController.run(cmd, cmdList[cmd], cliArgs, deps);
+
+    logger.info(`Run process [${cmd}]. PID: [${process.pid.toString()}]. CliArgs:`, cliArgs);
+    await cmdList[cmd](cliArgs, deps);
 };
 
 const main = async () => {
-    const fs = new FS();
+    const fs = new FS;
     const cliArgs = parseCliArgs(process.argv);
     const config = JSON.parse(await fs.readFile('./config/config.json'));
     const logger = new Logger(fs);
@@ -38,7 +39,6 @@ const main = async () => {
         ctxDir: process.cwd(),
         fs: fs,
         logger: logger,
-        processController: new ProcessController(),
         mongoManager: new MongoManager().createMongoClient(config.mongodb, logger),
     });
 }

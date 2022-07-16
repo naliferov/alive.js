@@ -40,10 +40,11 @@ export default class AstNode {
         const subNodes = [];
 
         for (let i = 0; i < subChildren.length; i++) {
-            const node = window.astPool.get(subChildren[i].id);
-            if (node.constructor.name === 'Inserter') continue;
 
-            subNodes.push(node.serialize());
+            const astNode = window.astPool.get(subChildren[i].id);
+            if (astNode.constructor.name === 'Inserter') continue;
+
+            subNodes.push(astNode.serialize());
         }
 
         return subNodes;

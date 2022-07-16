@@ -27,7 +27,7 @@ export default class AstNodeEditor {
     }
 
     createEditNode(fxController) {
-        this.node = new Inserter();
+        this.node = new Inserter;
         this.mode = MODE_INSERT;
         this.node.iEditTxt();
 
@@ -172,7 +172,7 @@ export default class AstNodeEditor {
                     node.iKeyupDisable(keyUp);
                 }
 
-                setTimeout(() => window.e('astControlMode'), 300);
+                setTimeout(() => window.e('astControlMode'), 200);
                 fxController.save();
             }
         };

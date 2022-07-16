@@ -60,7 +60,6 @@ export default class Id extends AstNode {
         } else if (this.isNew()) {
             this.letChunk.hide()
             this.newChunk.hide();
-            this.space.hide();
         } else {
             this.letChunk.show();
         }

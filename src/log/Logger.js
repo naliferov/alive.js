@@ -39,15 +39,7 @@ export default class Logger {
         }
     }
 
-    async info(msg, object = null) {
-        await this.log(msg, object);
-    }
-
-    async warning(msg, object = null) {
-        await this.log(msg, object);
-    }
-
-    async error(msg, object = null) {
-        await this.log(msg, object);
-    }
+    async info(msg, object = null) { await this.log(msg, object); }
+    async warning(msg, object = null) { await this.log(msg, object); }
+    async error(msg, object = null) { await this.log(msg, object); }
 }

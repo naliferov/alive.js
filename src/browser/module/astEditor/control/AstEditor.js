@@ -89,6 +89,8 @@ export default class AstEditor {
         }
 
         AST.currentVersion = AST.currentVersion ?? AST.versions.length - 1;
+        console.log(this.contextNode.get('name'), AST.currentVersion);
+
         return AST.versions[AST.currentVersion];
     }
 
@@ -123,7 +125,7 @@ export default class AstEditor {
         if (AST.currentVersion <= 0) return;
 
         AST.currentVersion--;
-        this.marker.unmarkAll();
+        this.unmarkAll();
         this.renderAST();
         console.log('switch to AST to prev version.');
     }
@@ -133,7 +135,7 @@ export default class AstEditor {
         if (AST.currentVersion >= AST.versions.length - 1) return;
 
         AST.currentVersion++;
-        this.marker.unmarkAll();
+        this.unmarkAll();
         this.renderAST();
         console.log('switch to AST to next version.');
     }
@@ -146,8 +148,6 @@ export default class AstEditor {
         AST.currentVersion = AST.versions.length - 1;
 
         this.contextNode.set('AST', AST);
-
-        //console.log(this.contextNode.get('AST'));
 
         await this.nodes.save();
     }
@@ -304,8 +304,14 @@ export default class AstEditor {
         if (chunk.getId()) window.astPool.delete(chunk.getId());
     }
 
-    unmarkAll() { return this.marker.unmarkAll(); }
-    mark(chunk) { this.marker.mark(chunk); }
+    unmarkAll() {
+        this.marker.unmarkAll()
+        return this;
+    }
+    mark(ASTNode) {
+        this.marker.mark(ASTNode);
+        e('markASTNode', [this.contextNode, ASTNode]);
+    }
 
     deleteBtn() {
         if (this.marker.isEmpty()) return;
@@ -326,8 +332,8 @@ export default class AstEditor {
                 if (parent.isEmpty()) {
                     const chunkForMarking = arrayItem.getNextChunk() || arrayItem.getPrevChunk();
                     this.removeChunk(arrayItem);
-                    if (chunkForMarking) this.marker.unmarkAll().mark(chunkForMarking);
-                    else this.marker.unmarkAll().mark(array);
+                    if (chunkForMarking) this.unmarkAll().mark(chunkForMarking);
+                    else this.unmarkAll().mark(array);
                 }
 
                 this.save();
@@ -336,7 +342,7 @@ export default class AstEditor {
 
             if (prevChunk instanceof NewLine && !prevChunk.hasVerticalShift()) {
                 if (prevChunk.getPrevChunk()) {
-                    this.marker.unmarkAll().mark(prevChunk.getPrevChunk());
+                    this.unmarkAll().mark(prevChunk.getPrevChunk());
                 }
                 this.removeChunk(marked);
                 this.removeChunk(prevChunk);
@@ -349,7 +355,7 @@ export default class AstEditor {
                 return;
             }
 
-            if (chunkForMarking) this.marker.unmarkAll().mark(chunkForMarking);
+            if (chunkForMarking) this.unmarkAll().mark(chunkForMarking);
             if (! (marked instanceof Main)) {
                 this.removeChunk(marked);
             }
@@ -376,13 +382,13 @@ export default class AstEditor {
     switchToEditMode(chunk) {
         const inserter = this.astNodeEditor.createEditNode(this);
         chunk.insert(inserter);
-        this.marker.unmarkAll().mark(inserter);
+        this.unmarkAll().mark(inserter);
         e('astNodeEditMode');
         inserter.focus();
     }
 
     markSendEventAndFocus(editNode) {
-        this.marker.unmarkAll().mark(editNode);
+        this.unmarkAll().mark(editNode);
         e('astNodeEditMode');
         editNode.focus();
     }
@@ -540,11 +546,11 @@ export default class AstEditor {
             if (marked instanceof ConditionNode) {
                 const prevChunk = marked.getParentChunk().getPrevChunk();
                 if (!prevChunk) return;
-                this.marker.unmarkAll().mark(prevChunk);
+                this.unmarkAll().mark(prevChunk);
                 return;
             }
             if (marked instanceof BodyNode) {
-                this.marker.unmarkAll().mark(marked.getParentChunk().getCondition());
+                this.unmarkAll().mark(marked.getParentChunk().getCondition());
                 return;
             }
             if (parent instanceof ForConditionPartInternal) {
@@ -553,12 +559,12 @@ export default class AstEditor {
                 const prevForConditionPart = forConditionPart.getPrevChunk();
 
                 if (!marked.getPrevChunk() && prevForConditionPart && prevForConditionPart.getLastChunk()) {
-                    this.marker.unmarkAll().mark(prevForConditionPart.getLastChunk());
+                    this.unmarkAll().mark(prevForConditionPart.getLastChunk());
                     return;
                 }
             }
             if (marked instanceof ObjectValue) {
-                this.marker.unmarkAll().mark(marked.getPrevChunk().getPrevChunk());
+                this.unmarkAll().mark(marked.getPrevChunk().getPrevChunk());
                 return;
             }
 
@@ -570,7 +576,7 @@ export default class AstEditor {
 
             if (isShift) {
                 this.marker.setDirection('left');
-                this.marker.mark(prevChunk)
+                this.mark(prevChunk)
                 return;
             }
 
@@ -578,7 +584,7 @@ export default class AstEditor {
                 prevChunk = prevChunk.getPrevChunk();
             }
 
-            this.marker.unmarkAll().mark(prevChunk)
+            this.unmarkAll().mark(prevChunk)
             return;
         }
 
@@ -591,11 +597,11 @@ export default class AstEditor {
             const isLeftDirection = this.marker.getDirection() === 'left';
 
             if (isShift) {
-                if (isLeftDirection) this.marker.mark(chunk);
+                if (isLeftDirection) this.mark(chunk);
                 else this.marker.unmark(marked);
             } else {
                 if (chunk instanceof NewLine) chunk = marked.getPrevChunk();
-                this.marker.unmarkAll().mark(chunk);
+                this.unmarkAll().mark(chunk);
             }
         }
     }
@@ -611,14 +617,14 @@ export default class AstEditor {
                 if (objectKey.isEmpty()) {
                     this.switchToEditMode(objectKey);
                 } else {
-                    this.marker.unmarkAll().mark(objectKey.getLastChunk());
+                    this.unmarkAll().mark(objectKey.getLastChunk());
                 }
             }
         } else if (parent instanceof IfBody) {
 
             const ifCondition = parent.getParentChunk().getCondition();
             if (ifCondition.getLastChunk()) {
-                this.marker.unmarkAll().mark(ifCondition.getLastChunk());
+                this.unmarkAll().mark(ifCondition.getLastChunk());
             } else {
                 this.switchToEditMode(ifCondition);
             }
@@ -626,7 +632,7 @@ export default class AstEditor {
 
             const subId = parent.getParentChunk();
             if (subId.getPrevChunk()) {
-                this.marker.unmarkAll().mark(subId.getPrevChunk());
+                this.unmarkAll().mark(subId.getPrevChunk());
             }
         }
     }
@@ -640,7 +646,7 @@ export default class AstEditor {
                 return;
             }
 
-            this.marker.mark(chunk);
+            this.mark(chunk);
             return;
         }
 
@@ -663,7 +669,7 @@ export default class AstEditor {
                     } else {
                         const first = ifChunk.getBody().getFirstChunk();
                         if (!first) return;
-                        this.marker.mark(first);
+                        this.mark(first);
                     }
 
                     return;
@@ -684,7 +690,7 @@ export default class AstEditor {
                         //this.pubsub.pub(AST_NODE_EDIT_MODE);
                         const inserter = this.astNodeEditor.createEditNode(this);
                         forChunk.getBody().insert(inserter);
-                        this.marker.mark(inserter);
+                        this.mark(inserter);
                     }
                     return;
                 }
@@ -692,17 +698,17 @@ export default class AstEditor {
 
             if (marked instanceof ConditionNode) {
                 const body = marked.getParentChunk().getBody();
-                this.marker.unmarkAll().mark(body);
+                this.unmarkAll().mark(body);
                 return;
             }
             if (marked instanceof BodyNode) {
                 const conditionBodyChunk = marked.getParentChunk();
-                if (conditionBodyChunk.getNextChunk()) this.marker.unmarkAll().mark(conditionBodyChunk.getNextChunk());
+                if (conditionBodyChunk.getNextChunk()) this.unmarkAll().mark(conditionBodyChunk.getNextChunk());
                 return;
             }
             if (marked instanceof ForCondition) {
                 const forBody = marked.getParentChunk().getBody();
-                this.marker.unmarkAll().mark(forBody);
+                this.unmarkAll().mark(forBody);
                 return;
             }
             if (parent instanceof ForConditionPartInternal) {
@@ -713,7 +719,7 @@ export default class AstEditor {
                     const forCondition = forConditionPart.getParentChunk();
 
                     if (forConditionPart.getNextChunk()) {
-                        this.marker.unmarkAll().mark(forConditionPart.getNextChunk().getFirstChunk().getFirstChunk());
+                        this.unmarkAll().mark(forConditionPart.getNextChunk().getFirstChunk().getFirstChunk());
                         return;
                     }
 
@@ -725,7 +731,7 @@ export default class AstEditor {
 
             }
             if (marked instanceof ObjectKey) {
-                this.marker.unmarkAll().mark(marked.getNextChunk().getNextChunk());
+                this.unmarkAll().mark(marked.getNextChunk().getNextChunk());
                 return;
             }
             if (marked instanceof ObjectValue) return;
@@ -739,7 +745,7 @@ export default class AstEditor {
 
             if (isShift) {
                 this.marker.setDirection('right');
-                this.marker.mark(nextChunk);
+                this.mark(nextChunk);
                 return;
             }
 
@@ -749,7 +755,8 @@ export default class AstEditor {
                 nextChunk = nextChunk.getNextChunk();
             }
 
-            this.marker.unmarkAll().mark(nextChunk);
+            if (!nextChunk) return;
+            this.unmarkAll().mark(nextChunk);
             return;
         }
 
@@ -761,10 +768,10 @@ export default class AstEditor {
             if (!chunk) return;
 
             if (isShift) {
-                if (this.marker.getDirection() === 'right') this.marker.mark(chunk);
+                if (this.marker.getDirection() === 'right') this.mark(chunk);
                 else this.marker.unmark(marked);
             } else {
-                this.marker.unmarkAll().mark(chunk);
+                this.unmarkAll().mark(chunk);
             }
         }
     }
@@ -782,14 +789,14 @@ export default class AstEditor {
                     objectValue.insert(inserter);
                     this.markSendEventAndFocus(inserter);
                 } else {
-                    this.marker.unmarkAll().mark(objectValue.getFirstChunk());
+                    this.unmarkAll().mark(objectValue.getFirstChunk());
                 }
             }
         } else if (parent instanceof IfCondition) {
 
             const ifBody = parent.getParentChunk().getBody();
             if (ifBody.getFirstChunk()) {
-                this.marker.unmarkAll().mark(ifBody.getFirstChunk());
+                this.unmarkAll().mark(ifBody.getFirstChunk());
             } else {
                 this.switchToEditMode(ifBody);
             }
@@ -818,7 +825,7 @@ export default class AstEditor {
                 parent = parent.getParentChunk();
             }
 
-            this.marker.unmarkAll().mark(parent);
+            this.unmarkAll().mark(parent);
             return;
         }
 
@@ -839,7 +846,7 @@ export default class AstEditor {
 
             if (prev instanceof NewLine && prevChunk) {
                 this.marker.unmarkAll().reset();
-                this.marker.mark(prevChunk);
+                this.mark(prevChunk);
             }
 
             return;
@@ -848,7 +855,7 @@ export default class AstEditor {
     moveDown(isShift, isCtrl) {
 
         if (this.marker.isEmpty()) {
-            this.marker.mark(this.mainNode.getFirstChunk());
+            this.mark(this.mainNode.getFirstChunk());
             return;
         }
 
@@ -874,17 +881,17 @@ export default class AstEditor {
 
                     this.switchToEditMode(callableConditionPart);
                 } else {
-                    this.marker.unmarkAll().mark(marked.getBody());
+                    this.unmarkAll().mark(marked.getBody());
                 }
 
             } else if (marked instanceof Surround) {
-                this.marker.unmarkAll().mark(marked.getFirstChunk());
+                this.unmarkAll().mark(marked.getFirstChunk());
             } else if (marked instanceof BodyNode) {
 
                 if (marked.isEmpty()) {
                     this.switchToEditMode(marked);
                 } else {
-                    this.marker.unmarkAll().mark(marked.getFirstChunk());
+                    this.unmarkAll().mark(marked.getFirstChunk());
                 }
 
             } else if (marked instanceof ConditionAndBodyNode) {
@@ -892,7 +899,7 @@ export default class AstEditor {
                 if (marked.isConditionEmpty() && marked.isBodyEmpty()) {
                     this.switchToEditMode(marked.getCondition());
                 } else {
-                    this.marker.unmarkAll().mark(marked.getCondition());
+                    this.unmarkAll().mark(marked.getCondition());
                 }
 
             } else if (marked instanceof For) {
@@ -902,7 +909,7 @@ export default class AstEditor {
                     marked.insertInCondition(forConditionPart);
                     this.switchToEditMode(forConditionPart);
                 } else {
-                    this.marker.unmarkAll().mark(marked.getCondition());
+                    this.unmarkAll().mark(marked.getCondition());
                 }
 
             } else if (marked instanceof Call) {
@@ -925,7 +932,7 @@ export default class AstEditor {
             }  else if (marked instanceof ForConditionPart) {
 
                 const internal = marked.getInternal();
-                if (internal.getFirstChunk()) this.marker.unmarkAll().mark(internal.getFirstChunk());
+                if (internal.getFirstChunk()) this.unmarkAll().mark(internal.getFirstChunk());
 
             } else if (marked instanceof ArrayChunk) {
 
@@ -936,11 +943,11 @@ export default class AstEditor {
                     this.markSendEventAndFocus(inserter);
                 } else {
                     const body = marked.getBody();
-                    this.marker.unmarkAll().mark(body.getFirstChunk());
+                    this.unmarkAll().mark(body.getFirstChunk());
                 }
 
             } else if (marked instanceof ArrayItem) {
-                this.marker.unmarkAll().mark(marked.getItemParts().getFirstChunk());
+                this.unmarkAll().mark(marked.getItemParts().getFirstChunk());
 
             } else if (marked instanceof ObjectChunk) {
 
@@ -952,21 +959,21 @@ export default class AstEditor {
                     this.markSendEventAndFocus(inserter);
                 } else {
                     const body = marked.getBody();
-                    this.marker.unmarkAll().mark(body.getFirstChunk());
+                    this.unmarkAll().mark(body.getFirstChunk());
                 }
 
             } else if (marked instanceof ObjectKey) {
-                this.marker.unmarkAll().mark(marked.getFirstChunk().getFirstChunk());
+                this.unmarkAll().mark(marked.getFirstChunk().getFirstChunk());
 
             } else if (marked instanceof ObjectValue) {
                 this.switchToEditMode(marked);
             } else if (marked instanceof SubId) {
-                this.marker.unmarkAll().mark(marked.getFirstContainerNode());
+                this.unmarkAll().mark(marked.getFirstContainerNode());
             } else if (marked.isEmpty()) {
                 this.switchToEditMode(marked);
             } else {
                 const firstChunk = marked.getFirstChunk();
-                if (firstChunk) this.marker.unmarkAll().mark(firstChunk);
+                if (firstChunk) this.unmarkAll().mark(firstChunk);
             }
 
             return;
@@ -989,7 +996,7 @@ export default class AstEditor {
             const nextChunk = next.getNextChunk();
 
             if (next instanceof NewLine && nextChunk) {
-                this.marker.unmarkAll().mark(nextChunk);
+                this.unmarkAll().mark(nextChunk);
             }
         }
     }
