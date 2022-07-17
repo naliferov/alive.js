@@ -17,7 +17,7 @@ export default class ObjectItem extends AstNode {
 
     serialize() {
         return {
-            t: this.constructor.name,
+            ...super.serialize(),
             k: this.key.serialize(),
             v: this.value.serialize(),
         }

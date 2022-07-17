@@ -20,7 +20,7 @@ export default class ObjectValue extends AstNode {
 
     serialize() {
         return {
-            t: this.constructor.name,
+            ...super.serialize(),
             itemParts: this.itemParts.serializeSubNodes(),
         }
     }

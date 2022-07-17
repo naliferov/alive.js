@@ -30,8 +30,9 @@ export default class Id extends AstNode {
     }*/
 
     serialize() {
-        const data = {
-            t: this.constructor.name,
+        let data = super.serialize();
+        data = {
+            ...data,
             name: this.nameChunk.getTxt(),
             mode: this.isLet() ? 'let' : this.isNew() ? 'new' : '',
         };

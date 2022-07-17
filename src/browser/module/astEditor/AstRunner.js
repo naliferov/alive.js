@@ -31,18 +31,17 @@ export default class AstRunner {
     }
 
 
-    createJSFromList(body, spaceCounts, addInitialSpace = true) {
+    createJSFromList(body, spaceCount, addSpaceFlag = true) {
 
         let s = '';
 
-        let addSpace = addInitialSpace;
+        let addSpace = addSpaceFlag;
         let sp = () => {
             if (addSpace) {
                 addSpace = false;
-                return ''.padStart(spaceCounts, ' ');
-            } else {
-                return ''
+                return ''.padStart(spaceCount, ' ');
             }
+            return ''
         }
 
         for (let i = 0; i < body.length; i++) {
@@ -61,12 +60,17 @@ export default class AstRunner {
                 addSpace = true;
             } else if (d.t === 'SubId') {
                 const container = d.container;
-                s += '.' + this.createJSFromList(container, spaceCounts, false);
-            } else if (d.t === 'Call') {
-                s += '(' + this.createCallCode(d, 0) + ')';
-            } else {
-                console.log('Unknown astNode type', d);
+                s += '.' + this.createJSFromList(container, spaceCount, false);
+            } else if (d.t === 'If') {
+
+                s += sp() + 'if (' + this.createJSFromList(d.condition) + ') {\n';
+                s += this.createJSFromList(d.body, spaceCount + 4);
+
+                addSpace = true;
+                s += '\n' + sp() + '}';
             }
+            else if (d.t === 'Call') s += '(' + this.createCallCode(d, 0) + ')';
+            else console.log('Unknown astNode type', d);
         }
 
         return s;
@@ -85,7 +89,7 @@ export default class AstRunner {
         js.push("x['main'] = async () => {");
 
         //todo get import names from above imports;
-        js.push("let {http} = await x['main.imports']();");
+        js.push("    let {http} = await x['main.imports']();");
 
         js.push(this.createJSFromList(AST.body, 4));
         js.push("}");

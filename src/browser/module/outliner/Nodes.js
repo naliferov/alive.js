@@ -181,7 +181,6 @@ export default class Nodes {
                 const subNodes = getNodesData(outlinerNode);
                 if (subNodes.length > 0) tData.nodes = subNodes;
                 if (node.get('AST')) tData.AST = node.get('AST');
-                if (node.get('moduleType')) tData.moduleType = node.get('moduleType');
 
                 r.push(tData);
             }

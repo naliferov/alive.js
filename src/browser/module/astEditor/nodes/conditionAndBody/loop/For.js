@@ -44,7 +44,7 @@ export default class For extends AstNode {
 
     serialize() {
         return {
-            t: this.constructor.name,
+            ...super.serialize(),
             condition: this.condition.serializeSubNodes(),
             body: this.body.serializeSubNodes(),
         }

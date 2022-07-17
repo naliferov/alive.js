@@ -20,7 +20,7 @@ export default class ForConditionPart extends AstNode {
 
     serialize() {
         return {
-            t: this.constructor.name,
+            ...super.serialize(),
             internal: this.internal.serializeSubNodes(),
         };
     }

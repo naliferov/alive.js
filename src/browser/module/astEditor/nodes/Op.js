@@ -30,7 +30,7 @@ export default class Op extends AstNode {
 
     serialize() {
         return {
-            t: this.constructor.name,
+            ...super.serialize(),
             op: this.opType.getTxt(),
         }
     }

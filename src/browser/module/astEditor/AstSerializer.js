@@ -15,7 +15,6 @@ import Keyword from "./nodes/Keyword.js";
 import SubId from "./nodes/id/SubId.js";
 import Call from "./nodes/conditionAndBody/call/call/Call.js";
 import Import from "./nodes/module/import/Import.js";
-import CallCondition from "./nodes/conditionAndBody/call/call/CallCondition.js";
 import CallConditionPart from "./nodes/conditionAndBody/call/call/CallConditionPart.js";
 
 export default class AstSerializer {

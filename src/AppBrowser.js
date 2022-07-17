@@ -160,12 +160,12 @@ class AppBrowser {
             const ASTRunner = new AstRunner();
             const js = ASTRunner.createJsCode(node, lastASTVersion);
 
-            let res = await new HttpClient().post('/process/start', {js});
+            await new HttpClient().post('/process/start', {js});
         }
         e['markASTNode'] = async ([contextNode, ASTNode]) => {
             const contextNodeId = contextNode.get('id');
             const ASTNodeId = ASTNode.getId();
-            localState.setMarkedASTNodeId(contextNodeId, ASTNodeId);
+            //localState.setMarkedASTNodeId(contextNodeId, ASTNodeId);
         }
 
         tabManager.getV().on('click', () => e('astControlMode'));

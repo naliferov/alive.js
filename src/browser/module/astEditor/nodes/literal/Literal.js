@@ -25,7 +25,7 @@ export default class Literal extends AstNode {
 
     serialize() {
         return {
-            t: this.constructor.name,
+            ...super.serialize(),
             txt: this.getTxt(),
             type: this.type,
         }

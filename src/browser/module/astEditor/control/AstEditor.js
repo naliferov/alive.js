@@ -87,9 +87,9 @@ export default class AstEditor {
             console.log(`AST not found in unit ${this.contextNode.get('id')}.`);
             return;
         }
-
         AST.currentVersion = AST.currentVersion ?? AST.versions.length - 1;
-        console.log(this.contextNode.get('name'), AST.currentVersion);
+        console.log(`Module: [${this.contextNode.get('name')}] Version: [${AST.currentVersion}]`);
+        console.log(AST.versions[AST.currentVersion]);
 
         return AST.versions[AST.currentVersion];
     }
@@ -127,7 +127,7 @@ export default class AstEditor {
         AST.currentVersion--;
         this.unmarkAll();
         this.renderAST();
-        console.log('switch to AST to prev version.');
+        console.log('Switch to AST to prev version.');
     }
 
     switchASTToNextVersion() {
@@ -137,7 +137,7 @@ export default class AstEditor {
         AST.currentVersion++;
         this.unmarkAll();
         this.renderAST();
-        console.log('switch to AST to next version.');
+        console.log('Switch to AST to next version.');
     }
 
     async save() {
@@ -145,10 +145,14 @@ export default class AstEditor {
         let AST = this.contextNode.get('AST') ?? {}
         AST.versions = AST.versions ?? [];
         AST.versions.push(this.serializer.serialize(this.moduleNode));
-        AST.currentVersion = AST.versions.length - 1;
+        if (AST.versions.length > 100) {
+            AST.versions = AST.versions.slice(AST.versions.length - 100);
+            AST.currentVersion = AST.versions.length - 1;
+        } else {
+            AST.currentVersion = AST.currentVersion ?? AST.versions.length - 1;
+        }
 
         this.contextNode.set('AST', AST);
-
         await this.nodes.save();
     }
 
@@ -918,6 +922,15 @@ export default class AstEditor {
                     const callConditionPart = new CallConditionPart();
                     marked.insertInCondition(callConditionPart);
                     this.switchToEditMode(callConditionPart);
+                } else {
+                    this.unmarkAll().mark(marked.getFirstConditionPart());
+                }
+
+            } else if (marked instanceof CallConditionPart) {
+
+                const callConditionPartInternal = marked.getInternal();
+                if (!callConditionPartInternal.isEmpty()) {
+                    this.unmarkAll().mark(callConditionPartInternal.getFirstChunk());
                 }
 
             } else if (marked instanceof Callable) {

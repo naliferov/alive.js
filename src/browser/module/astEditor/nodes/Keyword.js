@@ -26,7 +26,7 @@ export default class Keyword extends AstNode {
 
     serialize() {
         return {
-            t: this.constructor.name,
+            ...super.serialize(),
             keyword: this.kType.getTxt(),
         }
     }

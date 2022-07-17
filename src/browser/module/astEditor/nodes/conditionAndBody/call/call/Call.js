@@ -14,10 +14,11 @@ export default class Call extends AstNode {
 
     insertInCondition(node) { this.condition.insert(node); }
     isConditionEmpty() { return this.condition.getChildrenCount() < 1; }
+    getFirstConditionPart() { return this.condition.getFirstChunk(); }
 
     serialize() {
         return {
-            t: this.constructor.name,
+            ...super.serialize(),
             condition: this.condition.serializeSubNodes(),
         };
     }

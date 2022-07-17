@@ -31,6 +31,7 @@ export default class AstNode {
 
     serialize() {
         return {
+            id: this.getId(),
             t: this.constructor.name,
         }
     }
@@ -43,8 +44,9 @@ export default class AstNode {
 
             const astNode = window.astPool.get(subChildren[i].id);
             if (astNode.constructor.name === 'Inserter') continue;
+            let astNodeSerialized = astNode.serialize();
 
-            subNodes.push(astNode.serialize());
+            subNodes.push(astNodeSerialized);
         }
 
         return subNodes;
