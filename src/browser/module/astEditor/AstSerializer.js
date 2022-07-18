@@ -82,7 +82,7 @@ export default class AstSerializer {
         }
         const deserializeCall = (data) => {
 
-            const call = new Call;
+            const call = new Call('', {id: data.id, conditionId: data.conditionId});
             const condition = data.condition;
 
             for (let i = 0; i < condition.length; i++) {

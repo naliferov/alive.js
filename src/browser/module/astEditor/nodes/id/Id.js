@@ -9,8 +9,8 @@ export default class Id extends AstNode {
 
     subId;
 
-    constructor(name) {
-        super('', {className: 'id'});
+    constructor(name, options = {}) {
+        super('', {...options, className: 'id'});
         this.letChunk = new Keyword('let');
         this.letChunk.hide()
 

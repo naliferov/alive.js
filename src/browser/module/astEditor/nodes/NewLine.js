@@ -2,8 +2,8 @@ import AstNode from "./AstNode.js";
 
 export default class NewLine extends AstNode {
 
-    constructor() {
-        super('', {className: 'newLine'});
+    constructor(txt = '', options = {}) {
+        super('', {...options, className: 'newLine'});
         this.newLine();
     }
 

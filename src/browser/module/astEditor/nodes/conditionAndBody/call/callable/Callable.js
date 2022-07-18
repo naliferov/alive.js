@@ -7,8 +7,8 @@ import ConditionAndBodyNode from "../../ConditionAndBodyNode.js";
 
 export default class Callable extends ConditionAndBodyNode {
 
-    constructor() {
-        super('', {className: 'callable'});
+    constructor(txt = '', options = {}) {
+        super('', {...options, className: 'callable'});
 
         let openBracket = new AstNode('('); super.insert(openBracket);
         this.condition = new CallableCondition(); super.insert(this.condition);

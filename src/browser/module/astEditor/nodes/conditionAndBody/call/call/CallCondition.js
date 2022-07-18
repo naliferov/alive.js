@@ -1,5 +1,7 @@
 import ConditionNode from "../../ConditionNode.js";
 
 export default class CallCondition extends ConditionNode {
-    constructor() { super('', {className: 'callCondition'}); }
+    constructor(txt = '', options = {}) {
+        super('', {...options, className: 'callCondition'});
+    }
 }

@@ -1,7 +1,7 @@
 import AstNode from "../../AstNode.js";
 
 export default class ImportPath extends AstNode {
-    constructor() {
-        super('', {className: 'ImportPath'});
+    constructor(txt = '', options = {}) {
+        super('', {...options, className: 'ImportPath'});
     }
 }

@@ -7,8 +7,8 @@ export default class ArrayItem extends AstNode {
     itemParts;
     newLineChunk;
 
-    constructor() {
-        super('', {className: 'arrayItem'});
+    constructor(txt = '', options = {}) {
+        super('', {...options, className: 'arrayItem'});
         this.itemParts = new ArrayItemParts; super.insert(this.itemParts);
         super.insert(new AstNode(', ', {className: 'comma'}));
     }

@@ -6,8 +6,8 @@ export default class ArrayChunk extends AstNode {
     arrayBody;
     isVertical = false;
 
-    constructor() {
-        super('', {className: 'array'});
+    constructor(txt = '', options = {}) {
+        super('', {...options, className: 'array'});
 
         let openBracket = new AstNode('[', {className:'bracket'}); super.insert(openBracket);
         this.arrayBody = new ArrayBody; super.insert(this.arrayBody);
@@ -26,6 +26,7 @@ export default class ArrayChunk extends AstNode {
         return {
             ...super.serialize(),
             body: this.arrayBody.serializeSubNodes(),
+            bodyId: this.arrayBody.getId(),
             isVertical: this.isVertical,
         }
     }

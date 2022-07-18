@@ -33,7 +33,7 @@ import Call from "../nodes/conditionAndBody/call/call/Call.js";
 import CallConditionPart from "../nodes/conditionAndBody/call/call/CallConditionPart.js";
 import Module from "../nodes/module/Module.js";
 import ModuleBody from "../nodes/module/ModuleBody.js";
-import ModuleImports from "../nodes/module/import/ModuleImports.js";
+import ModuleImports from "../nodes/module/ModuleImports.js";
 import ModuleCallableCondition from "../nodes/module/ModuleCallableCondition.js";
 import Import from "../nodes/module/import/Import.js";
 

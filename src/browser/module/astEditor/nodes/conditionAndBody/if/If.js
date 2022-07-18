@@ -7,8 +7,8 @@ import ConditionAndBodyNode from "../ConditionAndBodyNode.js";
 
 export default class If extends ConditionAndBodyNode {
 
-    constructor() {
-        super('', {className: 'if'});
+    constructor(txt = '', options = {}) {
+        super('', {...options, className: 'if'});
 
         const ifChunk = new AstNode('if', {className: ['ifKeyword', 'keyword']});
 

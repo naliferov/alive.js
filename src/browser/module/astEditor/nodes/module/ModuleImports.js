@@ -1,4 +1,4 @@
-import AstNode from "../../AstNode.js";
+import AstNode from "../AstNode.js";
 
 export default class ModuleImports extends AstNode {
     constructor() {

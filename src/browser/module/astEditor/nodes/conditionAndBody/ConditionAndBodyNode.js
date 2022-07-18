@@ -18,6 +18,10 @@ export default class ConditionAndBodyNode extends AstNode {
     serialize() {
         return {
             ...super.serialize(),
+
+            conditionId: this.condition.getId(),
+            bodyId: this.body.getId(),
+
             condition: this.condition.serializeSubNodes(),
             body: this.body.serializeSubNodes(),
         };

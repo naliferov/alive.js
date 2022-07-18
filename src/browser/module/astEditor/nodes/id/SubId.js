@@ -6,8 +6,8 @@ export default class SubId extends AstNode {
     container;
     expressionMode = false;
 
-    constructor() {
-        super('', {className: 'subId'});
+    constructor(txt = '', options = {}) {
+        super('', {...options, className: 'subId'});
 
         const bracket = new AstNode('[', {className: 'bracket'});
         if (!this.expressionMode) bracket.hide();

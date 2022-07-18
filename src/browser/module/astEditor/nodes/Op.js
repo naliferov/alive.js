@@ -4,8 +4,8 @@ export default class Op extends AstNode {
 
     opType;
 
-    constructor(op) {
-        super('', {className: 'op'});
+    constructor(op, options = {}) {
+        super('', {...options, className: 'op'});
 
         const openSpace = new AstNode('.');
         openSpace.visibilityHide();

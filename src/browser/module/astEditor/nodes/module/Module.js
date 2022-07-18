@@ -1,5 +1,5 @@
 import AstNode from "../AstNode.js";
-import ModuleImports from "./import/ModuleImports.js";
+import ModuleImports from "./ModuleImports.js";
 import ModuleBody from "./ModuleBody.js";
 import ModuleCallableCondition from "./ModuleCallableCondition.js";
 

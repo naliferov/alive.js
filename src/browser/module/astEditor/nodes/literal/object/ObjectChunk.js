@@ -5,8 +5,8 @@ export default class ObjectChunk extends AstNode {
 
     objectBody;
 
-    constructor() {
-        super('', {className: 'object'});
+    constructor(txt = '', options = {}) {
+        super('', {...options, className: 'object'});
 
         let openBracket = new AstNode('{', {className:'bracket'}); super.insert(openBracket);
         this.objectBody = new ObjectBody; super.insert(this.objectBody);

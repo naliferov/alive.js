@@ -5,8 +5,8 @@ export default class CallableConditionPart extends AstNode {
 
     internal;
 
-    constructor() {
-        super('', {className: 'callConditionPart'});
+    constructor(txt = '', options = {}) {
+        super('', {...options, className: 'callConditionPart'});
 
         this.internal = new CallableConditionPartInternal;
         super.insert(this.internal);

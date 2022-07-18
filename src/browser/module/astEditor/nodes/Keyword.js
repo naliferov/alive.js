@@ -4,8 +4,8 @@ export default class Keyword extends AstNode {
 
     kType;
 
-    constructor(type) {
-        super('', {className: ['keyword']});
+    constructor(type, options = {}) {
+        super('', {...options, className: ['keyword']});
 
         this.kType = new AstNode(type, {className: 'keyword'});
         const closeSpace = new AstNode('.');

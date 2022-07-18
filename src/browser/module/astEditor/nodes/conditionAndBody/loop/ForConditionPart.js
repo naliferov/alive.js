@@ -3,9 +3,7 @@ import ForConditionPartInternal from "./ForConditionPartInternal.js";
 
 export default class ForConditionPart extends AstNode {
 
-    internal;
-
-    constructor() {
+    constructor(txt = '', options = {}) {
         super('', {className: 'forConditionPart'});
 
         this.internal = new ForConditionPartInternal();
@@ -14,9 +12,7 @@ export default class ForConditionPart extends AstNode {
         super.insert(closePart);
     }
 
-    getInternal() {
-        return this.internal;
-    }
+    getInternal() { return this.internal; }
 
     serialize() {
         return {
@@ -25,9 +21,6 @@ export default class ForConditionPart extends AstNode {
         };
     }
 
-    getLastChunk() {
-        return this.internal.getLastChunk();
-    }
-
+    getLastChunk() { return this.internal.getLastChunk(); }
     insert(chunk) { this.internal.insert(chunk); }
 }

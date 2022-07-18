@@ -7,7 +7,7 @@ export default class AstNode {
     v;
 
     constructor(txt = '', options = {}) {
-        this.id = uuid();
+        this.id = options.id ?? uuid();
 
         let classArr = ['ASTNode'];
 
@@ -17,7 +17,7 @@ export default class AstNode {
 
         this.v = new V({
             id: this.id,
-            tagName: (options.tagName ? options.tagName: 'div'),
+            tagName: options.tagName ? options.tagName: 'div',
             class: classArr,
             txt,
         });

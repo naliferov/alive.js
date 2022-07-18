@@ -3,14 +3,12 @@ import Space from "../../Space.js";
 import NewLine from "../../NewLine.js";
 import ForCondition from "./ForCondition.js";
 import ForBody from "./ForBody.js";
+import ConditionAndBodyNode from "../ConditionAndBodyNode.js";
 
-export default class For extends AstNode {
+export default class For extends ConditionAndBodyNode {
 
-    condition;
-    body;
-
-    constructor() {
-        super('', {className: ['for']});
+    constructor(txt = '', options = {}) {
+        super('', {...options, className: ['for']});
 
         const forChunk = new AstNode('for', {className: ['keyword']});
         super.insert(forChunk);
@@ -32,12 +30,8 @@ export default class For extends AstNode {
     getFirstChunk() { return this.condition; }
 
     insertInCondition(chunk) { this.condition.insert(chunk); }
-    isConditionEmpty() {
-        return this.condition.getChildrenCount() < 1;
-    }
-    isBodyEmpty() {
-        return this.body.getChildrenCount() < 1;
-    }
+    isConditionEmpty() { return this.condition.getChildrenCount() < 1; }
+    isBodyEmpty() { return this.body.getChildrenCount() < 1; }
 
     getCondition() { return this.condition; }
     getBody() { return this.body; }
@@ -46,7 +40,9 @@ export default class For extends AstNode {
         return {
             ...super.serialize(),
             condition: this.condition.serializeSubNodes(),
+            conditionId: this.condition.getId(),
             body: this.body.serializeSubNodes(),
+            bodyId: this.body.getId(),
         }
     }
 }

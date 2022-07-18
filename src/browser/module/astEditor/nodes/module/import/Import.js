@@ -6,8 +6,8 @@ import ImportPath from "./ImportPath.js";
 
 export default class Import extends AstNode {
 
-    constructor() {
-        super('', {className: 'import'});
+    constructor(txt = '', options = {}) {
+        super('', {...options, className: 'import'});
 
         super.insert(new Keyword('import'));
 
