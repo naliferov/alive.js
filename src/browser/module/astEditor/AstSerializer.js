@@ -10,7 +10,7 @@ import CallableConditionPart from "./nodes/conditionAndBody/call/callable/Callab
 import ArrayChunk from "./nodes/literal/array/ArrayChunk.js";
 import ArrayItem from "./nodes/literal/array/ArrayItem.js";
 import ObjectItem from "./nodes/literal/object/ObjectItem.js";
-import ObjectChunk from "./nodes/literal/object/ObjectChunk.js";
+import ObjectNode from "./nodes/literal/object/ObjectNode.js";
 import Keyword from "./nodes/Keyword.js";
 import SubId from "./nodes/id/SubId.js";
 import Call from "./nodes/conditionAndBody/call/call/Call.js";
@@ -30,10 +30,10 @@ export default class AstSerializer {
             return _import;
         }
 
-        const deserializeIfChunk = (ifData) => {
-            const if_ = new If;
-            buildAST(if_.getCondition(), ifData.condition);
-            buildAST(if_.getBody(), ifData.body);
+        const deserializeIfChunk = (d) => {
+            const if_ = new If('', {id: d.id});
+            buildAST(if_.getCondition(), d.condition);
+            buildAST(if_.getBody(), d.body);
 
             return if_;
         }
@@ -60,7 +60,7 @@ export default class AstSerializer {
         }
         const deserializeCallable = (data) => {
 
-            const callable = new Callable;
+            const callable = new Callable('', {id: data.id});
             const condition = data.condition;
             const body = data.body;
 
@@ -90,7 +90,7 @@ export default class AstSerializer {
                 if (!condition[i].internal) {
                     throw new Error('invalid data ' + JSON.stringify(condition[i]))
                 }
-                const conditionPart = new CallConditionPart;
+                const conditionPart = new CallConditionPart('', {id: condition[i].id});
                 call.insertInCondition(conditionPart);
                 buildAST(conditionPart, condition[i].internal);
             }
@@ -102,12 +102,10 @@ export default class AstSerializer {
             const array = new ArrayChunk;
             const body = data.body;
 
-            if (!body) {
-                throw new Error('invalid ArrayChunk data ' + JSON.stringify(data));
-            }
-            for (let i = 0; i < body.length; i++) {
+            if (!body) throw new Error('invalid ArrayChunk data ' + JSON.stringify(data));
 
-                const arrayItem = new ArrayItem;
+            for (let i = 0; i < body.length; i++) {
+                const arrayItem = new ArrayItem('', {id: body[i].id});
                 buildAST(arrayItem, body[i].itemParts);
 
                 array.insert(arrayItem);
@@ -117,14 +115,14 @@ export default class AstSerializer {
         }
         const deserializeObjectChunk = (data) => {
 
-            const object = new ObjectChunk;
+            const object = new ObjectNode('', {id: data.id});
             const body = data.body;
 
             if (!object) {
-                throw new Error('invalid ObjectChunk data ' + JSON.stringify(data));
+                throw new Error('invalid ObjectNode data ' + JSON.stringify(data));
             }
             for (let i = 0; i < body.length; i++) {
-                const objectItem = new ObjectItem;
+                const objectItem = new ObjectItem('', {id: body[i].id});
                 buildAST(objectItem.getKey(), body[i].k.itemParts);
                 buildAST(objectItem.getValue(), body[i].v.itemParts);
                 object.insert(objectItem);
@@ -136,7 +134,7 @@ export default class AstSerializer {
 
             if (!subIdData) throw new Error('invalid subIdData ' + JSON.stringify(subIdData));
 
-            const subId = new SubId;
+            const subId = new SubId('', {id: subIdData.id});
             buildAST(subId, subIdData.container);
             return subId;
         }
@@ -150,7 +148,7 @@ export default class AstSerializer {
                 let chunkForIns;
 
                 if (d.t === 'Name' || d.t === 'Id') {
-                    const nameChunk = new Id(d.name);
+                    const nameChunk = new Id(d.name, {id: d.id});
                     if (d.mode === 'let') nameChunk.enableLet();
                     if (d.mode === 'new') nameChunk.enableNew();
                     chunkForIns = nameChunk;
@@ -163,11 +161,11 @@ export default class AstSerializer {
                 } else if (d.t === 'SubId') {
                     chunkForIns = deserializeSubId(d);
                 } else if (d.t === 'Op') {
-                    chunkForIns = new Op(d.op);
+                    chunkForIns = new Op(d.op, {id: d.id});
                 } else if (d.t === 'Literal') {
-                    chunkForIns = new Literal(d.txt, d.type);
+                    chunkForIns = new Literal(d.txt, d.type, {id: d.id});
                 } else if (d.t === 'NewLine') {
-                    const newLine = new NewLine;
+                    const newLine = new NewLine('', {id: d.id});
                     if (lastInsertedChunk instanceof NewLine) newLine.addVerticalShift();
                     chunkForIns = newLine;
                 }
@@ -182,7 +180,7 @@ export default class AstSerializer {
                     chunkForIns = callableConditionPart;
                 }
                 else if (d.t === 'ArrayChunk') chunkForIns = deserializeArrayChunk(d);
-                else if (d.t === 'ObjectChunk') chunkForIns = deserializeObjectChunk(d);
+                else if (d.t === 'ObjectNode') chunkForIns = deserializeObjectChunk(d);
                 else if (d.t === 'Keyword') chunkForIns = new Keyword(d.keyword);
                 else if (d.t === 'Import') chunkForIns = deserializeImportNode(d);
                 else {

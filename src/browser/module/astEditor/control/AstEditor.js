@@ -23,7 +23,7 @@ import ArrayChunk from "../nodes/literal/array/ArrayChunk.js";
 import ArrayItem from "../nodes/literal/array/ArrayItem.js";
 import ArrayItemParts from "../nodes/literal/array/ArrayItemParts.js";
 import ArrayBody from "../nodes/literal/array/ArrayBody.js";
-import ObjectChunk from "../nodes/literal/object/ObjectChunk.js";
+import ObjectNode from "../nodes/literal/object/ObjectNode.js";
 import ObjectItem from "../nodes/literal/object/ObjectItem.js";
 import ObjectItemParts from "../nodes/literal/object/ObjectItemParts.js";
 import ObjectKey from "../nodes/literal/object/ObjectKey.js";
@@ -45,26 +45,17 @@ export default class AstEditor {
     moduleNode;
 
     contextNode;
-
-    callableModule;
-
     nodes;
 
     marker;
     serializer;
     astNodeEditor;
 
-    constructor(
-        contextNode,
-        serializer,
-        astNodeEditor,
-        nodes
-    ) {
+
+    constructor(contextNode, serializer, astNodeEditor) {
         this.contextNode = contextNode;
         this.astNodeEditor = astNodeEditor;
         this.serializer = serializer;
-        this.nodes = nodes;
-
 
         this.v = new V({class: 'astEditor'});
 
@@ -80,6 +71,8 @@ export default class AstEditor {
 
         this.renderAST();
     }
+
+    isASTNodeEditorIsActive() { return this.astNodeEditor.isActive(); }
 
     getLastASTVersion() {
         let AST = this.contextNode.get('AST');
@@ -153,7 +146,7 @@ export default class AstEditor {
         }
 
         this.contextNode.set('AST', AST);
-        await this.nodes.save();
+        e('ASTChange');
     }
 
     onKeyDown(e) {
@@ -962,7 +955,7 @@ export default class AstEditor {
             } else if (marked instanceof ArrayItem) {
                 this.unmarkAll().mark(marked.getItemParts().getFirstChunk());
 
-            } else if (marked instanceof ObjectChunk) {
+            } else if (marked instanceof ObjectNode) {
 
                 if (marked.isEmpty()) {
                     const objectItem = new ObjectItem();

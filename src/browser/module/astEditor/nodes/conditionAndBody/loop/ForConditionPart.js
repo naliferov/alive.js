@@ -4,7 +4,7 @@ import ForConditionPartInternal from "./ForConditionPartInternal.js";
 export default class ForConditionPart extends AstNode {
 
     constructor(txt = '', options = {}) {
-        super('', {className: 'forConditionPart'});
+        super('', {...options, className: 'forConditionPart'});
 
         this.internal = new ForConditionPartInternal();
         super.insert(this.internal);

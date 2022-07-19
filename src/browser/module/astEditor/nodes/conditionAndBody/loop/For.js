@@ -15,14 +15,16 @@ export default class For extends ConditionAndBodyNode {
         super.insert(new Space());
 
         let openBracket = new AstNode('(', {className: 'bracket'}); super.insert(openBracket);
-        this.condition = new ForCondition(); super.insert(this.condition);
+        this.condition = new ForCondition(txt, {id: options.conditionId});
+        super.insert(this.condition);
         let closeBracket = new AstNode(')', {className: 'bracket'}); super.insert(closeBracket);
 
         super.insert(new Space());
         openBracket = new AstNode('{'); super.insert(openBracket);
         super.insert(new NewLine());
 
-        this.body = new ForBody(); super.insert(this.body);
+        this.body = new ForBody;
+        super.insert(this.body);
         super.insert(new NewLine());
         closeBracket = new AstNode('}'); super.insert(closeBracket);
     }

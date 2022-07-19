@@ -10,9 +10,9 @@ export default class If extends ConditionAndBodyNode {
     constructor(txt = '', options = {}) {
         super('', {...options, className: 'if'});
 
-        const ifChunk = new AstNode('if', {className: ['ifKeyword', 'keyword']});
+        const ifKeyword = new AstNode('if', {className: ['keyword']});
 
-        super.insert(ifChunk);
+        super.insert(ifKeyword);
         super.insert(new Space);
 
         let openBracket = new AstNode('('); super.insert(openBracket);

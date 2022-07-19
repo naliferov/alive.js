@@ -149,6 +149,7 @@ class AppBrowser {
         };
         e['astControlMode'] = () => input.onKeyDown(async (e) => await tabManager.onKeyDown(e));
         e['astNodeEditMode'] = () => input.disableHandlers();
+        e['astNodeEditModeStop'] = () => e('astControlMode');
         e['ASTPrevVersion'] = () => tabManager.ASTPrevVersion();
         e['ASTNextVersion'] = () => tabManager.ASTNextVersion();
         e['runASTModule'] = async () => {
@@ -165,11 +166,15 @@ class AppBrowser {
         e['markASTNode'] = async ([contextNode, ASTNode]) => {
             const contextNodeId = contextNode.get('id');
             const ASTNodeId = ASTNode.getId();
-            //localState.setMarkedASTNodeId(contextNodeId, ASTNodeId);
+            localState.setMarkedASTNodeId(contextNodeId, ASTNodeId);
         }
+        e['ASTChange'] = () => nodes.save();
 
-        tabManager.getV().on('click', () => e('astControlMode'));
         nodes.getV().on('click', () => e('nodesControlMode'));
+        tabManager.getV().on('click', () => {
+            if (tabManager.getActiveTab() && tabManager.getActiveTab().getAstEditor().isASTNodeEditorIsActive()) return;
+            e('astControlMode');
+        });
         e('astControlMode');
 
         const activeTabId = localState.getActiveTabId();

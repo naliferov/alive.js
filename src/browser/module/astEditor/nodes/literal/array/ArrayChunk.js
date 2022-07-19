@@ -14,14 +14,6 @@ export default class ArrayChunk extends AstNode {
         let closeBracket = new AstNode(']', {className:'bracket'});  super.insert(closeBracket);
     }
 
-    getBody() {
-        return this.arrayBody;
-    }
-
-    isEmpty() {
-        return this.arrayBody.isEmpty();
-    }
-
     serialize() {
         return {
             ...super.serialize(),
@@ -31,11 +23,8 @@ export default class ArrayChunk extends AstNode {
         }
     }
 
-    switchViewMode() {
-        this.isVertical = !this.isVertical;
-    }
-
-    insert(arrayItem) {
-        this.arrayBody.insert(arrayItem);
-    }
+    getBody() { return this.arrayBody; }
+    isEmpty() { return this.arrayBody.isEmpty(); }
+    switchViewMode() { this.isVertical = !this.isVertical; }
+    insert(arrayItem) { this.arrayBody.insert(arrayItem); }
 }

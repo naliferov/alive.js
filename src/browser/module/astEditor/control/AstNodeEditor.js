@@ -9,7 +9,7 @@ import For from "../nodes/conditionAndBody/loop/For.js";
 import Call from "../nodes/conditionAndBody/call/call/Call.js";
 import Callable from "../nodes/conditionAndBody/call/callable/Callable.js";
 import ArrayChunk from "../nodes/literal/array/ArrayChunk.js";
-import ObjectChunk from "../nodes/literal/object/ObjectChunk.js";
+import ObjectNode from "../nodes/literal/object/ObjectNode.js";
 import Literal from "../nodes/literal/Literal.js";
 import ArrayItemParts from "../nodes/literal/array/ArrayItemParts.js";
 
@@ -25,6 +25,7 @@ export default class AstNodeEditor {
         this.node = null;
         this.mode = null;
     }
+    isActive() { return this.node && this.mode; }
 
     createEditNode(fxController) {
         this.node = new Inserter;
@@ -35,7 +36,7 @@ export default class AstNodeEditor {
         return this.node;
     }
 
-    editNode(node, fxController) {
+    editNode(node, astEditor) {
 
         if (node instanceof Id ||
             node instanceof Op ||
@@ -47,7 +48,7 @@ export default class AstNodeEditor {
         } else return;
 
         e('astNodeEditMode');
-        this.processNodeInput(node, fxController);
+        this.processNodeInput(node, astEditor);
     }
 
     insertNewChunk(newChunk, insertAgain = false, astEditor) {
@@ -72,7 +73,7 @@ export default class AstNodeEditor {
         }
     }
 
-    processNodeInput(node, fxController) {
+    processNodeInput(node, astEditor) {
 
         let isCaretOnLastChar = false;
 
@@ -92,7 +93,7 @@ export default class AstNodeEditor {
 
                 if (this.mode === MODE_INSERT) {
 
-                    fxController.removeChunk(node);
+                    astEditor.removeChunk(node);
                     chunk = prevChunk ? prevChunk: parentChunk;
 
                     if (parentChunk instanceof ForConditionPartInternal) {
@@ -126,7 +127,7 @@ export default class AstNodeEditor {
                         const arrayBody = arrayItem.getParentChunk();
 
                         if (parentChunk.isEmpty()) {
-                            fxController.removeChunk(arrayItem);
+                            astEditor.removeChunk(arrayItem);
 
                             if (arrayBody.isEmpty()) {
                                 chunk = arrayBody.getParentChunk();
@@ -142,29 +143,27 @@ export default class AstNodeEditor {
                         }
                     }
 
-                    fxController.unmarkAll();
+                    astEditor.unmarkAll();
                     if (chunk && !(chunk instanceof Main)) {
-                        fxController.mark(chunk);
+                        astEditor.mark(chunk);
                     }
 
                 } else if (this.mode === MODE_EDIT) {
-
-                    console.log('edit stop');
                     node.oEditTxt();
                     node.iKeydownDisable(keyDown);
                     node.iKeyupDisable(keyUp);
-                    fxController.save();
+                    astEditor.save();
                 }
 
                 this.resetState();
-                setTimeout(() => window.e('astControlMode'), 300);
+                setTimeout(() => window.e('astNodeEditModeStop'), 300);
             } else if (key === 'Enter') {
 
                 e.preventDefault();
 
                 if (this.mode === MODE_INSERT) {
                     const chunk = this.getNewChunkByTxt(this.node.getTxt());
-                    if (chunk) this.insertNewChunk(chunk, false, fxController);
+                    if (chunk) this.insertNewChunk(chunk, false, astEditor);
                 } else if (this.mode === MODE_EDIT) {
                     console.log('edit stop');
                     node.oEditTxt();
@@ -172,8 +171,9 @@ export default class AstNodeEditor {
                     node.iKeyupDisable(keyUp);
                 }
 
-                setTimeout(() => window.e('astControlMode'), 200);
-                fxController.save();
+                this.resetState();
+                setTimeout(() => window.e('astNodeEditModeStop'), 200);
+                astEditor.save();
             }
         };
         const keyUp = (e) => {
@@ -181,7 +181,7 @@ export default class AstNodeEditor {
             const isSpace = e.key === ' ';
             if (isCaretOnLastChar && (isArrowRight || isSpace)) {
                 const chunk = this.getNewChunkByTxt(this.node.getTxt());
-                if (chunk) this.insertNewChunk(chunk, true, fxController);
+                if (chunk) this.insertNewChunk(chunk, true, astEditor);
             }
         }
 
@@ -216,7 +216,7 @@ export default class AstNodeEditor {
         if (t === '(') return new Call();
         if (t === '=>') return new Callable();
         if (t === '[') return new ArrayChunk();
-        if (t === '{') return new ObjectChunk();
+        if (t === '{') return new ObjectNode();
 
         const num = Number(t);
         if (!isNaN(num)) return new Literal(t, 'number');

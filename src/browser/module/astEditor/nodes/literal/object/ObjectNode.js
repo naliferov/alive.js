@@ -1,7 +1,7 @@
 import AstNode from "../../AstNode.js";
 import ObjectBody from "./ObjectBody.js";
 
-export default class ObjectChunk extends AstNode {
+export default class ObjectNode extends AstNode {
 
     objectBody;
 
