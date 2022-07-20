@@ -72,6 +72,7 @@ export default class AstEditor {
         this.renderAST();
     }
 
+    getModuleNode() { return this.moduleNode; }
     isASTNodeEditorIsActive() { return this.astNodeEditor.isActive(); }
 
     getLastASTVersion() {

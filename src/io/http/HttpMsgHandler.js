@@ -32,7 +32,7 @@ export default class HttpMsgHandler {
     }
 
     authorize(res, authKey) {
-        res.cookie(COOKIE_KEY, authKey, { maxAge: (60 * 60 * 24) * (15 * 1000), httpOnly: true, secure: true, sameSite: 'Strict'});
+        res.cookie(COOKIE_KEY, authKey, { maxAge: (60 * 60 * 24) * (30 * 1000), httpOnly: true, secure: true, sameSite: 'Strict'});
     }
 
     async handle(req, res, next) {

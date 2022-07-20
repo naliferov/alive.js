@@ -5,6 +5,9 @@ import LocalState from "./browser/Localstate.js";
 import HttpClient from "./io/http/HttpClient.js";
 import V from "./type/V.js";
 import AstRunner from "./browser/module/astEditor/AstRunner.js";
+import ModuleImports from "./browser/module/astEditor/nodes/module/ModuleImports.js";
+import ModuleCallableCondition from "./browser/module/astEditor/nodes/module/ModuleCallableCondition.js";
+import ModuleBody from "./browser/module/astEditor/nodes/module/ModuleBody.js";
 
 class AppBrowser {
 
@@ -130,6 +133,9 @@ class AppBrowser {
         e('>', [run, btnsBar]);
         run.on('click', () => e('runASTModule'));
 
+        const process = new V({class: 'btn', txt: 'process'});
+        e('>', [process, btnsBar]);
+
         const nodes = new Nodes;
         await nodes.init();
         e('>', [nodes.getV(), sideBar]);
@@ -165,7 +171,14 @@ class AppBrowser {
         }
         e['markASTNode'] = async ([contextNode, ASTNode]) => {
             const contextNodeId = contextNode.get('id');
-            const ASTNodeId = ASTNode.getId();
+            let ASTNodeId = ASTNode.getId();
+            if (ASTNode instanceof ModuleImports ||
+                ASTNode instanceof ModuleCallableCondition ||
+                ASTNode instanceof ModuleBody
+            ) {
+                ASTNodeId = ASTNode.constructor.name
+            }
+
             localState.setMarkedASTNodeId(contextNodeId, ASTNodeId);
         }
         e['ASTChange'] = () => nodes.save();
@@ -193,7 +206,19 @@ class AppBrowser {
             const node = await nodes.getNodeById(activeTabId);
             await tabManager.focusTab(node);
 
+            const astEditor = tabManager.getActiveTab().getAstEditor();
+            const module = astEditor.getModuleNode();
             const markedASTNodeId = localState.getMarkedASTNodeId(activeTabId);
+
+            const map = {
+                [ModuleImports.name]: module.getImports(),
+                [ModuleCallableCondition.name]: module.getCallableCondition(),
+                [ModuleBody.name]: module.getBody()
+            }
+            if (map[markedASTNodeId]) {
+                astEditor.mark(map[markedASTNodeId]);
+                return;
+            }
             const markedASTNode = markedASTNodeId ? window.astPool.get(markedASTNodeId) : null;
             if (markedASTNode) {
                 tabManager.getActiveTab().getAstEditor().mark(markedASTNode);
