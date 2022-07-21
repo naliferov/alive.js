@@ -15,7 +15,7 @@ export default class OutlinerNode {
         this.contextNode = node;
 
         this.domId = uuid();
-        window.outlinerNodesPool.set(this.domId, this);
+        window.outlinerPool.set(this.domId, this);
         this.v = new V({id: this.domId, class: ['node']});
 
         const container = new V({class: ['nodeContainer', 'flex']});
@@ -46,18 +46,18 @@ export default class OutlinerNode {
 
     getDomId() { return this.domId; }
     isEmpty() { return !this.nodesV.getDOM().children.length; }
-    getParent() { return window.outlinerNodesPool.get(this.v.parentDOM().parentNode.id); }
+    getParent() { return window.outlinerPool.get(this.v.parentDOM().parentNode.id); }
 
     next() {
         const next = this.v.getDOM().nextSibling;
         if (!next) return;
-        return window.outlinerNodesPool.get(next.id);
+        return window.outlinerPool.get(next.id);
     }
 
     prev() {
         const previous = this.v.getDOM().previousSibling;
         if (!previous) return;
-        return window.outlinerNodesPool.get(previous.id);
+        return window.outlinerPool.get(previous.id);
     }
     getContextNode() { return this.contextNode }
     getV() { return this.v }

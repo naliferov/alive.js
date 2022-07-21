@@ -15,9 +15,9 @@ class AppBrowser {
     input;
 
     initGlobals() {
-        window.domPool = new Map;
         window.nodesPool = new Map;
-        window.outlinerNodesPool = new Map;
+        window.domPool = new Map;
+        window.outlinerPool = new Map;
         window.astPool = new Map;
 
         window.eHandlers = {};
@@ -55,9 +55,6 @@ class AppBrowser {
     }
 
     async showSignPage(app, type) {
-
-        this.initGlobals();
-
         const isSignIn = type === 'sign_in';
         const formName = isSignIn ? 'Sign in': 'Sign up';
 
@@ -105,9 +102,12 @@ class AppBrowser {
         }
     }
 
-    async showIDE(app) {
-        this.initGlobals();
+    async showProcessPage(app) {
+        const pageProcess = new V({class: ['page'], txt: 'process page'});
+        e('>', [pageProcess, app]);
+    }
 
+    async showIDE(app) {
         const pageIDE = new V({class: ['pageIDE']});
         e('>', [pageIDE, app]);
 
@@ -133,8 +133,12 @@ class AppBrowser {
         e('>', [run, btnsBar]);
         run.on('click', () => e('runASTModule'));
 
-        const process = new V({class: 'btn', txt: 'process'});
+        const process = new V({class: 'btn', tagName: 'a', txt: 'process'});
+        process.setAttr('href', '/process222');
         e('>', [process, btnsBar]);
+        const AST = new V({class: 'btn', tagName: 'a', txt: 'AST'});
+        AST.setAttr('href', '/');
+        e('>', [AST, btnsBar]);
 
         const nodes = new Nodes;
         await nodes.init();
@@ -226,8 +230,15 @@ class AppBrowser {
         }
     }
 
+    async show404Page(app) {
+        const addNodeBtn = new V({class: ['btn'], txt: '404'});
+        e('>', [addNodeBtn, app]);
+    }
+
     async run() {
-        this.app = new V();
+        this.initGlobals();
+
+        this.app = new V;
         this.app.setDOM(document.getElementById('app'));
 
         const path = document.location.pathname
@@ -235,8 +246,15 @@ class AppBrowser {
             '/': () => this.showIDE(this.app),
             '/sign/in': () => this.showSignPage(this.app, 'sign_in'),
             '/sign/up': () => this.showSignPage(this.app, 'sign_up'),
+            '/process': () => this.showProcessPage(this.app),
         }
         if (m[path]) m[path]();
+
+        navigation.addEventListener('navigate', navigateEvent => {
+            const url = new URL(navigateEvent.destination.url);
+            this.app.clear();
+            navigateEvent.transitionWhile(m[url.pathname] ? m[url.pathname]() : this.show404Page(this.app) );
+        });
     }
 }
 

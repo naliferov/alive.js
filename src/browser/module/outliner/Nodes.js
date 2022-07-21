@@ -39,7 +39,7 @@ export default class Nodes {
                 e('>', [newOutlinerNode.getV(), outlinerNode.getNodesV()]);
 
                 window.nodesPool.set(newNode.get('id'), newNode);
-                window.outlinerNodesPool.set(newOutlinerNode.getDomId(), newOutlinerNode);
+                window.outlinerPool.set(newOutlinerNode.getDomId(), newOutlinerNode);
                 render(newOutlinerNode);
             }
         }
@@ -49,7 +49,7 @@ export default class Nodes {
 
     isEmpty() { return this.outLinerRootNode.isEmpty()}
     getNodeById(id) { return window.nodesPool.get(id); }
-    getOutlinerNodeById(id) { return window.outlinerNodesPool.get(id); }
+    getOutlinerNodeById(id) { return window.outlinerPool.get(id); }
 
     async handleKeyDown(e) {
 
@@ -149,19 +149,19 @@ export default class Nodes {
         const newOutlinerNode = new OutlinerNode(newNode);
 
         e('>after', [newOutlinerNode.getV(), outlinerNode.getV()]);
-        window.outlinerNodesPool.set(newOutlinerNode.getDomId(), newOutlinerNode);
+        window.outlinerPool.set(newOutlinerNode.getDomId(), newOutlinerNode);
     }
 
     create(outlinerNode) {
         const newNode = new Node({id: uuid(), name: 'New node'});
         const newOutlinerNode = new OutlinerNode(newNode);
         e('>', [newOutlinerNode.getV(), outlinerNode.getNodesV()]);
-        window.outlinerNodesPool.set(newOutlinerNode.getDomId(), newOutlinerNode);
+        window.outlinerPool.set(newOutlinerNode.getDomId(), newOutlinerNode);
     }
 
     delete(outlinerNode) {
         window.nodesPool.delete(outlinerNode.getContextNode().get('id'));
-        window.outlinerNodesPool.delete(outlinerNode.getDomId());
+        window.outlinerPool.delete(outlinerNode.getDomId());
         outlinerNode.getV().removeFromDom();
     }
 
@@ -173,7 +173,7 @@ export default class Nodes {
 
             for (let outlinerNodeDom of outlinerNode.getNodesV().getDOM().children) {
 
-                const outlinerNode = window.outlinerNodesPool.get(outlinerNodeDom.getAttribute('id'));
+                const outlinerNode = window.outlinerPool.get(outlinerNodeDom.getAttribute('id'));
                 const node = outlinerNode.getContextNode();
 
                 let tData = {id: node.get('id'), name: node.get('name')};
