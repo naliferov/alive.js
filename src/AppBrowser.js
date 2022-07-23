@@ -250,6 +250,7 @@ class AppBrowser {
         }
         if (m[path]) m[path]();
 
+
         navigation.addEventListener('navigate', navigateEvent => {
             const url = new URL(navigateEvent.destination.url);
             this.app.clear();
